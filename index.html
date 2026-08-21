@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TopTop BD - Dynamic Home</title>
+    <!-- FontAwesome আইকন -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Supabase CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <!-- স্টাইল ফাইল লিংক -->
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <!-- ১. হেডার ও সার্চ বার -->
+    <header>
+        <h1>TopTop BD</h1>
+        <input type="text" id="searchBox" class="search-box" placeholder="আপনার পছন্দের পণ্য খুঁজুন...">
+    </header>
+
+    <!-- ২. ডাইনামিক ব্যানার সেকশন (সুপাবেজ থেকে লোড হবে) -->
+    <div class="banner-container" id="bannerContainer">
+        <!-- জাভাস্ক্রিপ্ট দিয়ে ব্যানার এখানে ডাইনামিকালি আসবে -->
+        <div class="banner-slider">
+            লোড হচ্ছে...
+        </div>
+    </div>
+
+    <!-- ৩. মেইন ক্যাটাগরি সেকশন -->
+    <div class="categories-container">
+        <div class="section-title">ক্যাটাগরি সমূহ</div>
+        <div class="categories-grid" id="mainCategories"></div>
+    </div>
+
+    <!-- ৪. সাব-ক্যাটাগরি সেকশন -->
+    <div class="sub-categories-container">
+        <div class="section-title">সাব-ক্যাটাগরি সমূহ</div>
+        <div class="sub-categories-grid" id="subCategories"></div>
+    </div>
+
+    <!-- ৫. প্রোডাক্ট সেকশন -->
+    <div class="container">
+        <div class="section-title">প্রোডাক্টসমূহ</div>
+        <div class="product-grid" id="productGrid"></div>
+    </div>
+
+    <!-- জাভাস্ক্রিপ্ট ফাইল লিংক -->
+    <script src="script.js"></script>
+</body>
+</html>

@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>প্রোডাক্ট ডিটেইলস - TopTop BD</title>
+    <!-- FontAwesome আইকন -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Supabase CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        body {
+            background-color: #f7f7f7;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+        .details-container {
+            max-width: 600px;
+            margin: 20px auto;
+            background: #fff;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            padding: 20px;
+        }
+        .back-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            text-decoration: none;
+            color: #ff5722;
+            font-weight: 600;
+            margin-bottom: 15px;
+            font-size: 14px;
+        }
+        .product-title {
+            font-size: 24px;
+            font-weight: 700;
+            color: #222;
+            margin-bottom: 8px;
+            line-height: 1.4;
+        }
+        .product-price {
+            font-size: 22px;
+            font-weight: 700;
+            color: #ff5722;
+            margin-bottom: 15px;
+        }
+        .main-img-box {
+            width: 100%;
+            height: 320px;
+            border-radius: 8px;
+            overflow: hidden;
+            background: #eee;
+            margin-bottom: 12px;
+        }
+        .main-img-box img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .sub-images-grid {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        .sub-img-thumb {
+            width: 75px;
+            height: 75px;
+            border-radius: 6px;
+            overflow: hidden;
+            border: 2px solid #ddd;
+            cursor: pointer;
+            background: #eee;
+        }
+        .sub-img-thumb img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .sub-img-thumb.active {
+            border-color: #ff5722;
+        }
+        .section-heading {
+            font-size: 16px;
+            font-weight: 600;
+            color: #444;
+            border-top: 1px solid #eee;
+            padding-top: 15px;
+            margin-top: 15px;
+            margin-bottom: 8px;
+        }
+        .product-description {
+            font-size: 14px;
+            color: #555;
+            line-height: 1.6;
+            margin-bottom: 25px;
+        }
+        /* বাটন লেআউট স্টাইলস */
+        .action-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        .btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            width: 100%;
+            padding: 14px;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            text-decoration: none;
+            border: none;
+            cursor: pointer;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+            transition: opacity 0.2s;
+        }
+        .btn:hover {
+            opacity: 0.9;
+        }
+        /* ওপরে বড় অর্ডার বাটন */
+        .order-btn {
+            background: #ff5722;
+            color: white;
+            padding: 16px;
+            font-size: 18px;
+        }
+        /* নিচের চ্যাট বাটনগুলোর জন্য রো */
+        .chat-buttons-row {
+            display: flex;
+            gap: 10px;
+        }
+        .whatsapp-btn {
+            background: #25D366;
+            color: white;
+            flex: 1;
+        }
+        .messenger-btn {
+            background: #0084FF;
+            color: white;
+            flex: 1;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="details-container">
+        <a href="index.html" class="back-btn"><i class="fa-solid fa-arrow-left"></i> হোম পেজে ফিরে যান</a>
+        
+        <div id="productDetailsContent">
+            <p style="text-align: center; padding: 40px; color: #777;">লোড হচ্ছে...</p>
+        </div>
+    </div>
+
+    <script>
+        const SUPABASE_URL = 'https://mzqqkkgdggwmpegvqaol.supabase.co';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im16cXFra2dkZ2d3bXBlZ3ZxYW9sIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODY4MDU4NDUsImV4cCI6MjEwMjM4MTg0NX0.hbUQ4dKjX2iXTF-ugi7JkV_-J5gKIpSEsPN8RpJ0EEo';
+
+        const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+        // URL থেকে প্রোডাক্ট আইডি নেওয়া
+        const urlParams = new URLSearchParams(window.location.search);
+        const productId = urlParams.get('id');
+
+        async function fetchProductDetails() {
+            const container = document.getElementById('productDetailsContent');
+            
+            if (!productId) {
+                container.innerHTML = `<p style="color:red; text-align:center;">প্রোডাক্ট আইডি পাওয়া যায়নি!</p>`;
+                return;
+            }
+
+            try {
+                const { data, error } = await supabaseClient
+                    .from('products')
+                    .select('*')
+                    .eq('id', productId)
+                    .single();
+
+                if (error || !data) {
+                    container.innerHTML = `<p style="color:red; text-align:center;">প্রোডাক্ট ডাটা লোড করা যায়নি।</p>`;
+                    return;
+                }
+
+                // ছবিগুলো সাজানো
+                let images = [];
+                if (data.image_url) images.push(data.image_url);
+                if (data.image_url_1) images.push(data.image_url_1);
+                if (data.image_url_2) images.push(data.image_url_2);
+                
+                if (images.length === 0) images.push('https://via.placeholder.com/300?text=No+Image');
+
+                // ডেটাবেস থেকে ডাইনামিক লিংকগুলো সেটআপ (যদি না থাকে তবে ডিফল্ট fallback ব্যবহার হবে)
+                const orderAction = data.order_link 
+                    ? `href="${data.order_link}" target="_blank"` 
+                    : `onclick="alert('অর্ডার প্রসেস শুরু হয়েছে!')"`;
+
+                const whatsappLink = data.whatsapp_link || "https://wa.me/8801712345678"; 
+                const messengerLink = data.messenger_link || "https://m.me/yourpageusername"; 
+
+                container.innerHTML = `
+                    <h1 class="product-title">${data.name}</h1>
+                    <div class="product-price">৳ ${data.price}</div>
+
+                    <div class="main-img-box">
+                        <img id="mainProductImg" src="${images[0]}" alt="${data.name}">
+                    </div>
+                    
+                    ${images.length > 1 ? `
+                        <div class="sub-images-grid">
+                            ${images.map((img, index) => `
+                                <div class="sub-img-thumb ${index === 0 ? 'active' : ''}" onclick="changeMainImage('${img}', this)">
+                                    <img src="${img}" alt="Thumbnail">
+                                </div>
+                            `).join('')}
+                        </div>
+                    ` : ''}
+
+                    <div class="section-heading">পণ্যের বিবরণ</div>
+                    <div class="product-description">${data.description || data.short_description || 'কোনো বিবরণ দেওয়া হয়নি।'}</div>
+
+                    <!-- বাটন লেআউট: ওপরে বড় অর্ডার বাটন, নিচে WhatsApp ও Messenger -->
+                    <div class="action-buttons">
+                        <a ${orderAction} class="btn order-btn" style="text-decoration: none; text-align: center; display: block;">
+                            <i class="fa-solid fa-cart-shopping"></i> অর্ডার করুন (Orders)
+                        </a>
+                        
+                        <div class="chat-buttons-row">
+                            <a href="${whatsappLink}" target="_blank" class="btn whatsapp-btn">
+                                <i class="fa-brands fa-whatsapp"></i> WhatsApp
+                            </a>
+
+                            <a href="${messengerLink}" target="_blank" class="btn messenger-btn">
+                                <i class="fa-brands fa-facebook-messenger"></i> Messenger
+                            </a>
+                        </div>
+                    </div>
+                `;
+
+            } catch (err) {
+                console.error(err);
+                container.innerHTML = `<p style="color:red; text-align:center;">কানেকশন এরর হয়েছে!</p>`;
+            }
+        }
+
+        // ছোট ছবিতে ক্লিক করলে বড় ছবি পরিবর্তন করার ফাংশন
+        function changeMainImage(imgSrc, element) {
+            document.getElementById('mainProductImg').src = imgSrc;
+            document.querySelectorAll('.sub-img-thumb').forEach(el => el.classList.remove('active'));
+            element.classList.add('active');
+        }
+
+        window.onload = fetchProductDetails;
+    </script>
+</body>
+</html>
