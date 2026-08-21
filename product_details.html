@@ -162,6 +162,10 @@
 
         const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
+        // গ্লোবাল ভেরিয়েবল যাতে বর্তমানে সিলেক্ট করা ছবি ও প্রোডাক্টের তথ্য রাখা যায়
+        let currentProduct = null;
+        let selectedImageUrl = "";
+
         // URL থেকে প্রোডাক্ট আইডি নেওয়া
         const urlParams = new URLSearchParams(window.location.search);
         const productId = urlParams.get('id');
@@ -186,6 +190,8 @@
                     return;
                 }
 
+                currentProduct = data; // গ্লোবাল ভেরিয়েবলে ডাটা সেভ হলো
+
                 // ছবিগুলো সাজানো
                 let images = [];
                 if (data.image_url) images.push(data.image_url);
@@ -194,13 +200,11 @@
                 
                 if (images.length === 0) images.push('https://via.placeholder.com/300?text=No+Image');
 
-                // ডেটাবেস থেকে ডাইনামিক লিংকগুলো সেটআপ (যদি না থাকে তবে ডিফল্ট fallback ব্যবহার হবে)
+                selectedImageUrl = images[0]; // ডিফল্টভাবে প্রথম ছবি সিলেক্ট থাকবে
+
                 const orderAction = data.order_link 
                     ? `href="${data.order_link}" target="_blank"` 
                     : `onclick="alert('অর্ডার প্রসেস শুরু হয়েছে!')"`;
-
-                const whatsappLink = data.whatsapp_link || "https://wa.me/8801712345678"; 
-                const messengerLink = data.messenger_link || "https://m.me/yourpageusername"; 
 
                 container.innerHTML = `
                     <h1 class="product-title">${data.name}</h1>
@@ -230,13 +234,13 @@
                         </a>
                         
                         <div class="chat-buttons-row">
-                            <a href="${whatsappLink}" target="_blank" class="btn whatsapp-btn">
+                            <button onclick="sendToWhatsApp()" class="btn whatsapp-btn">
                                 <i class="fa-brands fa-whatsapp"></i> WhatsApp
-                            </a>
+                            </button>
 
-                            <a href="${messengerLink}" target="_blank" class="btn messenger-btn">
+                            <button onclick="sendToMessenger()" class="btn messenger-btn">
                                 <i class="fa-brands fa-facebook-messenger"></i> Messenger
-                            </a>
+                            </button>
                         </div>
                     </div>
                 `;
@@ -247,11 +251,63 @@
             }
         }
 
-        // ছোট ছবিতে ক্লিক করলে বড় ছবি পরিবর্তন করার ফাংশন
+        // ছোট ছবিতে ক্লিক করলে বড় ছবি পরিবর্তন করার ফাংশন এবং সিলেক্টেড ছবি আপডেট করা
         function changeMainImage(imgSrc, element) {
             document.getElementById('mainProductImg').src = imgSrc;
+            selectedImageUrl = imgSrc; // ছবির লিংক আপডেট হলো
             document.querySelectorAll('.sub-img-thumb').forEach(el => el.classList.remove('active'));
             element.classList.add('active');
+        }
+
+        // হোয়াটসঅ্যাপে ডাটাবেজের লিংক থেকে নাম্বার নিয়ে মেসেজ পাঠানোর ফাংশন
+        function sendToWhatsApp() {
+            if (!currentProduct) return;
+
+            let dbWhatsapp = currentProduct.whatsapp_link || "https://wa.me/8801712345678";
+            let phone = "8801712345678";
+
+            if (dbWhatsapp.includes("wa.me/")) {
+                phone = dbWhatsapp.split("wa.me/")[1].split("?")[0];
+            }
+
+            let message = `আসসালামু আলাইকুম, আমি এই প্রোডাক্টটি কিনতে চাই:\n\n` +
+                          `📌 নাম: ${currentProduct.name}\n` +
+                          `💰 দাম: ৳ ${currentProduct.price}\n` +
+                          `🖼️ প্রোডাক্ট ছবি: ${selectedImageUrl}\n\n` +
+                          `দয়া করে বিষয়টি কনফার্ম করুন।`;
+
+            let encodedMessage = encodeURIComponent(message);
+            let whatsappUrl = `https://wa.me/${phone}?text=${encodedMessage}`;
+
+            window.open(whatsappUrl, '_blank');
+        }
+
+        // মেসেঞ্জারে ডাটাবেজের লিংক থেকে ইউজারনেম নিয়ে মেসেজ পাঠানোর ফাংশন
+        function sendToMessenger() {
+            if (!currentProduct) return;
+
+            let dbMessenger = currentProduct.messenger_link || "https://m.me/yourpageusername";
+            let pageUsername = "yourpageusername";
+
+            if (dbMessenger.includes("m.me/")) {
+                pageUsername = dbMessenger.split("m.me/")[1].split("/")[0].split("?")[0];
+            }
+
+            let message = `আসসালামু আলাইকুম, আমি এই প্রোডাক্টটি কিনতে চাই:\n\n` +
+                          `📌 নাম: ${currentProduct.name}\n` +
+                          `💰 দাম: ৳ ${currentProduct.price}\n` +
+                          `🖼️ প্রোডাক্ট ছবি: ${selectedImageUrl}\n\n` +
+                          `দয়া করে বিষয়টি কনফার্ম করুন।`;
+
+            // কাস্টমারের সুবিধার্থে টেক্সট ক্লিপবোর্ডে কপি করে মেসেঞ্জারে নিয়ে যাওয়ার ব্যবস্থা
+            navigator.clipboard.writeText(message).then(() => {
+                alert("প্রোডাক্টের বিবরণ ও ছবির লিংক কপি করা হয়েছে! মেসেঞ্জার ওপেন হলে সেখানে পেস্ট (Paste) করে দিন।");
+            }).catch(err => {
+                console.log('Copy failed', err);
+            });
+
+            let messengerUrl = `https://m.me/${pageUsername}`;
+            window.open(messengerUrl, '_blank');
         }
 
         window.onload = fetchProductDetails;

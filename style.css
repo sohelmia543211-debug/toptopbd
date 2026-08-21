@@ -147,11 +147,21 @@ header h1 {
     box-shadow: 0 8px 20px rgba(255,87,34,0.35);
 }
 
+
 .product-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-    gap: 25px;
+    grid-template-columns: repeat(2, 1fr); /* মোবাইলে সবসময় ২ কলাম থাকবে */
+    gap: 15px;
 }
+
+/* বড় স্ক্রিনের জন্য (ল্যাপটপ বা ট্যাবলেট) */
+@media (min-width: 768px) {
+    .product-grid {
+        grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+        gap: 25px;
+    }
+}
+
 .product-card {
     background: white;
     border-radius: 15px;
@@ -248,13 +258,20 @@ header h1 {
 
 }
 
-/* ক্যাটাগরি গ্রিড ও কার্ড স্টাইল */
+/* ক্যাটাগরি গ্রিড ও কার্ড স্টাইল (হরিজন্টাল স্ক্রোল) */
 .categories-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
-    gap: 20px; /* কার্ডগুলোর মাঝের দূরত্ব বাড়িয়ে দেওয়া হলো */
-    padding: 20px; /* চারপাশের জায়গা বাড়ানো হলো যাতে শ্যাডো কেটে না যায় */
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    gap: 15px;
+    overflow-x: auto;
+    padding: 15px 5px;
+    scrollbar-width: none;
 }
+.categories-grid::-webkit-scrollbar {
+    display: none;
+}
+
 
 
 /* শিমার বা লোডিং ইফেক্ট এনিমেশন */

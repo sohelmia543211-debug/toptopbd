@@ -26,7 +26,7 @@ async function fetchBanners() {
                 </div>
             `;
         }
-    } catch (err) { console.error('ব্যানার কানেকশন এরর:', err); }
+    } catch (err) { console.error('ব্যানার কানেকشن এরর:', err); }
 }
 
 // ২. ইনিশিয়ালি সব ডাটা ফেচ করা
@@ -91,10 +91,10 @@ function renderMainCategories() {
 
 function selectMainCategory(cat) {
     currentMainCategory = cat;
-    currentSubCategory = "সব"; 
+    currentSubCategory = "সব"; // মেইন ক্যাটাগরি বদলালে সাব-ক্যাটাগরি রিসেট হবে
     renderMainCategories();
-    renderSubCategories();
-    renderProducts();
+    renderSubCategories(); // শুধু সাব-ক্যাটাগরি আপডেট হবে
+    // এখানে renderProducts() বাদ দেওয়া হয়েছে, তাই মেইন ক্যাটাগরিতে ক্লিক করলে প্রোডাক্ট ফিল্টার হবে না।
 }
 
 // ৪. সাব-ক্যাটাগরি রেন্ডার করা
@@ -139,10 +139,10 @@ function renderSubCategories() {
 function selectSubCategory(subName) {
     currentSubCategory = subName;
     renderSubCategories();
-    renderProducts();
+    renderProducts(); // সাব-ক্যাটাগরিতে ক্লিক করলেই কেবল প্রোডাক্ট আপডেট হবে
 }
 
-// ৫. প্রোডাক্ট ফিল্টার করে দেখানো (product_details.html এর সাথে লিংক করা)
+// ৫. প্রোডাক্ট ফিল্টার করে দেখানো
 function renderProducts(searchKeyword = "") {
     const grid = document.getElementById('productGrid');
     if (!grid) return;
@@ -170,7 +170,6 @@ function renderProducts(searchKeyword = "") {
     }
 
     filteredProducts.forEach(p => {
-        // এখানে product_details.html ব্যবহার করা হয়েছে যাতে ফাইলের নামের সাথে মিলে যায়
         grid.innerHTML += `
             <div class="product-card" onclick="window.location.href='product_details.html?id=${p.id}'" style="cursor: pointer;">
                 <div class="product-img-box">
