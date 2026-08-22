@@ -96,11 +96,12 @@ header h1 {
     padding-left: 6px;
 }
 
-/* ক্যাটাগরি গ্রিড ও কার্ড স্টাইল */
+/* ক্যাটাগরি গ্রিড ও কার্ড স্টাইল (২ সারি ও পাশাপাশি কাছাকাছি থাকার জন্য) */
 .categories-grid {
     display: flex;
-    flex-direction: row;
-    flex-wrap: nowrap;
+    flex-direction: column;
+    flex-wrap: wrap;
+    height: 180px; /* দুই সারির জন্য উপযুক্ত উচ্চতা */
     gap: 10px;
     overflow-x: auto;
     padding: 5px;
@@ -109,6 +110,7 @@ header h1 {
 .categories-grid::-webkit-scrollbar {
     display: none;
 }
+
 
 .cat-card {
     background: white;
@@ -119,9 +121,11 @@ header h1 {
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
     transition: all 0.3s ease;
     border: 2px solid transparent;
-    min-width: 75px;
+    width: 85px;      /* কার্ডের সাইজ ছোট ও ফিক্সড রাখতে এটি যোগ করা হলো */
+    min-width: 85px;  /* ছোট স্ক্রিনে যেন শেপ ঠিক থাকে */
     flex-shrink: 0;
 }
+
 
 .cat-card img {
     width: 45px;
@@ -132,14 +136,20 @@ header h1 {
 }
 
 .cat-card span {
-    display: block;
+    display: -webkit-box;
+    -webkit-line-clamp: 2; /* ক্যাটাগরির লেখা বড় জোর ২ লাইন দেখাবে */
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
     font-size: 11px; 
     font-weight: 600;
     color: #333;
-    white-space: normal; 
-    line-height: 1.1;
-    margin-top: 2px;
+    line-height: 1.2;
+    margin-top: 4px;
+    height: 26px; /* ২ লাইনের জন্য নির্দিষ্ট উচ্চতা, যাতে সব কার্ড সমান দেখায় */
 }
+
+
 
 .cat-card.active {
     border-color: #ff5722;
