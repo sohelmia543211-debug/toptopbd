@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TopTop BD - Dynamic Home</title>
+    <title>TopTop BD - লোকাল মার্কেটপ্লেস (নতুন ও পুরনো পণ্য)</title>
     <!-- FontAwesome আইকন -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <!-- Supabase CDN -->
@@ -27,19 +27,28 @@
         </div>
     </div>
 
-    <!-- ৩. মেইন ক্যাটাগরি সেকশন -->
+    <!-- ৩. প্রোডাক্ট টাইপ ড্রপডাউন ফিল্টার সেকশন -->
+    <div class="filter-dropdown-container" style="text-align: center; margin: 20px 0;">
+        <select id="productTypeFilter" onchange="filterProductsByType(this.value)" style="padding: 12px 20px; font-size: 16px; font-weight: bold; border-radius: 25px; border: 2px solid #ff5722; background-color: #fff; color: #333; cursor: pointer; outline: none; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+            <option value="used_product" selected>🔄 পুরনো পণ্য</option>
+            <option value="new_product">✨ নতুন পণ্য</option>
+            <option value="land_property">🏠 জমি ও প্রপার্টি</option>
+        </select>
+    </div>
+
+    <!-- ৪. মেইন ক্যাটাগরি সেকশন -->
     <div class="categories-container">
         <div class="section-title">ক্যাটাগরি সমূহ</div>
         <div class="categories-grid" id="mainCategories"></div>
     </div>
 
-    <!-- ৪. সাব-ক্যাটাগরি সেকশন -->
+    <!-- ৫. সাব-ক্যাটাগরি সেকশন -->
     <div class="sub-categories-container">
         <div class="section-title">সাব-ক্যাটাগরি সমূহ</div>
         <div class="sub-categories-grid" id="subCategories"></div>
     </div>
 
-    <!-- ৫. প্রোডাক্ট সেকশন -->
+    <!-- ৬. প্রোডাক্ট সেকশন -->
     <div class="container">
         <div class="section-title">প্রোডাক্টসমূহ</div>
         <div class="product-grid" id="productGrid"></div>

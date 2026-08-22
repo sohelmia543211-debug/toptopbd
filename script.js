@@ -5,6 +5,7 @@ const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 let currentMainCategory = "সব"; 
 let currentSubCategory = "সব";
+let currentProductType = "used_product"; // ডিফল্টভাবে পুরনো পণ্য সিলেক্ট থাকবে
 let globalMainCategories = [];
 let globalSubCategories = [];
 let globalProducts = [];
@@ -62,7 +63,13 @@ async function fetchInitialData() {
     }
 }
 
-// ৩. মেইন ক্যাটাগরি রেন্ডার করা
+// ৩. ড্রপডাউন থেকে প্রোডাক্ট টাইপ ফিল্টার করার ফাংশন
+function filterProductsByType(type) {
+    currentProductType = type;
+    renderProducts();
+}
+
+// ৪. মেইন ক্যাটাগরি রেন্ডার করা
 function renderMainCategories() {
     const grid = document.getElementById('mainCategories');
     if (!grid) return;
@@ -93,11 +100,11 @@ function selectMainCategory(cat) {
     currentMainCategory = cat;
     currentSubCategory = "সব"; // মেইন ক্যাটাগরি বদলালে সাব-ক্যাটাগরি রিসেট হবে
     renderMainCategories();
-    renderSubCategories(); // শুধু সাব-ক্যাটাগরি আপডেট হবে
-    // এখানে renderProducts() বাদ দেওয়া হয়েছে, তাই মেইন ক্যাটাগরিতে ক্লিক করলে প্রোডাক্ট ফিল্টার হবে না।
+    renderSubCategories(); 
+    // এখানে renderProducts() বাদ দেওয়া হয়েছে, তাই মেইন ক্যাটাগরিতে ক্লিক করলে প্রোডাক্ট বদলাবে না, শুধু সাব-ক্যাটাগরি আপডেট হবে।
 }
 
-// ৪. সাব-ক্যাটাগরি রেন্ডার করা
+// ৫. সাব-ক্যাটাগরি রেন্ডার করা
 function renderSubCategories() {
     const grid = document.getElementById('subCategories');
     if (!grid) return;
@@ -139,16 +146,18 @@ function renderSubCategories() {
 function selectSubCategory(subName) {
     currentSubCategory = subName;
     renderSubCategories();
-    renderProducts(); // সাব-ক্যাটাগরিতে ক্লিক করলেই কেবল প্রোডাক্ট আপডেট হবে
+    renderProducts(); // শুধুমাত্র সাব-ক্যাটাগরিতে ক্লিক করলেই প্রোডাক্ট ফিল্টার হয়ে আপডেট হবে
 }
 
-// ৫. প্রোডাক্ট ফিল্টার করে দেখানো
+// ৬. প্রোডাক্ট ফিল্টার করে দেখানো
 function renderProducts(searchKeyword = "") {
     const grid = document.getElementById('productGrid');
     if (!grid) return;
     grid.innerHTML = "";
 
     let filteredProducts = globalProducts.filter(p => {
+        let matchesType = p.product_type === currentProductType;
+
         let matchesMain = true;
         if (currentMainCategory !== "সব") {
             matchesMain = p.main_category_id == currentMainCategory.id || p.category === currentMainCategory.name || p.Category_id == currentMainCategory.id;
@@ -161,11 +170,11 @@ function renderProducts(searchKeyword = "") {
 
         const matchesSearch = p.name.toLowerCase().includes(searchKeyword.toLowerCase());
 
-        return matchesMain && matchesSub && matchesSearch;
+        return matchesType && matchesMain && matchesSub && matchesSearch;
     });
 
     if (filteredProducts.length === 0) {
-        grid.innerHTML = `<div class="no-product"><i class="fa-solid fa-box-open" style="font-size: 28px; margin-bottom: 8px; display:block; color:#ff5722;"></i>কোনো পণ্য পাওয়া যায়নি।</div>`;
+        grid.innerHTML = `<div class="no-product" style="grid-column: 1 / -1; text-align: center; padding: 30px;"><i class="fa-solid fa-box-open" style="font-size: 28px; margin-bottom: 8px; display:block; color:#ff5722;"></i>কোনো পণ্য পাওয়া যায়নি।</div>`;
         return;
     }
 
@@ -185,7 +194,7 @@ function renderProducts(searchKeyword = "") {
     });
 }
 
-// ৬. সার্চ বক্স লাইভ ফিল্টার
+// ৭. সার্চ বক্স লাইভ ফিল্টার
 const searchBox = document.getElementById('searchBox');
 if (searchBox) {
     searchBox.addEventListener('input', (e) => {
