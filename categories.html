@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TopTop BD - ক্যাটাগরি সমূহ</title>
+    <!-- FontAwesome আইকন -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Supabase CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+        body {
+            padding-bottom: 70px;
+            background-color: #f4f6f9;
+            margin: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        header {
+            background-color: #ffffff;
+            padding: 15px;
+            text-align: center;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        header h1 {
+            margin: 0;
+            font-size: 20px;
+            color: #ff5722;
+            font-weight: 700;
+        }
+
+        /* স্প্লিট লেআউট */
+        .category-page-container {
+            display: flex;
+            height: calc(100vh - 125px);
+        }
+
+        /* বাম পাশের সাইডবার (মেইন ক্যাটাগরি) - আরও সুন্দর কার্ড লুক */
+        .main-category-sidebar {
+            width: 32%;
+            background-color: #ffffff;
+            border-right: 1px solid #eaeaea;
+            overflow-y: auto;
+            padding: 10px;
+        }
+
+        .main-category-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px 10px;
+            margin-bottom: 8px;
+            font-size: 13px;
+            font-weight: 600;
+            color: #444;
+            cursor: pointer;
+            border-radius: 10px;
+            background: #fafafa;
+            border: 1px solid #eee;
+            transition: all 0.25s ease;
+        }
+
+        .main-category-item img {
+            width: 30px;
+            height: 30px;
+            border-radius: 6px;
+            object-fit: cover;
+        }
+
+        .main-category-item:hover {
+            background: #fff2ef;
+            color: #ff5722;
+            border-color: #ffd8d0;
+        }
+
+        .main-category-item.active {
+            background-color: #fff2ef;
+            color: #ff5722;
+            border-color: #ff5722;
+            box-shadow: 0 4px 10px rgba(255, 87, 34, 0.12);
+        }
+
+        /* ডান পাশের কনটেন্ট এরিয়া */
+        .sub-category-content {
+            width: 68%;
+            background-color: #f4f6f9;
+            padding: 15px;
+            overflow-y: auto;
+        }
+
+        .section-title {
+            font-size: 15px;
+            font-weight: 700;
+            color: #333;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        /* সাব-ক্যাটাগরি গ্রিড (কার্ড স্টাইল) */
+        .sub-category-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(105px, 1fr));
+            gap: 12px;
+        }
+
+        .sub-category-card {
+            background: #ffffff;
+            padding: 14px 8px;
+            text-align: center;
+            border-radius: 12px;
+            box-shadow: 0 3px 8px rgba(0,0,0,0.04);
+            cursor: pointer;
+            text-decoration: none;
+            color: #333;
+            border: 1px solid #eaeaea;
+            transition: all 0.2s ease;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .sub-category-card:hover {
+            transform: translateY(-3px);
+            border-color: #ff5722;
+            box-shadow: 0 6px 15px rgba(255, 87, 34, 0.1);
+        }
+
+        .sub-category-card img {
+            width: 50px;
+            height: 50px;
+            object-fit: cover;
+            border-radius: 50%;
+            margin-bottom: 8px;
+            background: #f9f9f9;
+            border: 1px solid #eee;
+        }
+
+        .sub-category-card span {
+            display: block;
+            font-size: 12px;
+            font-weight: 600;
+            color: #444;
+            line-height: 1.3;
+        }
+
+        /* বটম নেভিগেশন বার */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 60px;
+            background-color: #ffffff;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.08);
+            z-index: 1000;
+            border-top: 1px solid #eee;
+        }
+        .bottom-nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
+            color: #777;
+            font-size: 11px;
+            font-weight: 500;
+            flex: 1;
+            height: 100%;
+            transition: color 0.2s ease;
+        }
+        .bottom-nav-item i {
+            font-size: 18px;
+            margin-bottom: 3px;
+        }
+        .bottom-nav-item.active, .bottom-nav-item:hover {
+            color: #ff5722;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>ক্যাটাগরি ব্রাউজ করুন</h1>
+    </header>
+
+    <div class="category-page-container">
+        <!-- বাম পাশের মেইন ক্যাটাগরি সাইডবার -->
+        <div class="main-category-sidebar" id="categorySidebar">
+            <div style="padding: 20px; text-align: center; color: #888; font-size: 13px;">লোড হচ্ছে...</div>
+        </div>
+
+        <!-- ডান পাশের সাব-ক্যাটাগরি গ্রিড এরিয়া -->
+        <div class="sub-category-content" id="subCategoryContent">
+            <div style="text-align: center; color: #888; margin-top: 50px; font-size: 13px;">একটি ক্যাটাগরি সিলেক্ট করুন</div>
+        </div>
+    </div>
+
+    <!-- বটম নেভিগেশন বার -->
+    <nav class="bottom-nav">
+        <a href="index.html" class="bottom-nav-item">
+            <i class="fa-solid fa-house"></i>
+            <span>Home</span>
+        </a>
+        <a href="categories.html" class="bottom-nav-item active">
+            <i class="fa-solid fa-list"></i>
+            <span>Category</span>
+        </a>
+        <a href="favorites.html" class="bottom-nav-item">
+            <i class="fa-solid fa-heart"></i>
+            <span>Favorite</span>
+        </a>
+        <a href="seller_login.html" class="bottom-nav-item">
+            <i class="fa-solid fa-user-tie"></i>
+            <span>Seller Login</span>
+        </a>
+    </nav>
+
+    <script>
+        const SUPABASE_URL = 'https://mzqqkkgdggwmpegvqaol.supabase.co';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im16cXFra2dkZ2d3bXBlZ3ZxYW9sIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODY4MDU4NDUsImV4cCI6MjEwMjM4MTg0NX0.hbUQ4dKjX2iXTF-ugi7JkV_-J5gKIpSEsPN8RpJ0EEo';
+        
+        const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+        let globalMainCategories = [];
+        let globalSubCategories = [];
+
+        async function loadCategoriesPage() {
+            const sidebar = document.getElementById('categorySidebar');
+
+            try {
+                const [mainRes, subRes] = await Promise.all([
+                    supabaseClient.from('MainCategory').select('*'),
+                    supabaseClient.from('categories').select('*')
+                ]);
+
+                if (mainRes.error) throw mainRes.error;
+                
+                globalMainCategories = mainRes.data || [];
+                globalSubCategories = subRes.data || [];
+
+                if (globalMainCategories.length === 0) {
+                    sidebar.innerHTML = '<div style="padding: 20px; text-align: center; color: #888;">কোনো ক্যাটাগরি পাওয়া যায়নি</div>';
+                    return;
+                }
+
+                renderSidebar();
+
+            } catch (err) {
+                console.error('Supabase Error:', err);
+                sidebar.innerHTML = '<div style="padding: 20px; text-align: center; color: red; font-size: 13px;">ডাটা লোড করতে সমস্যা হয়েছে।</div>';
+            }
+        }
+
+        function renderSidebar() {
+            const sidebar = document.getElementById('categorySidebar');
+            sidebar.innerHTML = '';
+            
+            globalMainCategories.forEach((cat, index) => {
+                const item = document.createElement('div');
+                item.className = 'main-category-item';
+                
+                // আইকন বা ইমেজ সহ মেইন ক্যাটাগরি কার্ড
+                item.innerHTML = `
+                    <img src="${cat.image_url || 'https://via.placeholder.com/30'}" alt="${cat.name}">
+                    <span>${cat.name}</span>
+                `;
+                
+                item.onclick = () => {
+                    document.querySelectorAll('.main-category-item').forEach(el => el.classList.remove('active'));
+                    item.classList.add('active');
+                    loadSubCategories(cat.id, cat.name);
+                };
+
+                sidebar.appendChild(item);
+
+                if (index === 0) {
+                    item.classList.add('active');
+                    loadSubCategories(cat.id, cat.name);
+                }
+            });
+        }
+
+        function loadSubCategories(mainCategoryId, mainCategoryName) {
+            const subContent = document.getElementById('subCategoryContent');
+            
+            const filteredSubs = globalSubCategories.filter(sub => 
+                sub.main_category_id == mainCategoryId || 
+                sub.Category_id == mainCategoryId || 
+                sub.category_id == mainCategoryId
+            );
+
+            if (filteredSubs.length === 0) {
+                subContent.innerHTML = `
+                    <div class="section-title">${mainCategoryName}</div>
+                    <div style="text-align: center; color: #888; margin-top: 40px; font-size: 13px;">এই ক্যাটাগরিতে কোনো সাব-ক্যাটাগরি নেই</div>
+                `;
+                return;
+            }
+
+            let gridHTML = `
+                <div class="section-title">${mainCategoryName}</div>
+                <div class="sub-category-grid">
+            `;
+
+            filteredSubs.forEach(sub => {
+                gridHTML += `
+                    <a href="products.html?sub_category=${sub.id}" class="sub-category-card">
+                        <img src="${sub.image_url || 'https://via.placeholder.com/50'}" alt="${sub.name}">
+                        <span>${sub.name}</span>
+                    </a>
+                `;
+            });
+            gridHTML += '</div>';
+
+            subContent.innerHTML = gridHTML;
+        }
+
+        loadCategoriesPage();
+    </script>
+</body>
+</html>

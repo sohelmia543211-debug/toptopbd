@@ -92,15 +92,14 @@ function renderMainCategories() {
     grid.innerHTML = html;
 }
 
-// মেইন ক্যাটাগরিতে ক্লিক করলে শুধু সাব-ক্যাটাগরি ইনস্ট্যান্ট আপডেট হবে (প্রোডাক্ট আপডেট হবে না)
+// মেইন ক্যাটাগরিতে ক্লিক করলে শুধুমাত্র সাব-ক্যাটাগরি আপডেট হবে
 function selectMainCategory(cat) {
     currentMainCategory = cat;
-    currentSubCategory = "সব"; // মেইন বদলালে সাব-ক্যাটাগরি রিসেট হয়ে "সব" হবে
+    currentSubCategory = "সব"; // মেইন বদলালে সাব-ক্যাটাগরি রিসেট হয়ে "সব" হবে
     
     renderMainCategories();
     renderSubCategories(); 
-    
-    // সাব-ক্যাটাগরি সেকশনে হালকা এনিমেশন এফেক্ট দেওয়া হলো যাতে আপডেটের বিষয়টি বোঝা যায়
+
     const subGrid = document.getElementById('subCategories');
     if(subGrid) {
         subGrid.style.opacity = '0.3';
@@ -152,13 +151,12 @@ function renderSubCategories() {
     grid.innerHTML = html;
 }
 
-// সাব-ক্যাটাগরিতে ক্লিক করলে শুধুমাত্র প্রোডাক্টগুলো আপডেট হবে এবং ভিজ্যুয়াল এফেক্ট দেখাবে
+// সাব-ক্যাটাগরিতে ক্লিক করলে প্রোডাক্টগুলো ফিল্টার হয়ে আপডেট হবে
 function selectSubCategory(subName) {
     currentSubCategory = subName;
     renderSubCategories();
-    renderProducts(); 
+    renderProducts();
 
-    // প্রোডাক্ট গ্রিডে আপডেটের জন্য ভিজ্যুয়াল এফেক্ট বা পপ এফেক্ট দেওয়া হলো
     const prodGrid = document.getElementById('productGrid');
     if(prodGrid) {
         prodGrid.style.opacity = '0.3';
@@ -171,7 +169,7 @@ function selectSubCategory(subName) {
     }
 }
 
-// ৬. লোকাল অ্যারে থেকে ইনস্ট্যান্ট প্রোডাক্ট ফিল্টার করা
+// ৬. লোকাল অ্যারে থেকে প্রোডাক্ট ফিল্টার করা
 function renderProducts(searchKeyword = "") {
     const grid = document.getElementById('productGrid');
     if (!grid) return;
@@ -182,12 +180,21 @@ function renderProducts(searchKeyword = "") {
 
         let matchesMain = true;
         if (currentMainCategory !== "সব") {
-            matchesMain = p.main_category_id == currentMainCategory.id || p.category === currentMainCategory.name || p.Category_id == currentMainCategory.id;
+            const matchedSubCat = globalSubCategories.find(sub => sub.id == p.category_id);
+            const subMainCatId = matchedSubCat ? (matchedSubCat.Category_id || matchedSubCat.category_id) : null;
+
+            matchesMain = (p.main_category_id == currentMainCategory.id) || 
+                          (subMainCatId == currentMainCategory.id) || 
+                          (p.category === currentMainCategory.name);
         }
-        
+
         let matchesSub = true;
         if (currentSubCategory !== "সব") {
-            matchesSub = p.sub_category === currentSubCategory || p.category === currentSubCategory;
+            const matchedSubCat = globalSubCategories.find(sub => sub.id == p.category_id);
+            const subNameMatch = matchedSubCat ? matchedSubCat.name : "";
+            matchesSub = (p.sub_category === currentSubCategory) || 
+                         (p.category === currentSubCategory) || 
+                         (subNameMatch === currentSubCategory);
         }
 
         const matchesSearch = p.name.toLowerCase().includes(searchKeyword.toLowerCase());

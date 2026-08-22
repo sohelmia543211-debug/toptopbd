@@ -34,12 +34,41 @@
             margin-bottom: 15px;
             font-size: 14px;
         }
+        .title-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 10px;
+        }
         .product-title {
-            font-size: 24px;
+            font-size: 22px;
             font-weight: 700;
             color: #222;
             margin-bottom: 8px;
             line-height: 1.4;
+            flex-grow: 1;
+        }
+        /* ফেভরিট হার্ট আইকন স্টাইল */
+        .favorite-btn {
+            background: #fff;
+            border: 2px solid #eee;
+            border-radius: 50%;
+            width: 42px;
+            height: 42px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 20px;
+            color: #ccc;
+            transition: all 0.2s ease;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+            flex-shrink: 0;
+        }
+        .favorite-btn.active {
+            color: #ff3b30;
+            border-color: #ff3b30;
+            background: #fff5f5;
         }
         .product-price {
             font-size: 22px;
@@ -97,7 +126,6 @@
             line-height: 1.6;
             margin-bottom: 25px;
         }
-        /* বাটন লেআউট স্টাইলস */
         .action-buttons {
             display: flex;
             flex-direction: column;
@@ -122,14 +150,12 @@
         .btn:hover {
             opacity: 0.9;
         }
-        /* ওপরে বড় অর্ডার বাটন */
         .order-btn {
             background: #ff5722;
             color: white;
             padding: 16px;
             font-size: 18px;
         }
-        /* নিচের চ্যাট বাটনগুলোর জন্য রো */
         .chat-buttons-row {
             display: flex;
             gap: 10px;
@@ -162,11 +188,9 @@
 
         const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-        // গ্লোবাল ভেরিয়েবল যাতে বর্তমানে সিলেক্ট করা ছবি ও প্রোডাক্টের তথ্য রাখা যায়
         let currentProduct = null;
         let selectedImageUrl = "";
 
-        // URL থেকে প্রোডাক্ট আইডি নেওয়া
         const urlParams = new URLSearchParams(window.location.search);
         const productId = urlParams.get('id');
 
@@ -190,9 +214,8 @@
                     return;
                 }
 
-                currentProduct = data; // গ্লোবাল ভেরিয়েবলে ডাটা সেভ হলো
+                currentProduct = data;
 
-                // ছবিগুলো সাজানো
                 let images = [];
                 if (data.image_url) images.push(data.image_url);
                 if (data.image_url_1) images.push(data.image_url_1);
@@ -200,14 +223,19 @@
                 
                 if (images.length === 0) images.push('https://via.placeholder.com/300?text=No+Image');
 
-                selectedImageUrl = images[0]; // ডিফল্টভাবে প্রথম ছবি সিলেক্ট থাকবে
+                selectedImageUrl = images[0];
 
                 const orderAction = data.order_link 
                     ? `href="${data.order_link}" target="_blank"` 
                     : `onclick="alert('অর্ডার প্রসেস শুরু হয়েছে!')"`;
 
                 container.innerHTML = `
-                    <h1 class="product-title">${data.name}</h1>
+                    <div class="title-row">
+                        <h1 class="product-title">${data.name}</h1>
+                        <button class="favorite-btn" id="favBtn" onclick="toggleFavorite('${data.id}')">
+                            <i class="fa-solid fa-heart"></i>
+                        </button>
+                    </div>
                     <div class="product-price">৳ ${data.price}</div>
 
                     <div class="main-img-box">
@@ -227,7 +255,6 @@
                     <div class="section-heading">পণ্যের বিবরণ</div>
                     <div class="product-description">${data.description || data.short_description || 'কোনো বিবরণ দেওয়া হয়নি।'}</div>
 
-                    <!-- বাটন লেআউট: ওপরে বড় অর্ডার বাটন, নিচে WhatsApp ও Messenger -->
                     <div class="action-buttons">
                         <a ${orderAction} class="btn order-btn" style="text-decoration: none; text-align: center; display: block;">
                             <i class="fa-solid fa-cart-shopping"></i> অর্ডার করুন (Orders)
@@ -245,24 +272,53 @@
                     </div>
                 `;
 
+                // পেজ লোড হওয়ার পর চেক করা প্রোডাক্টটি আগে থেকেই ফেভরিটে আছে কিনা
+                checkFavoriteStatus();
+
             } catch (err) {
                 console.error(err);
                 container.innerHTML = `<p style="color:red; text-align:center;">কানেকশন এরর হয়েছে!</p>`;
             }
         }
 
-        // ছোট ছবিতে ক্লিক করলে বড় ছবি পরিবর্তন করার ফাংশন এবং সিলেক্টেড ছবি আপডেট করা
+        // ফেভরিট টগল করার ফাংশন (localStorage এ সেভ বা রিমুভ হবে)
+        function toggleFavorite(id) {
+            let favorites = JSON.parse(localStorage.getItem('topTopFavorites')) || [];
+            const index = favorites.indexOf(id);
+            const favBtn = document.getElementById('favBtn');
+
+            if (index > -1) {
+                favorites.splice(index, 1); // বাদ দেওয়া
+                favBtn.classList.remove('active');
+            } else {
+                favorites.push(id); // যোগ করা
+                favBtn.classList.add('active');
+            }
+
+            localStorage.setItem('topTopFavorites', JSON.stringify(favorites));
+        }
+
+        // পেজ লোড হওয়ার সময় ফেভরিট স্ট্যাটাস চেক করে আইকন লাল করার ফাংশন
+        function checkFavoriteStatus() {
+            if (!productId) return;
+            let favorites = JSON.parse(localStorage.getItem('topTopFavorites')) || [];
+            const favBtn = document.getElementById('favBtn');
+            if (favorites.includes(productId)) {
+                favBtn.classList.add('active');
+            } else {
+                favBtn.classList.remove('active');
+            }
+        }
+
         function changeMainImage(imgSrc, element) {
             document.getElementById('mainProductImg').src = imgSrc;
-            selectedImageUrl = imgSrc; // ছবির লিংক আপডেট হলো
+            selectedImageUrl = imgSrc;
             document.querySelectorAll('.sub-img-thumb').forEach(el => el.classList.remove('active'));
             element.classList.add('active');
         }
 
-        // হোয়াটসঅ্যাপে ডাটাবেজের লিংক থেকে নাম্বার নিয়ে মেসেজ পাঠানোর ফাংশন
         function sendToWhatsApp() {
             if (!currentProduct) return;
-
             let dbWhatsapp = currentProduct.whatsapp_link || "https://wa.me/8801712345678";
             let phone = "8801712345678";
 
@@ -277,15 +333,11 @@
                           `দয়া করে বিষয়টি কনফার্ম করুন।`;
 
             let encodedMessage = encodeURIComponent(message);
-            let whatsappUrl = `https://wa.me/${phone}?text=${encodedMessage}`;
-
-            window.open(whatsappUrl, '_blank');
+            window.open(`https://wa.me/${phone}?text=${encodedMessage}`, '_blank');
         }
 
-        // মেসেঞ্জারে ডাটাবেজের লিংক থেকে ইউজারনেম নিয়ে মেসেজ পাঠানোর ফাংশন
         function sendToMessenger() {
             if (!currentProduct) return;
-
             let dbMessenger = currentProduct.messenger_link || "https://m.me/yourpageusername";
             let pageUsername = "yourpageusername";
 
@@ -299,15 +351,13 @@
                           `🖼️ প্রোডাক্ট ছবি: ${selectedImageUrl}\n\n` +
                           `দয়া করে বিষয়টি কনফার্ম করুন।`;
 
-            // কাস্টমারের সুবিধার্থে টেক্সট ক্লিপবোর্ডে কপি করে মেসেঞ্জারে নিয়ে যাওয়ার ব্যবস্থা
             navigator.clipboard.writeText(message).then(() => {
                 alert("প্রোডাক্টের বিবরণ ও ছবির লিংক কপি করা হয়েছে! মেসেঞ্জার ওপেন হলে সেখানে পেস্ট (Paste) করে দিন।");
             }).catch(err => {
                 console.log('Copy failed', err);
             });
 
-            let messengerUrl = `https://m.me/${pageUsername}`;
-            window.open(messengerUrl, '_blank');
+            window.open(`https://m.me/${pageUsername}`, '_blank');
         }
 
         window.onload = fetchProductDetails;
