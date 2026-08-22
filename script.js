@@ -6,9 +6,83 @@ const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 let currentMainCategory = "সব"; 
 let currentSubCategory = "সব";
 let currentProductType = "used_product"; 
-let globalMainCategories = [];
-let globalSubCategories = [];
 let globalProducts = [];
+
+// ১২টি হার্ডকোডেড মেইন ক্যাটাগরি এবং সাব-ক্যাটাগরি লিস্ট
+const hardcodedCategories = [
+  {
+    id: "mobiles",
+    name: "মোবাইল ও ট্যাব",
+    icon: "fa-mobile-screen-button",
+    subcategories: ["স্মার্টফোন", "ফিচার ফোন", "ট্যাব ও আইপ্যাড", "মোবাইল এক্সেসরিজ"]
+  },
+  {
+    id: "electronics",
+    name: "ইলেকট্রনিক্স",
+    icon: "fa-laptop",
+    subcategories: ["ল্যাপটপ ও কম্পিউটার", "টিভি ও সাউন্ড সিস্টেম", "এসি ও ফ্রিজ", "হোম অ্যাপ্লায়েন্সেস"]
+  },
+  {
+    id: "vehicles",
+    name: "যানবাহন",
+    icon: "fa-motorcycle",
+    subcategories: ["মোটরসাইকেল", "বাইসাইকেল", "প্রাইভেট কার", "অন্যান্য যান ও পার্টস"]
+  },
+  {
+    id: "property",
+    name: "প্রপার্টি",
+    icon: "fa-building",
+    subcategories: ["বাসা/ফ্লাট ভাড়া", "জমি বা প্লট বিক্রি", "সাবলেট রুম", "দোকান বা অফিস স্পেস"]
+  },
+  {
+    id: "fashion",
+    name: "ফ্যাশন",
+    icon: "fa-shirt",
+    subcategories: ["পুরুষদের পোশাক", "নারীদের পোশাক", "জুতো ও ব্যাগ", "প্রসাধনী ও ঘড়ি"]
+  },
+  {
+    id: "home_living",
+    name: "হোম ও লিভিং",
+    icon: "fa-couch",
+    subcategories: ["ঘরের আসবাবপত্র", "হোম ডেকোর বা শোপিস", "কিচেন ও ডাইনিং", "লাইটিং ও ফ্যান"]
+  },
+  {
+    id: "pets",
+    name: "পোষা প্রাণী",
+    icon: "fa-dog",
+    subcategories: ["বিড়াল ও কুকুর", "পাখি ও মাছ", "গবাদিপশু", "পেট ফুড ও কেয়ার"]
+  },
+  {
+    id: "books_sports",
+    name: "বই ও শখ",
+    icon: "fa-book",
+    subcategories: ["একাডেমিক বই ও উপন্যাস", "জিম ও স্পোর্টস আইটেম", "মিউজিক্যাল ইন্সট্রুমেন্ট", "খেলনা ও শখ"]
+  },
+  {
+    id: "agriculture",
+    name: "কৃষি ও বাগান",
+    icon: "fa-seedling",
+    subcategories: ["বীজ ও সার", "কৃষিকাজের যন্ত্রপাতি", "গাছের চারা ও টব", "সেচ সরঞ্জাম"]
+  },
+  {
+    id: "jobs",
+    name: "চাকরি",
+    icon: "fa-briefcase",
+    subcategories: ["ফুলটাইম জব", "পার্টটাইম ও রিমোট জব", "ইন্টার্নশিপ", "কাজের লোক বা সার্ভিস"]
+  },
+  {
+    id: "services",
+    name: "সার্ভিস",
+    icon: "fa-tools",
+    subcategories: ["আইটি ও গ্রাফিক্স ডিজাইন", "ইলেকট্রিক ও প্লাম্বিং", "ইভেন্ট ম্যানেজমেন্ট", "টিউশন বা কোচিং"]
+  },
+  {
+    id: "others",
+    name: "অন্যান্য",
+    icon: "fa-box",
+    subcategories: ["মিসেলেনিয়াস বা অন্যান্য আইটেম"]
+  }
+];
 
 // ১. ব্যানার লোড করা
 async function fetchBanners() {
@@ -30,27 +104,19 @@ async function fetchBanners() {
     } catch (err) { console.error('ব্যানার কানেকশন এরর:', err); }
 }
 
-// ২. ইনিশিয়ালি সব ডাটা একসাথে ফেচ করে মেমোরিতে রাখা
+// ২. প্রোডাক্ট ডাটা ফেচ করা এবং ক্যাটাগরি রেন্ডার করা
 async function fetchInitialData() {
-    const mainGrid = document.getElementById('mainCategories');
-    const subGrid = document.getElementById('subCategories');
-
-    if (mainGrid) mainGrid.innerHTML = `<div class="cat-card shimmer-card" style="height: 90px; min-width: 100px;"></div>`.repeat(4);
-    if (subGrid) subGrid.innerHTML = `<div class="cat-card shimmer-card" style="height: 60px; min-width: 90px;"></div>`.repeat(4);
+    const productGrid = document.getElementById('productGrid');
+    if (productGrid) productGrid.innerHTML = `<div class="cat-card shimmer-card" style="height: 120px; width: 100%;"></div>`.repeat(4);
 
     try {
-        const [mainRes, subRes, prodRes] = await Promise.all([
-            supabaseClient.from('MainCategory').select('*'),
-            supabaseClient.from('categories').select('*'),
-            supabaseClient.from('products').select('*')
-        ]);
-
-        if (!mainRes.error) globalMainCategories = mainRes.data;
-        if (!subRes.error) globalSubCategories = subRes.data.filter(sub => sub.name.trim() !== "সব");
-        if (!prodRes.error) globalProducts = prodRes.data;
-
         renderMainCategories();
         renderSubCategories();
+
+        const { data, error } = await supabaseClient.from('products').select('*');
+        if (!error) {
+            globalProducts = data;
+        }
         renderProducts();
 
     } catch (err) {
@@ -64,7 +130,7 @@ function filterProductsByType(type) {
     renderProducts();
 }
 
-// ৪. মেইন ক্যাটাগরি রেন্ডার করা
+// ৪. মেইন ক্যাটাগরি রেন্ডার করা (হার্ডকোড ডেটা থেকে)
 function renderMainCategories() {
     const grid = document.getElementById('mainCategories');
     if (!grid) return;
@@ -79,11 +145,13 @@ function renderMainCategories() {
         </div>
     `;
 
-    globalMainCategories.forEach(cat => {
+    hardcodedCategories.forEach(cat => {
         const isActive = (currentMainCategory !== "সব" && cat.id === currentMainCategory.id) ? 'active' : '';
         html += `
             <div class="cat-card ${isActive}" onclick='selectMainCategory(${JSON.stringify(cat)})'>
-                <img src="${cat.image_url}" alt="${cat.name}">
+                <div style="width: 35px; height: 35px; margin: 0 auto 3px auto; background: #fff5f2; border-radius: 6px; display: flex; align-items: center; justify-content: center; color: #ff5722;">
+                    <i class="fa-solid ${cat.icon}" style="font-size: 14px;"></i>
+                </div>
                 <span>${cat.name}</span>
             </div>
         `;
@@ -106,11 +174,10 @@ function renderSubCategories() {
 
     let filteredSubs = [];
     if (currentMainCategory === "সব") {
-        filteredSubs = globalSubCategories;
+        // সব মেইন ক্যাটাগরির সাবক্যাটাগরিগুলো একসাথে দেখানোর জন্য
+        filteredSubs = hardcodedCategories.flatMap(cat => cat.subcategories);
     } else {
-        filteredSubs = globalSubCategories.filter(sub => 
-            sub.Category_id == currentMainCategory.id || sub.category_id == currentMainCategory.id
-        );
+        filteredSubs = currentMainCategory.subcategories || [];
     }
 
     const allOptionActive = currentSubCategory === "সব" ? 'active' : '';
@@ -123,12 +190,14 @@ function renderSubCategories() {
         </div>
     `;
 
-    filteredSubs.forEach(sub => {
-        const isActive = sub.name === currentSubCategory ? 'active' : '';
+    filteredSubs.forEach(subName => {
+        const isActive = subName === currentSubCategory ? 'active' : '';
         html += `
-            <div class="sub-card ${isActive}" onclick="selectSubCategory('${sub.name}')">
-                ${sub.image_url ? `<img src="${sub.image_url}" alt="${sub.name}">` : ''}
-                <span>${sub.name}</span>
+            <div class="sub-card ${isActive}" onclick="selectSubCategory('${subName}')">
+                <div style="width: 28px; height: 28px; margin: 0 auto 3px auto; background: #fff5f2; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #ff5722; font-size: 11px;">
+                    <i class="fa-solid fa-tag"></i>
+                </div>
+                <span>${subName}</span>
             </div>
         `;
     });
@@ -152,21 +221,12 @@ function renderProducts(searchKeyword = "") {
 
         let matchesMain = true;
         if (currentMainCategory !== "সব") {
-            const matchedSubCat = globalSubCategories.find(sub => sub.id == p.category_id);
-            const subMainCatId = matchedSubCat ? (matchedSubCat.Category_id || matchedSubCat.category_id) : null;
-
-            matchesMain = (p.main_category_id == currentMainCategory.id) || 
-                          (subMainCatId == currentMainCategory.id) || 
-                          (p.category === currentMainCategory.name);
+            matchesMain = (p.category === currentMainCategory.name || p.main_category_id === currentMainCategory.id);
         }
 
         let matchesSub = true;
         if (currentSubCategory !== "সব") {
-            const matchedSubCat = globalSubCategories.find(sub => sub.id == p.category_id);
-            const subNameMatch = matchedSubCat ? matchedSubCat.name : "";
-            matchesSub = (p.sub_category === currentSubCategory) || 
-                         (p.category === currentSubCategory) || 
-                         (subNameMatch === currentSubCategory);
+            matchesSub = (p.sub_category === currentSubCategory || p.category === currentSubCategory);
         }
 
         let matchesSearch = p.name.toLowerCase().includes(searchKeyword.toLowerCase());

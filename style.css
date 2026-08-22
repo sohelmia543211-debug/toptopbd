@@ -28,7 +28,7 @@ header h1 {
     box-shadow: 0 4px 12px rgba(0,0,0,0.15);
 }
 
-/* ডাইনামিক ব্যানার ডিজাইন (মোবাইলের জন্য স্লিম ও সুন্দর) */
+/* ডাইনামিক ব্যানার ডিজাইন */
 .banner-container {
     padding: 10px;
     max-width: 1200px;
@@ -36,7 +36,7 @@ header h1 {
 }
 .banner-slider {
     width: 100%;
-    height: 110px; /* উচ্চতা কমিয়ে একদম স্লিম করা হলো */
+    height: 110px;
     background-size: cover;
     background-position: center;
     border-radius: 10px;
@@ -47,7 +47,6 @@ header h1 {
     align-items: center;
     justify-content: center;
 }
-/* ব্যানারের ওপর ডার্ক ওভারলে ও গ্লাস ইফেক্ট */
 .banner-overlay {
     position: absolute;
     top: 0;
@@ -96,13 +95,12 @@ header h1 {
     padding-left: 6px;
 }
 
-/* ক্যাটাগরি গ্রিড (ঠিক ২ সারি এবং কার্ডগুলোর মাঝে হালকা সুন্দর ফাঁকা থাকবে) */
 .categories-grid {
     display: flex;
     flex-direction: column;
     flex-wrap: wrap;
-    height: 155px; /* ঠিক দুটি সারির জন্য উপযুক্ত ফিক্সড উচ্চতা */
-    gap: 8px;      /* কার্ডগুলোর মাঝে নিখুঁত হালকা ফাঁকা */
+    height: 155px; 
+    gap: 8px;     
     overflow-x: auto;
     padding: 5px;
     scrollbar-width: none;
@@ -120,17 +118,9 @@ header h1 {
     box-shadow: 0 3px 8px rgba(0, 0, 0, 0.08);
     transition: all 0.3s ease;
     border: 2px solid transparent;
-    width: 75px;      /* কার্ডের সাইজ ছোট রাখা হলো */
+    width: 75px;      
     min-width: 75px;  
     flex-shrink: 0;
-}
-
-.cat-card img {
-    width: 35px;      
-    height: 35px;
-    margin-bottom: 3px;
-    border-radius: 6px;
-    object-fit: cover;
 }
 
 .cat-card span {
@@ -194,14 +184,6 @@ header h1 {
     justify-content: center;
 }
 
-.sub-card img {
-    width: 28px;
-    height: 28px;
-    margin-bottom: 3px;
-    border-radius: 50%;
-    object-fit: cover;
-}
-
 .sub-card span {
     display: block;
     font-size: 10px;
@@ -222,7 +204,7 @@ header h1 {
     transform: translateY(-2px);
 }
 
-/* প্রোডাক্ট গ্রিড (মোবাইলে ২ কলাম ও কম ফাঁকা) */
+/* প্রোডাক্ট গ্রিড */
 .product-grid {
     display: grid;
     grid-template-columns: repeat(2, 1fr); 
@@ -250,7 +232,7 @@ header h1 {
 
 .product-img-box {
     width: 100%;
-    height: 110px; /* ছবির উচ্চতা কমানো হয়েছে যাতে কার্ড লম্বা না দেখায় */
+    height: 110px; 
     background: #f8f9fa;
     display: flex;
     align-items: center;
@@ -286,43 +268,6 @@ header h1 {
     font-size: 14px;
 }
 
-.card-footer {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 8px 10px;
-    background: #fafbfc;
-    border-top: 1px solid #eee;
-}
-
-.icon-btn {
-    background: white;
-    border: 1px solid #dee2e6;
-    font-size: 13px;
-    cursor: pointer;
-    width: 28px;
-    height: 28px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.08);
-}
-.whatsapp-icon { color: #25D366; border-color: #25D366; }
-.phone-icon { color: #007bff; border-color: #007bff; }
-
-.order-btn {
-    background: #ff5722;
-    color: white;
-    border: none;
-    padding: 6px 12px;
-    border-radius: 15px;
-    font-size: 11px;
-    font-weight: bold;
-    cursor: pointer;
-    box-shadow: 0 3px 8px rgba(255,87,34,0.3);
-}
-
 .no-product {
     grid-column: 1 / -1;
     text-align: center;
@@ -334,7 +279,6 @@ header h1 {
     box-shadow: 0 4px 15px rgba(0,0,0,0.08);
 }
 
-/* শিমার এনিমেশন */
 @keyframes shimmer {
     0% { background-position: -468px 0; }
     100% { background-position: 468px 0; }
