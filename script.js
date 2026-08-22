@@ -5,7 +5,7 @@ const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 let currentMainCategory = "সব"; 
 let currentSubCategory = "সব";
-let currentProductType = "used_product"; // ডিফল্টভাবে পুরনো পণ্য সিলেক্ট থাকবে
+let currentProductType = "used_product"; 
 let globalMainCategories = [];
 let globalSubCategories = [];
 let globalProducts = [];
@@ -64,11 +64,10 @@ function filterProductsByType(type) {
     renderProducts();
 }
 
-// ৪. মেইন ক্যাটাগরি রেন্ডার করা
+// ৪. মেইন ক্যাটাগরি রেন্ডার করা (অপ্টিমাইজড)
 function renderMainCategories() {
     const grid = document.getElementById('mainCategories');
     if (!grid) return;
-    grid.innerHTML = "";
 
     const isAllActive = currentMainCategory === "সব" ? 'active' : '';
     let html = `
@@ -92,31 +91,20 @@ function renderMainCategories() {
     grid.innerHTML = html;
 }
 
-// মেইন ক্যাটাগরিতে ক্লিক করলে শুধুমাত্র সাব-ক্যাটাগরি আপডেট হবে
+// মেইন ক্যাটাগরিতে ক্লিক করলে ইনস্ট্যান্ট আপডেট হবে (বিলম্ব বা setTimeout বাদ দেওয়া হয়েছে)
 function selectMainCategory(cat) {
     currentMainCategory = cat;
-    currentSubCategory = "সব"; // মেইন বদলালে সাব-ক্যাটাগরি রিসেট হয়ে "সব" হবে
+    currentSubCategory = "সব"; 
     
     renderMainCategories();
     renderSubCategories(); 
-
-    const subGrid = document.getElementById('subCategories');
-    if(subGrid) {
-        subGrid.style.opacity = '0.3';
-        subGrid.style.transform = 'translateY(5px)';
-        setTimeout(() => {
-            subGrid.style.transition = 'all 0.2s ease-in-out';
-            subGrid.style.opacity = '1';
-            subGrid.style.transform = 'translateY(0)';
-        }, 50);
-    }
+    renderProducts(); // সাথে সাথে প্রোডাক্ট রেন্ডার হবে
 }
 
 // ৫. সাব-ক্যাটাগরি রেন্ডার করা
 function renderSubCategories() {
     const grid = document.getElementById('subCategories');
     if (!grid) return;
-    grid.innerHTML = "";
 
     let filteredSubs = [];
 
@@ -151,29 +139,17 @@ function renderSubCategories() {
     grid.innerHTML = html;
 }
 
-// সাব-ক্যাটাগরিতে ক্লিক করলে প্রোডাক্টগুলো ফিল্টার হয়ে আপডেট হবে
+// সাব-ক্যাটাগরিতে ক্লিক করলে ইনস্ট্যান্ট প্রোডাক্ট ফিল্টার হবে
 function selectSubCategory(subName) {
     currentSubCategory = subName;
     renderSubCategories();
     renderProducts();
-
-    const prodGrid = document.getElementById('productGrid');
-    if(prodGrid) {
-        prodGrid.style.opacity = '0.3';
-        prodGrid.style.transform = 'scale(0.98)';
-        setTimeout(() => {
-            prodGrid.style.transition = 'all 0.2s ease-in-out';
-            prodGrid.style.opacity = '1';
-            prodGrid.style.transform = 'scale(1)';
-        }, 50);
-    }
 }
 
 // ৬. লোকাল অ্যারে থেকে প্রোডাক্ট ফিল্টার করা
 function renderProducts(searchKeyword = "") {
     const grid = document.getElementById('productGrid');
     if (!grid) return;
-    grid.innerHTML = "";
 
     let filteredProducts = globalProducts.filter(p => {
         let matchesType = p.product_type === currentProductType;
@@ -212,7 +188,7 @@ function renderProducts(searchKeyword = "") {
         productHtml += `
             <div class="product-card" onclick="window.location.href='product_details.html?id=${p.id}'" style="cursor: pointer;">
                 <div class="product-img-box">
-                    ${p.image_url ? `<img src="${p.image_url}" style="width:100%; height:100%; object-fit:cover;">` : `<i class="fa-solid fa-image" style="font-size: 22px;"></i>`}
+                    ${p.image_url ? `<img src="${p.image_url}" style="main-width:100%; width:100%; height:100%; object-fit:cover;">` : `<i class="fa-solid fa-image" style="font-size: 22px;"></i>`}
                 </div>
                 <div class="product-info">
                     <h3>${p.name}</h3>
