@@ -95,14 +95,13 @@ header h1 {
     padding-left: 6px;
 }
 
-/* ক্যাটাগরি গ্রিড - অতিরিক্ত ফাঁকা জায়গা কমানো হয়েছে এবং কম্প্যাক্ট করা হয়েছে */
+/* মেইন ক্যাটাগরি গ্রিড - নিখুঁতভাবে ২ সারিতে দেখানোর জন্য Grid ব্যবহার করা হয়েছে */
 .categories-grid {
-    display: flex;
-    flex-direction: column;
-    flex-wrap: wrap;
-    height: 135px; 
-    gap: 6px;     
-    overflow-x: auto;
+    display: grid;
+    grid-template-columns: repeat(7, 75px); /* প্রতিটি কলামের নির্দিষ্ট সাইজ */
+    grid-template-rows: repeat(2, auto);   /* ঠিক ২টি সারি */
+    gap: 8px;                             
+    overflow-x: auto;                     
     padding: 4px;
     scrollbar-width: none;
 }
@@ -121,7 +120,7 @@ header h1 {
     border: 2px solid transparent;
     width: 75px;      
     min-width: 75px;  
-    flex-shrink: 0;
+    height: 75px;     /* কার্ডের উচ্চতা ফিক্সড করা হলো যাতে ২ সারিতে সুন্দর দেখায় */
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -152,7 +151,7 @@ header h1 {
     transform: translateY(-2px);
 }
 
-/* সাব-ক্যাটাগরি কন্টেইনার */
+/* সাব-ক্যাটাগরি কন্টেইনার - ১ সারিতে থাকবে */
 .sub-categories-container {
     padding: 0 10px 5px 10px;
 }
@@ -182,6 +181,7 @@ header h1 {
     border: 2px solid transparent;
     width: 80px;
     min-width: 80px; 
+    height: 75px;
     flex-shrink: 0;
     display: flex;
     flex-direction: column;
