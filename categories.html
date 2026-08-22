@@ -42,54 +42,73 @@
             height: calc(100vh - 125px);
         }
 
-        /* বাম পাশের সাইডবার (মেইন ক্যাটাগরি) - আরও সুন্দর কার্ড লুক */
+        /* বাম পাশের সাইডবার (মেইন ক্যাটাগরি) - টেক্সট ঠিক রাখার জন্য ফিক্সড উইডথ ও র‍্যাপিং */
         .main-category-sidebar {
-            width: 32%;
+            width: 35%;
             background-color: #ffffff;
             border-right: 1px solid #eaeaea;
             overflow-y: auto;
-            padding: 10px;
+            padding: 8px;
         }
 
         .main-category-item {
             display: flex;
             align-items: center;
-            gap: 10px;
-            padding: 12px 10px;
+            gap: 8px;
+            padding: 10px 8px;
             margin-bottom: 8px;
-            font-size: 13px;
-            font-weight: 600;
-            color: #444;
             cursor: pointer;
             border-radius: 10px;
             background: #fafafa;
             border: 1px solid #eee;
             transition: all 0.25s ease;
+            width: 100%;
         }
 
         .main-category-item img {
-            width: 30px;
-            height: 30px;
+            width: 28px;
+            height: 28px;
             border-radius: 6px;
             object-fit: cover;
+            flex-shrink: 0;
+        }
+
+        /* টেক্সট যাতে বক্সের বাইরে বা ওভারল্যাপ না করে */
+        .main-category-item span {
+            font-size: 11px;
+            font-weight: 600;
+            color: #444;
+            line-height: 1.2;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            word-break: break-word;
         }
 
         .main-category-item:hover {
             background: #fff2ef;
-            color: #ff5722;
             border-color: #ffd8d0;
+        }
+
+        .main-category-item:hover span {
+            color: #ff5722;
         }
 
         .main-category-item.active {
             background-color: #fff2ef;
-            color: #ff5722;
             border-color: #ff5722;
             box-shadow: 0 4px 10px rgba(255, 87, 34, 0.12);
         }
 
-        /* ডান পাশের কনটেন্ট এরিয়া */
+        .main-category-item.active span {
+            color: #ff5722;
+        }
+
+        /* ডান পাশের কনটেন্ট এরিয়া */
         .sub-category-content {
-            width: 68%;
+            width: 65%;
             background-color: #f4f6f9;
             padding: 15px;
             overflow-y: auto;
@@ -202,7 +221,7 @@
             <div style="padding: 20px; text-align: center; color: #888; font-size: 13px;">লোড হচ্ছে...</div>
         </div>
 
-        <!-- ডান পাশের সাব-ক্যাটাগরি গ্রিড এরিয়া -->
+        <!-- ডান পাশের সাব-ক্যাটাগরি গ্রিড এরিয়া -->
         <div class="sub-category-content" id="subCategoryContent">
             <div style="text-align: center; color: #888; margin-top: 50px; font-size: 13px;">একটি ক্যাটাগরি সিলেক্ট করুন</div>
         </div>
@@ -252,7 +271,7 @@
                 globalSubCategories = subRes.data || [];
 
                 if (globalMainCategories.length === 0) {
-                    sidebar.innerHTML = '<div style="padding: 20px; text-align: center; color: #888;">কোনো ক্যাটাগরি পাওয়া যায়নি</div>';
+                    sidebar.innerHTML = '<div style="padding: 20px; text-align: center; color: #888;">কোনো ক্যাটাগরি পাওয়া যায়নি</div>';
                     return;
                 }
 
@@ -260,7 +279,7 @@
 
             } catch (err) {
                 console.error('Supabase Error:', err);
-                sidebar.innerHTML = '<div style="padding: 20px; text-align: center; color: red; font-size: 13px;">ডাটা লোড করতে সমস্যা হয়েছে।</div>';
+                sidebar.innerHTML = '<div style="padding: 20px; text-align: center; color: red; font-size: 13px;">ডাটা লোড করতে সমস্যা হয়েছে।</div>';
             }
         }
 
@@ -272,7 +291,6 @@
                 const item = document.createElement('div');
                 item.className = 'main-category-item';
                 
-                // আইকন বা ইমেজ সহ মেইন ক্যাটাগরি কার্ড
                 item.innerHTML = `
                     <img src="${cat.image_url || 'https://via.placeholder.com/30'}" alt="${cat.name}">
                     <span>${cat.name}</span>
