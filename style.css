@@ -36,7 +36,7 @@ header h1 {
 }
 .banner-slider {
     width: 100%;
-    height: 110px; /* উচ্চতা কমিয়ে একদম স্লিম করা হলো */
+    height: 110px; /* উচ্চতা কমিয়ে একদম স্লিম করা হলো */
     background-size: cover;
     background-position: center;
     border-radius: 10px;
@@ -81,7 +81,6 @@ header h1 {
     text-shadow: 0 2px 5px rgba(0,0,0,0.8);
 }
 
-
 /* ক্যাটাগরি ও অন্যান্য ডিজাইন */
 .categories-container, .sub-categories-container, .container {
     max-width: 1200px;
@@ -97,12 +96,13 @@ header h1 {
     padding-left: 6px;
 }
 
-/* ক্যাটাগরি গ্রিড ও কার্ড স্টাইল (২ সারি এবং পাশাপাশি কাছাকাছি থাকার জন্য) */
+/* ক্যাটাগরি গ্রিড (ঠিক ২ সারি এবং কার্ডগুলোর মাঝে হালকা সুন্দর ফাঁকা থাকবে) */
 .categories-grid {
-    display: grid;
-    grid-template-rows: repeat(2, auto); /* ঠিক দুটি সারি তৈরি করবে */
-    grid-auto-flow: column; /* কলাম অনুযায়ী পাশাপাশি সাজবে এবং জায়গা ফুরোলে ডানে স্ক্রোল হবে */
-    gap: 8px; /* কার্ডগুলোর মাঝের দূরত্ব কমানো হলো */
+    display: flex;
+    flex-direction: column;
+    flex-wrap: wrap;
+    height: 155px; /* ঠিক দুটি সারির জন্য উপযুক্ত ফিক্সড উচ্চতা */
+    gap: 8px;      /* কার্ডগুলোর মাঝে নিখুঁত হালকা ফাঁকা */
     overflow-x: auto;
     padding: 5px;
     scrollbar-width: none;
@@ -120,13 +120,13 @@ header h1 {
     box-shadow: 0 3px 8px rgba(0, 0, 0, 0.08);
     transition: all 0.3s ease;
     border: 2px solid transparent;
-    width: 70px;      /* কার্ডের সাইজ ছোট করা হলো */
-    min-width: 70px;  
+    width: 75px;      /* কার্ডের সাইজ ছোট রাখা হলো */
+    min-width: 75px;  
     flex-shrink: 0;
 }
 
 .cat-card img {
-    width: 35px;      /* ছবির সাইজ ছোট করা হলো */
+    width: 35px;      
     height: 35px;
     margin-bottom: 3px;
     border-radius: 6px;
@@ -156,11 +156,6 @@ header h1 {
 .cat-card:hover {
     transform: translateY(-2px);
 }
-
-
-
-
-
 
 /* সাব-ক্যাটাগরি কন্টেইনার */
 .sub-categories-container {
@@ -255,7 +250,7 @@ header h1 {
 
 .product-img-box {
     width: 100%;
-    height: 110px; /* ছবির উচ্চতা কমানো হয়েছে যাতে কার্ড লম্বা না দেখায় */
+    height: 110px; /* ছবির উচ্চতা কমানো হয়েছে যাতে কার্ড লম্বা না দেখায় */
     background: #f8f9fa;
     display: flex;
     align-items: center;
