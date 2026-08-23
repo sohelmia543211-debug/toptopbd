@@ -72,6 +72,18 @@
         .form-control:focus {
             border-color: #ff5722;
         }
+        .password-wrapper {
+            position: relative;
+        }
+        .password-wrapper .toggle-eye {
+            position: absolute;
+            right: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            cursor: pointer;
+            color: #777;
+            font-size: 14px;
+        }
         .auth-btn {
             width: 100%;
             background: #ff5722;
@@ -117,7 +129,10 @@
 
                 <div class="form-group">
                     <label data-en="Password" data-bn="পাসওয়ার্ড">পাসওয়ার্ড</label>
-                    <input type="password" id="loginPassword" class="form-control" placeholder="পাসওয়ার্ড দিন" required>
+                    <div class="password-wrapper">
+                        <input type="password" id="loginPassword" class="form-control" placeholder="পাসওয়ার্ড দিন" required>
+                        <i class="fa-solid fa-eye toggle-eye" onclick="togglePassword('loginPassword', this)"></i>
+                    </div>
                 </div>
 
                 <button type="submit" class="auth-btn" data-en="Login" data-bn="লগইন করুন">লগইন করুন</button>
@@ -149,7 +164,16 @@
 
                 <div class="form-group">
                     <label data-en="Password" data-bn="পাসওয়ার্ড">পাসওয়ার্ড</label>
-                    <input type="password" id="regPassword" class="form-control" placeholder="কমপক্ষে ৬ ডিজিটের পাসওয়ার্ড" required>
+                    <div class="password-wrapper">
+                        <input type="password" id="regPassword" class="form-control" placeholder="কমপক্ষে ৬ ডিজিটের পাসওয়ার্ড" required>
+                        <i class="fa-solid fa-eye toggle-eye" onclick="togglePassword('regPassword', this)"></i>
+                    </div>
+                </div>
+
+                <!-- সেলার ছবি আপলোড ফিল্ড -->
+                <div class="form-group">
+                    <label data-en="Seller / Shop Image" data-bn="সেলার / দোকানের ছবি বা লোগো">সেলার / দোকানের ছবি বা লোগো</label>
+                    <input type="file" id="regSellerImage" class="form-control" accept="image/*">
                 </div>
 
                 <div class="form-group">
@@ -205,6 +229,20 @@
         const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
         let globalLocationsData = [];
+
+        // পাসওয়ার্ড শো/হাইড ফাংশন
+        function togglePassword(fieldId, icon) {
+            const inputField = document.getElementById(fieldId);
+            if (inputField.type === "password") {
+                inputField.type = "text";
+                icon.classList.remove("fa-eye");
+                icon.classList.add("fa-eye-slash");
+            } else {
+                inputField.type = "password";
+                icon.classList.remove("fa-eye-slash");
+                icon.classList.add("fa-eye");
+            }
+        }
 
         // ট্যাব সুইচ করার ফাংশন
         function switchTab(tab) {
@@ -273,7 +311,47 @@
             unionSelect.innerHTML = html;
         }
 
-        // সেলার রেজিস্ট্রেশন হ্যান্ডলার (সফল হলে সরাসরি ড্যাশবোর্ডে পাঠাবে)
+        // ইমেজ রিসাইজ ও অপ্টিমাইজ করার ফাংশন
+        function optimizeImage(file, maxWidth = 500, maxHeight = 500, quality = 0.7) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.readAsDataURL(file);
+                reader.onload = event => {
+                    const img = new Image();
+                    img.src = event.target.result;
+                    img.onload = () => {
+                        let width = img.width;
+                        let height = img.height;
+
+                        if (width > height) {
+                            if (width > maxWidth) {
+                                height = Math.round((height * maxWidth) / width);
+                                width = maxWidth;
+                            }
+                        } else {
+                            if (height > maxHeight) {
+                                width = Math.round((width * maxHeight) / height);
+                                height = maxHeight;
+                            }
+                        }
+
+                        const canvas = document.createElement('canvas');
+                        canvas.width = width;
+                        canvas.height = height;
+                        const ctx = canvas.getContext('2d');
+                        ctx.drawImage(img, 0, 0, width, height);
+
+                        canvas.toBlob(blob => {
+                            resolve(blob);
+                        }, 'image/jpeg', quality);
+                    };
+                    img.onerror = error => reject(error);
+                };
+                reader.onerror = error => reject(error);
+            });
+        }
+
+        // সেলার রেজিস্ট্রেশন হ্যান্ডলার
         async function handleRegister(e) {
             e.preventDefault();
             const shop_name = document.getElementById('shopName').value;
@@ -283,6 +361,7 @@
             const district = document.getElementById('regDistrict').value;
             const thana = document.getElementById('regThana').value;
             const union_name = document.getElementById('regUnion').value;
+            const imageFile = document.getElementById('regSellerImage').files[0];
 
             try {
                 const { data: existing } = await supabaseClient.from('sellers').select('*').eq('mobile', mobile);
@@ -291,7 +370,31 @@
                     return;
                 }
 
-                // ডাটাবেজে নতুন সেলার ইনসার্ট করা (Returning data সহ)
+                let seller_url = null;
+
+                // ছবি থাকলে আগে অপ্টিমাইজ করে বাক্যাটে আপলোড করা
+                if (imageFile) {
+                    const optimizedBlob = await optimizeImage(imageFile, 400, 400, 0.7);
+                    const fileName = 'seller_' + Date.now() + '.jpg';
+                    
+                    const { data: uploadData, error: uploadError } = await supabaseClient.storage
+                        .from('seller_image_bucet')
+                        .upload(fileName, optimizedBlob, { contentType: 'image/jpeg' });
+
+                    if (uploadError) {
+                        alert('ছবি আপলোড করতে সমস্যা হয়েছে: ' + uploadError.message);
+                        return;
+                    }
+
+                    // পাবলিক URL বের করা
+                    const { data: publicUrlData } = supabaseClient.storage
+                        .from('seller_image_bucet')
+                        .getPublicUrl(fileName);
+
+                    seller_url = publicUrlData.publicUrl;
+                }
+
+                // ডাটাবেজে নতুন সেলার ইনসার্ট করা
                 const { data, error } = await supabaseClient.from('sellers').insert([
                     {
                         shop_name,
@@ -301,6 +404,7 @@
                         district,
                         thana,
                         union_name,
+                        seller_url,
                         coins: 3, 
                         wallet_balance: 0
                     }
@@ -309,11 +413,10 @@
                 if (error) {
                     alert('রেজিস্ট্রেশন সফল হয়নি: ' + error.message);
                 } else {
-                    // সফল হলে লোকাল স্টোরেজে সেভার ইনফো সেভ করে সরাসরি ড্যাশবোর্ডে রিডাইরেক্ট করা
-                    const newSeller = data && data.length > 0 ? data[0] : { shop_name, owner_name, mobile, district, thana, union_name, coins: 3, wallet_balance: 0 };
+                    const newSeller = data && data.length > 0 ? data[0] : { shop_name, owner_name, mobile, district, thana, union_name, seller_url, coins: 3, wallet_balance: 0 };
                     localStorage.setItem('current_seller', JSON.stringify(newSeller));
                     
-                    alert('স্বাগতম! সফলভাবে রেজিস্ট্রেশন সম্পন্ন হয়েছে এবং আপনি ৩টি ফ্রি কয়েন পেয়েছেন।');
+                    alert('স্বাগতম! সফলভাবে রেজিস্ট্রেশন সম্পন্ন হয়েছে এবং আপনি ৩টি ফ্রি কয়েন পেয়েছেন।');
                     window.location.href = 'seller_dashboard.html';
                 }
             } catch (err) {

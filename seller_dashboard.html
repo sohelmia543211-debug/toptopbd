@@ -8,14 +8,12 @@
     <!-- FontAwesome আইকন -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
-    <!-- Google Fonts (Inter & Poppins) -->
+    <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
     
     <!-- Supabase CDN -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     
-    <!-- স্টাইল ফাইল লিংক -->
-    <link rel="stylesheet" href="style.css">
     <style>
         :root {
             --primary: #ff5722;
@@ -37,7 +35,7 @@
             -webkit-font-smoothing: antialiased;
         }
 
-        /* প্রিমিয়াম হেডার */
+        /* প্রিমিয়াম হেডার */
         header {
             background: var(--primary-gradient);
             color: white;
@@ -99,6 +97,7 @@
             border: 1px solid var(--border-color);
             position: relative;
             overflow: hidden;
+            gap: 20px;
         }
         .profile-card::before {
             content: '';
@@ -108,6 +107,20 @@
             height: 100%;
             width: 5px;
             background: var(--primary-gradient);
+        }
+        .profile-left {
+            display: flex;
+            align-items: center;
+            gap: 18px;
+        }
+        .seller-avatar {
+            width: 75px;
+            height: 75px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 3px solid #ffd8cc;
+            box-shadow: 0 4px 10px rgba(255, 87, 34, 0.15);
+            background: #fff3ed;
         }
         .profile-info h3 {
             margin: 0 0 6px 0;
@@ -135,18 +148,67 @@
             display: flex;
             align-items: center;
             gap: 6px;
+            white-space: nowrap;
         }
 
-        /* গ্রিড লেআউট (পিসি ও ট্যাবলেটের জন্য ফর্ম এবং লিস্ট পাশাপাশি বা সুন্দরভাবে সাজানো) */
-        .dashboard-grid {
+        @media (max-width: 600px) {
+            .profile-card {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            .coin-badge {
+                align-self: flex-start;
+            }
+        }
+
+        /* কুইক অ্যাকশন মেনু গ্রিড */
+        .action-grid {
             display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 25px;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin-bottom: 25px;
         }
         @media (max-width: 768px) {
-            .dashboard-grid {
+            .action-grid {
                 grid-template-columns: 1fr;
             }
+        }
+        .action-card {
+            background: var(--card-bg);
+            padding: 20px;
+            border-radius: var(--radius);
+            text-align: center;
+            border: 1px solid var(--border-color);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.03);
+            text-decoration: none;
+            color: var(--text-main);
+            transition: all 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+        }
+        .action-card:hover {
+            transform: translateY(-3px);
+            border-color: var(--primary);
+            box-shadow: 0 8px 25px rgba(255, 87, 34, 0.15);
+        }
+        .action-card i {
+            font-size: 28px;
+            color: var(--primary);
+            background: #fff3ed;
+            padding: 15px;
+            border-radius: 50%;
+        }
+        .action-card h4 {
+            margin: 0;
+            font-size: 15px;
+            font-weight: 600;
+        }
+        .action-card p {
+            margin: 0;
+            font-size: 12px;
+            color: var(--text-muted);
         }
 
         .card-box {
@@ -172,66 +234,12 @@
             color: var(--primary);
         }
 
-        /* ফর্ম স্টাইল */
-        .form-group {
-            margin-bottom: 15px;
-        }
-        .form-group label {
-            display: block;
-            font-size: 12px;
-            font-weight: 600;
-            color: #4a5568;
-            margin-bottom: 6px;
-        }
-        .form-control {
-            width: 100%;
-            padding: 12px 14px;
-            border: 1px solid var(--border-color);
-            border-radius: 10px;
-            font-size: 13px;
-            outline: none;
-            box-sizing: border-box;
-            background: #fbfcfd;
-            transition: all 0.3s;
-        }
-        .form-control:focus {
-            border-color: var(--primary);
-            background: #fff;
-            box-shadow: 0 0 0 3px rgba(255, 87, 34, 0.1);
-        }
-        .submit-btn {
-            width: 100%;
-            background: var(--primary-gradient);
-            color: white;
-            border: none;
-            padding: 13px;
-            border-radius: 10px;
-            font-size: 14px;
-            font-weight: 700;
-            cursor: pointer;
-            margin-top: 5px;
-            box-shadow: 0 4px 15px rgba(255, 87, 34, 0.3);
-            transition: transform 0.2s, box-shadow 0.2s;
-        }
-        .submit-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(255, 87, 34, 0.4);
-        }
-
-        /* আপলোড করা পণ্যের লিস্ট ডিজাইন */
+        /* আমার পণ্যের লিস্ট ডিজাইন */
         #myProductsList {
-            max-height: 380px;
+            max-height: 400px;
             overflow-y: auto;
             padding-right: 5px;
         }
-        #myProductsList::-webkit-scrollbar {
-            width: 5px;
-        }
-        #myProductsList::-webkit-scrollbar-thumb {
-            background: #cbd5e0;
-            border-radius: 10px;
-        }
-
         .product-item {
             display: flex;
             align-items: center;
@@ -241,10 +249,6 @@
             border-radius: 10px;
             margin-bottom: 10px;
             border: 1px solid var(--border-color);
-            transition: background 0.2s;
-        }
-        .product-item:hover {
-            background: #edf2f7;
         }
         .prod-info-left {
             display: flex;
@@ -278,7 +282,6 @@
             cursor: pointer;
             font-size: 12px;
             font-weight: 600;
-            transition: all 0.2s;
         }
         .delete-btn:hover {
             background: #e53e3e;
@@ -297,7 +300,7 @@
     <!-- হেডার -->
     <header>
         <div class="header-top">
-            <h1><a href="index.html">TopTop BD <span style="font-size: 12px; font-weight: 400; opacity: 0.8;">| Seller 2050</span></a></h1>
+            <h1><a href="index.html">TopTop BD <span style="font-size: 12px; font-weight: 400; opacity: 0.8;">| Seller Dashboard</span></a></h1>
             <button class="logout-btn" onclick="logoutSeller()"><i class="fa-solid fa-right-from-bracket"></i> <span data-en="Logout" data-bn="লগআউট">লগআউট</span></button>
         </div>
     </header>
@@ -307,10 +310,16 @@
         
         <!-- সেলার ইনফো কার্ড -->
         <div class="profile-card">
-            <div class="profile-info">
-                <h3 id="shopNameDisplay">দোকানের নাম</h3>
-                <p><i class="fa-solid fa-user-tie" style="color: #ff5722;"></i> <span id="ownerNameDisplay">মালিক: -</span></p>
-                <p><i class="fa-solid fa-location-dot" style="color: #ff5722;"></i> <span id="locationDisplay">এলাকা: -</span></p>
+            <div class="profile-left">
+                <!-- সেলারের ছবি দেখানোর ট্যাগ -->
+                <img id="sellerImgDisplay" src="https://cdn-icons-png.flaticon.com/512/3135/3135715.png" class="seller-avatar" alt="Seller Image" onerror="this.src='https://cdn-icons-png.flaticon.com/512/3135/3135715.png'">
+                
+                <div class="profile-info">
+                    <h3 id="shopNameDisplay">দোকানের নাম</h3>
+                    <p><i class="fa-solid fa-id-badge" style="color: #ff5722;"></i> <strong>সেলার আইডি:</strong> <span id="sellerIdDisplay">-</span></p>
+                    <p><i class="fa-solid fa-user-tie" style="color: #ff5722;"></i> <span id="ownerNameDisplay">মালিক: -</span></p>
+                    <p><i class="fa-solid fa-location-dot" style="color: #ff5722;"></i> <span id="locationDisplay">এলাকা: -</span></p>
+                </div>
             </div>
             <div>
                 <div class="coin-badge">
@@ -320,51 +329,53 @@
             </div>
         </div>
 
-        <!-- গ্রিড সেকশন: ফর্ম এবং লিস্ট -->
-        <div class="dashboard-grid">
-            
-            <!-- ১. পণ্য আপলোড ফর্ম -->
-            <div class="card-box">
-                <div class="section-title">
-                    <i class="fa-solid fa-circle-plus"></i>
-                    <span data-en="Upload New Product (1 Coin)" data-bn="নতুন পণ্য আপলোড (১ কয়েন)">নতুন পণ্য আপলোড (১ কয়েন)</span>
+        <!-- কুইক অ্যাকশন মেনু গ্রিড -->
+        <div class="action-grid">
+            <a href="upload_product.html" class="action-card">
+                <i class="fa-solid fa-circle-plus"></i>
+                <div>
+                    <h4>পণ্য আপলোড</h4>
+                    <p>নতুন পণ্য যোগ করুন (১ কয়েন)</p>
                 </div>
-                <form onsubmit="handleProductUpload(event)">
-                    <div class="form-group">
-                        <label data-en="Product Name" data-bn="পণ্যের নাম">পণ্যের নাম</label>
-                        <input type="text" id="prodName" class="form-control" placeholder="যেমন: প্রিমিয়াম শার্ট" required>
-                    </div>
+            </a>
 
-                    <div class="form-group">
-                        <label data-en="Price (Tk)" data-bn="মূল্য (টাকা)">মূল্য (টাকা)</label>
-                        <input type="number" id="prodPrice" class="form-control" placeholder="যেমন: ৫০০" required>
-                    </div>
+            <a href="coin_recharge.html" class="action-card">
+                <i class="fa-solid fa-wallet"></i>
+                <div>
+                    <h4>কয়েন রিচার্জ</h4>
+                    <p>ওয়ালেটে কয়েন যোগ করুন</p>
+                </div>
+            </a>
 
-                    <div class="form-group">
-                        <label data-en="Image URL" data-bn="ছবির লিংক (Image URL)">ছবির লিংক (Image URL)</label>
-                        <input type="text" id="prodImage" class="form-control" placeholder="https://..." required>
-                    </div>
+            <a href="update_profile.html" class="action-card">
+                <i class="fa-solid fa-user-pen"></i>
+                <div>
+                    <h4>প্রোফাইল আপডেট</h4>
+                    <p>দোকানের তথ্য পরিবর্তন করুন</p>
+                </div>
+            </a>
 
-                    <button type="submit" class="submit-btn">
-                        <i class="fa-solid fa-cloud-arrow-up"></i> <span data-en="Upload Product" data-bn="পণ্য আপলোড করুন">পণ্য আপলোড করুন</span>
-                    </button>
-                </form>
+            <a href="support.html" class="action-card">
+                <i class="fa-solid fa-headset"></i>
+                <div>
+                    <h4>সাপোর্ট / যোগাযোগ</h4>
+                    <p>আমাদের সাথে যোগাযোগ করুন</p>
+                </div>
+            </a>
+        </div>
+
+        <!-- আমার আপলোড করা পণ্যের তালিকা সেকশন -->
+        <div class="card-box">
+            <div class="section-title">
+                <i class="fa-solid fa-box-open"></i>
+                <span data-en="My Uploaded Products" data-bn="আমার আপলোড করা পণ্যসমূহ">আমার আপলোড করা পণ্যসমূহ</span>
             </div>
-
-            <!-- ২. আমার পণ্যসমূহ -->
-            <div class="card-box">
-                <div class="section-title">
-                    <i class="fa-solid fa-box-open"></i>
-                    <span data-en="My Uploaded Products" data-bn="আমার আপলোড করা পণ্যসমূহ">আমার আপলোড করা পণ্যসমূহ</span>
-                </div>
-                <div id="myProductsList">
-                    <div class="empty-text">
-                        <i class="fa-solid fa-spinner fa-spin" style="font-size: 20px; color: #ff5722; margin-bottom: 8px;"></i><br>
-                        <span data-en="Loading products..." data-bn="পণ্য লোড হচ্ছে...">পণ্য লোড হচ্ছে...</span>
-                    </div>
+            <div id="myProductsList">
+                <div class="empty-text">
+                    <i class="fa-solid fa-spinner fa-spin" style="font-size: 20px; color: #ff5722; margin-bottom: 8px;"></i><br>
+                    <span data-en="Loading products..." data-bn="পণ্য লোড হচ্ছে...">পণ্য লোড হচ্ছে...</span>
                 </div>
             </div>
-
         </div>
 
     </div>
@@ -383,67 +394,18 @@
         }
 
         function loadSellerInfo() {
+            document.getElementById('sellerIdDisplay').innerText = currentSeller.id;
             document.getElementById('shopNameDisplay').innerText = currentSeller.shop_name;
-            document.getElementById('ownerNameDisplay').innerText = currentSeller.owner_name;
-            document.getElementById('locationDisplay').innerText = `${currentSeller.union_name || ''}, ${currentSeller.thana || ''}, ${currentSeller.district || ''}`;
+            document.getElementById('ownerNameDisplay').innerText = `মালিক: ${currentSeller.owner_name}`;
+            document.getElementById('locationDisplay').innerText = `এলাকা: ${currentSeller.union_name || ''}, ${currentSeller.thana || ''}, ${currentSeller.district || ''}`;
             document.getElementById('coinCount').innerText = currentSeller.coins;
+
+            // ডাটাবেজের seller_url কলাম থেকে সেলারের ছবি সেট করা
+            if (currentSeller.seller_url) {
+                document.getElementById('sellerImgDisplay').src = currentSeller.seller_url;
+            }
+
             fetchMyProducts();
-        }
-
-        async function handleProductUpload(e) {
-            e.preventDefault();
-
-            if (currentSeller.coins < 1) {
-                alert('আপনার পর্যাপ্ত কয়েন নেই! পণ্য আপলোড করতে কমপক্ষে ১টি কয়েন লাগবে।');
-                return;
-            }
-
-            const name = document.getElementById('prodName').value;
-            const price = parseFloat(document.getElementById('prodPrice').value);
-            const image_url = document.getElementById('prodImage').value;
-
-            try {
-                const { error: prodError } = await supabaseClient.from('products').insert([
-                    {
-                        name,
-                        price,
-                        image_url,
-                        seller_id: currentSeller.id,
-                        district: currentSeller.district,
-                        thana: currentSeller.thana,
-                        union_name: currentSeller.union_name
-                    }
-                ]);
-
-                if (prodError) {
-                    alert('পণ্য আপলোড ব্যর্থ হয়েছে: ' + prodError.message);
-                    return;
-                }
-
-                const updatedCoins = currentSeller.coins - 1;
-                const { error: updateError } = await supabaseClient
-                    .from('sellers')
-                    .update({ coins: updatedCoins })
-                    .eq('id', currentSeller.id);
-
-                if (updateError) {
-                    alert('কয়েন আপডেট করতে সমস্যা হয়েছে!');
-                    return;
-                }
-
-                currentSeller.coins = updatedCoins;
-                localStorage.setItem('current_seller', JSON.stringify(currentSeller));
-
-                alert('সফলভাবে পণ্য আপলোড হয়েছে! ১টি কয়েন কাটা হয়েছে।');
-                document.getElementById('prodName').value = '';
-                document.getElementById('prodPrice').value = '';
-                document.getElementById('prodImage').value = '';
-
-                loadSellerInfo();
-
-            } catch (err) {
-                console.error('আপলোড এরর:', err);
-            }
         }
 
         async function fetchMyProducts() {
