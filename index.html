@@ -15,7 +15,7 @@
     <link rel="stylesheet" href="style.css">
     
     <style>
-        /* প্রিমিয়াম সার্চ বারের ডিজাইন (বড় ও সুন্দর করার জন্য) */
+        /* প্রিমিয়াম সার্চ বারের ডিজাইন (বড় ও সুন্দর করার জন্য) */
         .top-search-section {
             width: 100%;
             max-width: 950px;
@@ -59,6 +59,47 @@
         }
         .top-search-btn:hover {
             background: #e64a19;
+        }
+
+        /* ফিক্সড বটম নেভিগেশন বার যাতে কোনোভাবেই মিস না হয় */
+        html, body {
+            height: 100%;
+            margin: 0;
+            padding-bottom: 70px !important; /* নিচে যেন কনটেন্ট ঢাকা না পড়ে */
+            box-sizing: border-box;
+        }
+        .bottom-nav {
+            position: fixed !important;
+            bottom: 0 !important;
+            left: 0 !important;
+            width: 100% !important;
+            height: 60px !important;
+            background: #ffffff !important;
+            border-top: 1px solid #e0e0e0 !important;
+            display: flex !important;
+            justify-content: space-around !important;
+            align-items: center !important;
+            z-index: 99999 !important;
+            box-shadow: 0 -2px 10px rgba(0,0,0,0.1) !important;
+            box-sizing: border-box !important;
+        }
+        .bottom-nav-item {
+            text-decoration: none !important;
+            text-align: center !important;
+            color: #666 !important;
+            font-size: 12px !important;
+            flex: 1 !important;
+            display: flex !important;
+            flex-direction: column !important;
+            align-items: center !important;
+            justify-content: center !important;
+        }
+        .bottom-nav-item i {
+            font-size: 18px !important;
+            margin-bottom: 3px !important;
+        }
+        .bottom-nav-item.active {
+            color: #ff5722 !important;
         }
     </style>
 </head>
