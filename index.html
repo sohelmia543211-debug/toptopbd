@@ -27,7 +27,8 @@
     </div>
 
     <!-- ৩. প্রোডাক্ট টাইপ ও ডায়নামিক লোকেশন ফিল্টার সেকশন -->
-    <div class="filter-dropdown-container" style="display: flex; justify-content: center; gap: 10px; margin: 20px 10px; flex-wrap: wrap;">
+    <div class="filter-dropdown-container" style="display: flex; justify-content: center; gap: 10px; margin: 20px 10px; flex-wrap: wrap; align-items: center;">
+        
         <!-- প্রোডাক্ট টাইপ ফিল্টার -->
         <select id="productTypeFilter" onchange="filterProductsByType(this.value)" style="padding: 12px 15px; font-size: 15px; font-weight: bold; border-radius: 25px; border: 2px solid #ff5722; background-color: #fff; color: #333; cursor: pointer; outline: none; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
             <option value="used_product" selected>🔄 পুরনো পণ্য</option>
@@ -35,20 +36,23 @@
             <option value="land_property">🏠 জমি ও প্রপার্টি</option>
         </select>
 
-        <!-- ১. জেলা (District) ড্রপডাউন (সব সময় থাকবে) -->
-        <select id="districtFilter" onchange="onDistrictChange(this.value)" style="padding: 12px 15px; font-size: 15px; font-weight: bold; border-radius: 25px; border: 2px solid #ff5722; background-color: #fff; color: #333; cursor: pointer; outline: none; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
-            <option value="সব" selected>📍 সব জেলা</option>
-        </select>
+        <!-- ডাইনামিক হরিজেন্টাল লোকেশন ফিল্টার বক্স (পাথ ও রিসেটসহ) -->
+        <div id="locationWrapper" style="display: flex; align-items: center; background: #fff; border: 2px solid #ff5722; border-radius: 25px; padding: 5px 15px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+            <span id="locationPathText" style="font-size: 15px; font-weight: bold; color: #333; cursor: pointer; padding: 7px 5px;" onclick="openLocationSelector()">
+                📍 সব লোকেশন
+            </span>
+            
+            <!-- ড্রপডাউন লিস্ট (যা ডাইনামিকালি জেলা, থানা বা ইউনিয়ন দেখাবে) -->
+            <select id="dynamicLocationSelect" onchange="onLocationSelectionChange(this)" style="display: none; border: none; outline: none; font-size: 15px; font-weight: bold; background: transparent; color: #333; cursor: pointer; padding: 5px;">
+                <option value="" disabled selected>লোকেশন বেছে নিন</option>
+            </select>
 
-        <!-- ২. থানা (Thana) ড্রপডাউন (জেলা সিলেক্ট করলে দৃশ্যমান হবে) -->
-        <select id="thanaFilter" onchange="onThanaChange(this.value)" style="display: none; padding: 12px 15px; font-size: 15px; font-weight: bold; border-radius: 25px; border: 2px solid #ff5722; background-color: #fff; color: #333; cursor: pointer; outline: none; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
-            <option value="সব" selected>📍 সব থানা</option>
-        </select>
+            <!-- রিসেট বাটন -->
+            <button id="locationResetBtn" onclick="resetLocationFilter()" style="display: none; background: #ff5722; color: #fff; border: none; border-radius: 15px; padding: 5px 10px; margin-left: 8px; font-size: 13px; font-weight: bold; cursor: pointer;">
+                রিসেট ✕
+            </button>
+        </div>
 
-        <!-- ৩. ইউনিয়ন (Union) ড্রপডাউন (থানা সিলেক্ট করলে দৃশ্যমান হবে) -->
-        <select id="unionFilter" onchange="onUnionChange(this.value)" style="display: none; padding: 12px 15px; font-size: 15px; font-weight: bold; border-radius: 25px; border: 2px solid #ff5722; background-color: #fff; color: #333; cursor: pointer; outline: none; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
-            <option value="সব" selected>📍 সব ইউনিয়ন</option>
-        </select>
     </div>
 
     <!-- ৪. মেইন ক্যাটাগরি সেকশন -->

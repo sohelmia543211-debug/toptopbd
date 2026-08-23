@@ -60,7 +60,7 @@ header h1 {
     align-items: center;
     justify-content: flex-end; 
     text-align: center;
-    padding-bottom: 8px;      
+    padding-bottom: 8px;       
     padding-left: 10px;
     padding-right: 10px;
 }
@@ -81,13 +81,14 @@ header h1 {
     text-shadow: 0 2px 5px rgba(0,0,0,0.8);
 }
 
-/* ফিল্টার ড্রপডাউন কন্টেইনার ও স্টাইল (প্রোডাক্ট টাইপ, জেলা ও থানা ড্রপডাউন) */
+/* ফিল্টার ড্রপডাউন কন্টেইনার ও স্টাইল (প্রোডাক্ট টাইপ এবং হরিজেন্টাল লোকেশন বক্স) */
 .filter-dropdown-container {
     display: flex;
     justify-content: center;
     gap: 10px;
     margin: 20px 10px;
     flex-wrap: wrap;
+    align-items: center;
 }
 
 .filter-dropdown-container select {
@@ -107,6 +108,55 @@ header h1 {
 .filter-dropdown-container select:hover {
     border-color: #e64a19;
     box-shadow: 0 6px 10px rgba(0,0,0,0.15);
+}
+
+/* নতুন হরিজেন্টাল লোকেশন ফিল্টার বক্সের স্টাইল */
+#locationWrapper {
+    display: flex;
+    align-items: center;
+    background: #fff;
+    border: 2px solid #ff5722;
+    border-radius: 25px;
+    padding: 5px 15px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    transition: all 0.2s ease;
+}
+
+#locationPathText {
+    font-size: 15px;
+    font-weight: bold;
+    color: #333;
+    cursor: pointer;
+    padding: 7px 5px;
+    white-space: nowrap;
+}
+
+#dynamicLocationSelect {
+    border: none;
+    outline: none;
+    font-size: 15px;
+    font-weight: bold;
+    background: transparent;
+    color: #333;
+    cursor: pointer;
+    padding: 5px;
+}
+
+#locationResetBtn {
+    background: #ff5722;
+    color: #fff;
+    border: none;
+    border-radius: 15px;
+    padding: 5px 10px;
+    margin-left: 8px;
+    font-size: 13px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background 0.2s ease;
+}
+
+#locationResetBtn:hover {
+    background: #e64a19;
 }
 
 /* ক্যাটাগরি ও অন্যান্য ডিজাইন */

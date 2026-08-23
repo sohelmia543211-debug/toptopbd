@@ -8,7 +8,7 @@ let currentSubCategory = "সব";
 let currentProductType = "used_product"; 
 let currentDistrict = "সব"; 
 let currentThana = "সব";     
-let currentUnion = "সব";     // ইউনিয়ন ফিল্টারের জন্য ভেরিয়েবল
+let currentUnion = "সব";     
 let globalProducts = [];
 let globalLocations = [];   
 
@@ -114,80 +114,100 @@ async function fetchLocations() {
         const { data, error } = await supabaseClient.from('locations').select('*');
         if (!error && data) {
             globalLocations = data;
-            renderDistrictDropdown(); 
+            initLocationSelector(); 
         }
     } catch (err) {
         console.error('লোকেশন লোড এরর:', err);
     }
 }
 
-// ১. ইউনিক জেলাগুলো ড্রপডাউনে লোড করা
-function renderDistrictDropdown() {
-    const districtSelect = document.getElementById('districtFilter');
-    if (!districtSelect) return;
+// লোকেশন সিলেক্টর ইনিশিয়ালাইজ করা (প্রথমবার জেলা লোড করা)
+function initLocationSelector() {
+    const selectTag = document.getElementById('dynamicLocationSelect');
+    if (!selectTag) return;
 
     const uniqueDistricts = [...new Set(globalLocations.map(loc => loc.district))];
 
-    let html = `<option value="সব">📍 সব জেলা</option>`;
+    let html = `<option value="" disabled selected>জেলা বেছে নিন</option>`;
     uniqueDistricts.forEach(district => {
         html += `<option value="${district}">${district}</option>`;
     });
-    districtSelect.innerHTML = html;
+    selectTag.innerHTML = html;
 }
 
-// ২. জেলা সিলেক্ট করলে থানা ড্রপডাউন বের হবে
-function onDistrictChange(districtName) {
-    currentDistrict = districtName;
-    currentThana = "সব";
-    currentUnion = "সব";
+// লোকেশন বক্সে ক্লিক করলে ড্রপডাউন ওপেন করা
+function openLocationSelector() {
+    const selectTag = document.getElementById('dynamicLocationSelect');
+    const textTag = document.getElementById('locationPathText');
+    
+    if (selectTag.style.display === "none" || selectTag.style.display === "") {
+        selectTag.style.display = "inline-block";
+        textTag.style.display = "none";
+    }
+}
 
-    const thanaSelect = document.getElementById('thanaFilter');
-    const unionSelect = document.getElementById('unionFilter');
+// ড্রপডাউনে পরিবর্তন হলে (জেলা ➔ থানা ➔ ইউনিয়ন হ্যান্ডেল করা)
+function onLocationSelectionChange(selectElement) {
+    const selectedValue = selectElement.value;
+    const textTag = document.getElementById('locationPathText');
+    const resetBtn = document.getElementById('locationResetBtn');
 
-    if (districtName === "সব") {
-        thanaSelect.style.display = "none";
-        unionSelect.style.display = "none";
-    } else {
-        thanaSelect.style.display = "block";
-        unionSelect.style.display = "none"; 
-
-        const filteredThanas = [...new Set(globalLocations.filter(loc => loc.district === districtName).map(loc => loc.thana))];
+    if (currentDistrict === "সব") {
+        // জেলা সিলেক্ট করা হলো
+        currentDistrict = selectedValue;
+        textTag.innerText = `📍 ${currentDistrict}`;
         
-        let html = `<option value="সব">📍 সব থানা</option>`;
+        // এখন থানার লিস্ট লোড করবো একই ড্রপডাউনে
+        const filteredThanas = [...new Set(globalLocations.filter(loc => loc.district === currentDistrict).map(loc => loc.thana))];
+        let html = `<option value="" disabled selected>থানা বেছে নিন</option>`;
         filteredThanas.forEach(thana => {
             html += `<option value="${thana}">${thana}</option>`;
         });
-        thanaSelect.innerHTML = html;
-    }
-    renderProducts();
-}
+        selectElement.innerHTML = html;
+        resetBtn.style.display = "inline-block";
 
-// ৩. থানা সিলেক্ট করলে ইউনিয়ন ড্রপডাউন বের হবে
-function onThanaChange(thanaName) {
-    currentThana = thanaName;
-    currentUnion = "সব";
-
-    const unionSelect = document.getElementById('unionFilter');
-
-    if (thanaName === "সব") {
-        unionSelect.style.display = "none";
-    } else {
-        unionSelect.style.display = "block";
-
-        const filteredUnions = globalLocations.filter(loc => loc.district === currentDistrict && loc.thana === thanaName);
+    } else if (currentThana === "সব") {
+        // থানা সিলেক্ট করা হলো
+        currentThana = selectedValue;
+        textTag.innerText = `📍 ${currentDistrict}, ${currentThana}`;
         
-        let html = `<option value="সব">📍 সব ইউনিয়ন</option>`;
+        // এখন ইউনিয়নের লিস্ট লোড করবো একই ড্রপডাউনে
+        const filteredUnions = globalLocations.filter(loc => loc.district === currentDistrict && loc.thana === currentThana);
+        let html = `<option value="" disabled selected>ইউনিয়ন বেছে নিন</option>`;
         filteredUnions.forEach(loc => {
             html += `<option value="${loc.union_name}">${loc.union_name}</option>`;
         });
-        unionSelect.innerHTML = html;
+        selectElement.innerHTML = html;
+
+    } else if (currentUnion === "সব") {
+        // ইউনিয়ন সিলেক্ট করা হলো (চূড়ান্ত ধাপ)
+        currentUnion = selectedValue;
+        textTag.innerText = `📍 ${currentDistrict}, ${currentThana}, ${currentUnion}`;
+        
+        // ড্রপডাউন হাইড করে শুধু পাথ টেক্সট দেখাবে
+        selectElement.style.display = "none";
+        textTag.style.display = "inline-block";
     }
+
     renderProducts();
 }
 
-// ৪. ইউনিয়ন সিলেক্ট করার ফাংশন
-function onUnionChange(unionName) {
-    currentUnion = unionName;
+// লোকেশন ফিল্টার রিসেট করা
+function resetLocationFilter() {
+    currentDistrict = "সব";
+    currentThana = "সব";
+    currentUnion = "সব";
+
+    const textTag = document.getElementById('locationPathText');
+    const selectTag = document.getElementById('dynamicLocationSelect');
+    const resetBtn = document.getElementById('locationResetBtn');
+
+    textTag.innerText = "📍 সব লোকেশন";
+    textTag.style.display = "inline-block";
+    selectTag.style.display = "none";
+    resetBtn.style.display = "none";
+
+    initLocationSelector();
     renderProducts();
 }
 
@@ -320,7 +340,7 @@ function renderProducts(searchKeyword = "") {
             matchesSub = (p.sub_category === currentSubCategory || p.category === currentSubCategory);
         }
 
-        // জেলা, থানা ও ইউনিয়ন অনুযায়ী ফিল্টার শর্ত
+        // জেলা, থানা ও ইউনিয়ন অনুযায়ী ফিল্টার শর্ত
         let matchesDistrict = (currentDistrict === "সব" || p.district === currentDistrict);
         let matchesThana = (currentThana === "সব" || p.thana === currentThana || p.location === currentThana);
         let matchesUnion = (currentUnion === "সব" || p.union_name === currentUnion);
