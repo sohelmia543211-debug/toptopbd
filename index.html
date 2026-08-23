@@ -61,17 +61,18 @@
             background: #e64a19;
         }
 
-        /* ফিক্সড বটম নেভিগেশন বার যাতে কোনোভাবেই মিস না হয় */
+        /* ফিক্সড বটম নেভিগেশন বার যাতে কোনোভাবেই মিস না হয় */
         html, body {
             height: 100%;
             margin: 0;
-            padding-bottom: 70px !important; /* নিচে যেন কনটেন্ট ঢাকা না পড়ে */
+            padding-bottom: 80px !important; /* নিচে যেন কনটেন্ট ঢাকা না পড়ে */
             box-sizing: border-box;
         }
         .bottom-nav {
             position: fixed !important;
             bottom: 0 !important;
             left: 0 !important;
+            right: 0 !important;
             width: 100% !important;
             height: 60px !important;
             background: #ffffff !important;
@@ -131,7 +132,7 @@
         </div>
     </div>
 
-    <!-- ৪. ব্যানার ও ক্যাটাগরির মাঝে ফিল্টার বার (মাত্র দুটি ড্রপডাউন) -->
+    <!-- ৪. ব্যানার ও ক্যাটাগরির মাঝে ফিল্টার বার -->
     <div class="search-location-bar" id="searchBarContainer" style="width: 100%; max-width: 950px; margin: 15px auto; padding: 0 15px; box-sizing: border-box;">
         <!-- ডাইনামিকালি script.js দ্বারা রেন্ডার হবে -->
     </div>
@@ -151,7 +152,7 @@
     <!-- ৭. প্রোডাক্ট সেকশন -->
     <div class="container">
         <div class="section-title" data-en="Products" data-bn="প্রোডাক্টসমূহ">প্রোডাক্টসমূহ</div>
-        <div class="product-grid" id="productGrid"></div>
+        <div class="product-grid" id="productGrid" style="min-height: 250px;"></div>
     </div>
 
     <!-- ৮. বটম নেভিগেশন বার -->
@@ -182,10 +183,14 @@
             currentLang = currentLang === 'bn' ? 'en' : 'bn';
             localStorage.setItem('toptop_lang', currentLang);
             applyLanguage();
-            if (typeof renderMainCategories === 'function') renderMainCategories();
-            if (typeof renderSubCategories === 'function') renderSubCategories();
-            if (typeof renderFilterCards === 'function') renderFilterCards();
-            if (typeof renderProducts === 'function') renderProducts();
+            
+            // রেন্ডারিংগুলো একসাথে ব্রাউজারে ওভারলোড এড়াতে সামান্য মাইক্রো-টাস্কে দেওয়া হলো
+            setTimeout(() => {
+                if (typeof renderMainCategories === 'function') renderMainCategories();
+                if (typeof renderSubCategories === 'function') renderSubCategories();
+                if (typeof renderFilterCards === 'function') renderFilterCards();
+                if (typeof renderProducts === 'function') renderProducts();
+            }, 10);
         }
 
         function applyLanguage() {

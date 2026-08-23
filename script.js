@@ -215,25 +215,30 @@ async function fetchInitialData() {
 }
 
 function renderSearchBarAboveBanner() {
-    const topSearchContainer = document.getElementById('topSearchContainer');
+    const topSearchContainer = document.getElementById('topSearchContainer') || document.querySelector('.top-search-section');
     if (!topSearchContainer) return;
 
     const lang = getLang();
     const placeholderText = lang === 'en' ? 'Search your products, brands...' : 'আপনার পছন্দের পণ্য বা ব্র্যান্ড খুঁজুন...';
 
     topSearchContainer.innerHTML = `
-        <div style="width: 100%; max-width: 950px; margin: 12px auto; padding: 0 12px;">
-            <div style="display: flex; align-items: center; background: #fff; border: 2px solid #ff5722; border-radius: 35px; padding: 12px 20px; box-shadow: 0 4px 15px rgba(255,87,34,0.18);">
-                <i class="fa-solid fa-magnifying-glass" style="color: #ff5722; font-size: 20px; margin-right: 12px;"></i>
-                <input type="text" id="mainSearchInput" value="${currentSearchKeyword}" placeholder="${placeholderText}" oninput="handleSearchInput(this.value)" style="border: none; outline: none; width: 100%; font-size: 15px; background: transparent; color: #333;" />
-                ${currentSearchKeyword ? `<button onclick="clearSearchInput()" style="background: none; border: none; color: #ff5722; cursor: pointer; font-size: 16px;"><i class="fa-solid fa-xmark"></i></button>` : ''}
-            </div>
+        <div class="top-search-box">
+            <i class="fa-solid fa-magnifying-glass search-icon"></i>
+            <input type="text" id="mainSearchInput" value="${currentSearchKeyword}" placeholder="${placeholderText}" oninput="handleSearchInput(this.value)" />
+            ${currentSearchKeyword ? `<button onclick="clearSearchInput()" style="background: none; border: none; color: #ff5722; cursor: pointer; font-size: 16px; margin-right: 10px;"><i class="fa-solid fa-xmark"></i></button>` : ''}
+            <button class="top-search-btn" onclick="triggerSearch()">
+                <span data-en="Search" data-bn="সার্চ">সার্চ</span>
+            </button>
         </div>
     `;
 }
 
 function handleSearchInput(val) {
     currentSearchKeyword = val;
+    renderProducts();
+}
+
+function triggerSearch() {
     renderProducts();
 }
 
@@ -253,7 +258,7 @@ function renderFilterCards() {
     const newText = lang === 'en' ? 'New Products' : 'নতুন পণ্য';
     const propText = lang === 'en' ? 'Property' : 'প্রপার্টি';
 
-    const allDistText = lang === 'en' ? 'All Districts (সব জেলা)' : 'সব জেলা (সকল এলাকা)';
+    const allDistText = lang === 'en' ? 'All Districts' : 'সব জেলা (সকল এলাকা)';
     const districts = [...new Set(globalLocations.map(item => item.district))].filter(Boolean);
 
     let locationLabel = allDistText;
