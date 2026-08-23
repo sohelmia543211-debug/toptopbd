@@ -81,83 +81,104 @@ header h1 {
     text-shadow: 0 2px 5px rgba(0,0,0,0.8);
 }
 
-/* ফিল্টার ড্রপডাউন কন্টেইনার ও স্টাইল (প্রোডাক্ট টাইপ এবং হরিজেন্টাল লোকেশন বক্স) */
+/* ফিল্টার ড্রপডাউন কন্টেইনার ও স্টাইল (প্রোডাক্ট টাইপ এবং হরিজেন্টাল লোকেশন বক্স এক লাইনে পাশাপাশি রাখার জন্য) */
 .filter-dropdown-container {
     display: flex;
     justify-content: center;
-    gap: 10px;
-    margin: 20px 10px;
-    flex-wrap: wrap;
+    gap: 8px;
+    margin: 15px 10px;
+    flex-wrap: nowrap; /* নিচে নেমে যাওয়া রোধ করতে */
     align-items: center;
+    overflow-x: auto;
+    padding-bottom: 5px;
+}
+
+.filter-dropdown-container::-webkit-scrollbar {
+    display: none;
 }
 
 .filter-dropdown-container select {
-    padding: 12px 15px;
-    font-size: 15px;
+    padding: 10px 12px;
+    font-size: 13px;
     font-weight: bold;
-    border-radius: 25px;
+    border-radius: 20px;
     border: 2px solid #ff5722;
     background-color: #fff;
     color: #333;
     cursor: pointer;
     outline: none;
-    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    box-shadow: 0 3px 6px rgba(0,0,0,0.1);
     transition: all 0.2s ease;
+    white-space: nowrap;
+    flex-shrink: 0;
 }
 
 .filter-dropdown-container select:hover {
     border-color: #e64a19;
-    box-shadow: 0 6px 10px rgba(0,0,0,0.15);
+    box-shadow: 0 5px 8px rgba(0,0,0,0.15);
 }
 
-/* নতুন হরিজেন্টাল লোকেশন ফিল্টার বক্সের স্টাইল */
+/* নতুন হরিজেন্টাল লোকেশন ফিল্টার বক্সের স্টাইল (যাতে বড় নাম হলেও নিচে না নামে) */
 #locationWrapper {
     display: flex;
     align-items: center;
     background: #fff;
     border: 2px solid #ff5722;
-    border-radius: 25px;
-    padding: 5px 15px;
-    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    border-radius: 20px;
+    padding: 5px 10px;
+    box-shadow: 0 3px 6px rgba(0,0,0,0.1);
     transition: all 0.2s ease;
+    flex-shrink: 0;
+    max-width: 65%;
+    overflow: hidden;
 }
 
 #locationPathText {
-    font-size: 15px;
+    font-size: 13px;
     font-weight: bold;
     color: #333;
     cursor: pointer;
-    padding: 7px 5px;
+    padding: 5px 4px;
     white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 140px; /* বড় নাম হলে ডট ডট দেখাবে কিন্তু নিচে নামবে না */
 }
 
 #dynamicLocationSelect {
     border: none;
     outline: none;
-    font-size: 15px;
+    font-size: 13px;
     font-weight: bold;
     background: transparent;
     color: #333;
     cursor: pointer;
-    padding: 5px;
+    padding: 4px;
+    max-width: 110px;
 }
 
 #locationResetBtn {
     background: #ff5722;
     color: #fff;
     border: none;
-    border-radius: 15px;
-    padding: 5px 10px;
-    margin-left: 8px;
-    font-size: 13px;
+    border-radius: 12px;
+    padding: 4px 8px;
+    margin-left: 6px;
+    font-size: 11px;
     font-weight: bold;
     cursor: pointer;
+    white-space: nowrap;
     transition: background 0.2s ease;
+    flex-shrink: 0;
 }
 
 #locationResetBtn:hover {
     background: #e64a19;
 }
+
+
+
+
 
 /* ক্যাটাগরি ও অন্যান্য ডিজাইন */
 .categories-container, .sub-categories-container, .container {
