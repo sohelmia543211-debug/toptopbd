@@ -8,25 +8,87 @@ body {
 
 /* হেডার ও সার্চ বার */
 header {
-    background: linear-gradient(135deg, #ff5722, #ff784e);
-    padding: 15px 10px;
-    text-align: center;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+    background: #ffffff;
+    padding: 12px 15px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
+.header-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
 }
 header h1 {
-    color: white;
-    margin: 0 0 10px 0;
-    font-size: 22px;
+    margin: 0;
+    font-size: 20px;
+    color: #ff5722;
+    font-weight: 700;
 }
-.search-box {
-    width: 90%;
-    max-width: 500px;
-    padding: 10px 15px;
-    font-size: 15px;
+
+/* ভাষা পরিবর্তনের বাটন */
+.lang-switch-btn {
+    background: #fff2ef;
+    border: 1px solid #ff5722;
+    color: #ff5722;
+    padding: 5px 12px;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+.lang-switch-btn:hover {
+    background: #ff5722;
+    color: #fff;
+}
+
+/* সার্চ বার ও লোকেশন একসাথে ফ্রেম */
+.search-location-bar {
+    display: flex;
+    align-items: center;
+    background: #f4f6f9;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    overflow: hidden;
+    transition: border-color 0.2s;
+}
+.search-location-bar:focus-within {
+    border-color: #ff5722;
+    background: #fff;
+}
+.header-location-select {
+    background: transparent;
     border: none;
-    border-radius: 25px;
+    border-right: 1px solid #ddd;
+    padding: 8px 10px;
+    font-size: 12px;
+    color: #444;
     outline: none;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    max-width: 120px;
+    cursor: pointer;
+}
+.header-search-input {
+    flex: 1;
+    border: none;
+    background: transparent;
+    padding: 10px 12px;
+    font-size: 13px;
+    outline: none;
+    color: #333;
+}
+.header-search-btn {
+    background: #ff5722;
+    border: none;
+    color: #fff;
+    padding: 0 15px;
+    cursor: pointer;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 /* ডাইনামিক ব্যানার ডিজাইন */
@@ -37,11 +99,11 @@ header h1 {
 }
 .banner-slider {
     width: 100%;
-    height: 110px;
+    height: 130px;
     background-size: cover;
     background-position: center;
     border-radius: 10px;
-    box-shadow: 0 6px 15px rgba(0,0,0,0.2);
+    box-shadow: 0 6px 15px rgba(0,0,0,0.15);
     position: relative;
     overflow: hidden;
     display: flex;
@@ -60,11 +122,10 @@ header h1 {
     align-items: center;
     justify-content: flex-end; 
     text-align: center;
-    padding-bottom: 8px;       
+    padding-bottom: 10px;        
     padding-left: 10px;
     padding-right: 10px;
 }
-
 .banner-title {
     color: #ffffff;
     font-size: 16px; 
@@ -72,7 +133,6 @@ header h1 {
     margin: 0 0 2px 0;
     text-shadow: 0 2px 5px rgba(0,0,0,0.8);
 }
-
 .banner-subtitle {
     color: #ffccbc;
     font-size: 11px; 
@@ -81,350 +141,176 @@ header h1 {
     text-shadow: 0 2px 5px rgba(0,0,0,0.8);
 }
 
-
-
-
-
-/* ফিল্টার ড্রপডাউন কন্টেইনার ও স্টাইল (প্রোডাক্ট টাইপ এবং হরিজেন্টাল লোকেশন বক্স) */
+/* ফিল্টার ড্রপডাউন কন্টেইনার */
 .filter-dropdown-container {
     display: flex;
     justify-content: center;
-    gap: 10px;
-    margin: 20px 10px;
-    flex-wrap: wrap;
-    align-items: center;
+    margin: 10px 10px;
 }
-
 .filter-dropdown-container select {
-    padding: 12px 15px;
-    font-size: 15px;
-    font-weight: bold;
-    border-radius: 25px;
-    border: 2px solid #ff5722;
-    background-color: #fff;
-    color: #333;
-    cursor: pointer;
-    outline: none;
-    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-    transition: all 0.2s ease;
-}
-
-.filter-dropdown-container select:hover {
-    border-color: #e64a19;
-    box-shadow: 0 6px 10px rgba(0,0,0,0.15);
-}
-
-/* নতুন হরিজেন্টাল লোকেশন ফিল্টার বক্সের স্টাইল */
-#locationWrapper {
-    display: flex;
-    align-items: center;
+    padding: 10px 15px;
+    font-size: 14px;
+    border-radius: 8px;
+    border: 1px solid #ddd;
     background: #fff;
-    border: 2px solid #ff5722;
-    border-radius: 25px;
-    padding: 5px 15px;
-    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-    transition: all 0.2s ease;
-}
-
-#locationPathText {
-    font-size: 15px;
+    color: #ff5722;
     font-weight: bold;
-    color: #333;
     cursor: pointer;
-    padding: 7px 5px;
-    white-space: nowrap;
-}
-
-#dynamicLocationSelect {
-    border: none;
     outline: none;
-    font-size: 15px;
-    font-weight: bold;
-    background: transparent;
-    color: #333;
-    cursor: pointer;
-    padding: 5px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
 }
 
-#locationResetBtn {
-    background: #ff5722;
-    color: #fff;
-    border: none;
-    border-radius: 15px;
-    padding: 5px 10px;
-    margin-left: 8px;
-    font-size: 13px;
-    font-weight: bold;
-    cursor: pointer;
-    transition: background 0.2s ease;
-}
-
-#locationResetBtn:hover {
-    background: #e64a19;
-}
-
-
-
-
-
-
-/* ক্যাটাগরি ও অন্যান্য ডিজাইন */
+/* ক্যাটাগরি ও সাব-ক্যাটাগরি গ্রিড ডিজাইন */
 .categories-container, .sub-categories-container, .container {
+    padding: 0 12px;
     max-width: 1200px;
     margin: auto;
-    padding: 0 10px;
+    margin-bottom: 15px;
 }
 .section-title {
-    color: #212529;
     font-size: 15px;
-    margin: 15px 0 8px 0;
     font-weight: bold;
+    color: #333;
+    margin-bottom: 8px;
     border-left: 3px solid #ff5722;
     padding-left: 6px;
 }
-
-/* মেইন ক্যাটাগরি গ্রিড - কার্ডগুলো কাছাকাছি রাখার জন্য ফিক্সড */
 .categories-grid {
-    display: grid;
-    grid-template-rows: repeat(2, auto);
-    grid-auto-flow: column;             
-    gap: 6px 8px;                         
-    overflow-x: auto;                     
-    padding: 4px;
-    scrollbar-width: none;
+    display: flex;
+    gap: 8px;
+    overflow-x: auto;
+    padding-bottom: 5px;
 }
-.categories-grid::-webkit-scrollbar {
+.categories-grid::-webkit-scrollbar, .sub-categories-grid::-webkit-scrollbar {
     display: none;
 }
-
 .cat-card {
-    background: white;
-    padding: 6px 4px;
+    min-width: 75px;
+    background: #fff;
+    border: 1px solid #eee;
     border-radius: 8px;
-    cursor: pointer;
     text-align: center;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.06);
-    transition: all 0.2s ease;
-    border: 2px solid transparent;
-    width: 75px;      
-    min-width: 75px;  
-    height: 75px;     
+    padding: 8px 5px;
+    cursor: pointer;
     flex-shrink: 0;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
+    transition: all 0.2s;
 }
-
-.cat-card span {
-    display: -webkit-box;
-    -webkit-line-clamp: 2; 
-    -webkit-box-orient: vertical;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    font-size: 10px; 
-    font-weight: 600;
-    color: #333;
-    line-height: 1.1;
-    margin-top: 3px;
-    height: 22px; 
-}
-
 .cat-card.active {
     border-color: #ff5722;
     background: #fff5f2;
-    box-shadow: 0 3px 10px rgba(255, 87, 34, 0.15);
 }
-
-.cat-card:hover {
-    transform: translateY(-2px);
-}
-
-/* সাব-ক্যাটাগরি কন্টেইনার */
-.sub-categories-container {
-    padding: 10px 10px 5px 10px;
+.cat-card span {
+    font-size: 11px;
+    color: #333;
+    display: block;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .sub-categories-grid {
     display: flex;
-    flex-direction: row; 
-    flex-wrap: nowrap; 
     gap: 8px;
     overflow-x: auto;
-    padding: 4px 4px 10px 4px;
-    scrollbar-width: none;
+    padding-bottom: 5px;
 }
-
-.sub-categories-grid::-webkit-scrollbar {
-    display: none;
-}
-
 .sub-card {
-    background: white;
-    padding: 6px 4px;
+    min-width: 80px;
+    background: #fff;
+    border: 1px solid #eee;
     border-radius: 8px;
+    text-align: center;
+    padding: 8px 5px;
     cursor: pointer;
-    text-align: center;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.06);
-    transition: all 0.2s ease;
-    border: 2px solid transparent;
-    width: 80px;
-    min-width: 80px; 
-    height: 75px;
     flex-shrink: 0;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
 }
-
-.sub-card span {
-    display: -webkit-box;
-    -webkit-line-clamp: 2;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    font-size: 10px;
-    font-weight: 600;
-    color: #333;
-    line-height: 1.1;
-    margin-top: 3px;
-    height: 22px;
-    text-align: center;
-}
-
 .sub-card.active {
     border-color: #ff5722;
     background: #fff5f2;
-    box-shadow: 0 3px 10px rgba(255, 87, 34, 0.15);
 }
-
-.sub-card:hover {
-    transform: translateY(-2px);
+.sub-card span {
+    font-size: 10px;
+    color: #333;
+    display: block;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 /* প্রোডাক্ট গ্রিড */
 .product-grid {
     display: grid;
-    grid-template-columns: repeat(2, 1fr); 
+    grid-template-columns: repeat(2, 1fr);
     gap: 10px;
-    padding: 5px 0 15px 0;
 }
-
 @media (min-width: 768px) {
     .product-grid {
-        grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-        gap: 20px;
+        grid-template-columns: repeat(4, 1fr);
     }
 }
-
 .product-card {
-    background: white;
-    border-radius: 12px;
+    background: #fff;
+    border-radius: 8px;
     overflow: hidden;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.08);
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    border: 1px solid #f1f3f5;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+    border: 1px solid #eee;
 }
-
 .product-img-box {
     width: 100%;
-    height: 110px; 
-    background: #f8f9fa;
+    height: 120px;
+    background: #f9f9f9;
     display: flex;
     align-items: center;
     justify-content: center;
-    color: #adb5bd;
-    font-size: 13px;
-    border-bottom: 1px solid #f1f3f5;
+    color: #ccc;
 }
-
 .product-img-box img {
     width: 100%;
     height: 100%;
     object-fit: cover;
 }
-
 .product-info {
-    padding: 10px;
-    text-align: left;
+    padding: 8px;
 }
 .product-info h3 {
     font-size: 13px;
     margin: 0 0 4px 0;
-    color: #343a40;
-    font-weight: 600;
-    display: -webkit-box;
-    -webkit-line-clamp: 2;
-    -webkit-box-orient: vertical;
+    color: #333;
+    white-space: nowrap;
     overflow: hidden;
+    text-overflow: ellipsis;
 }
-.price {
-    color: #ff5722;
+.product-info .price {
+    font-size: 13px;
     font-weight: bold;
-    font-size: 14px;
+    color: #ff5722;
 }
 
-.no-product {
-    grid-column: 1 / -1;
-    text-align: center;
-    padding: 30px;
-    color: #6c757d;
-    font-size: 14px;
-    background: white;
-    border-radius: 12px;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.08);
-}
-
-@keyframes shimmer {
-    0% { background-position: -468px 0; }
-    100% { background-position: 468px 0; }
-}
-
-.shimmer-card {
-    background: #f6f7f8;
-    background-image: linear-gradient(to right, #f6f7f8 0%, #edeef1 20%, #f6f7f8 40%, #f6f7f8 100%);
-    background-repeat: no-repeat;
-    background-size: 800px 104px;
-    animation: shimmer 1.5s infinite linear;
-    border-radius: 12px;
-    height: 120px;
-}
-
-/* বটম নেভিগেশন স্টাইল */
+/* বটম নেভিগেশন */
 .bottom-nav {
     position: fixed;
     bottom: 0;
     left: 0;
     width: 100%;
-    height: 60px;
-    background-color: #ffffff;
+    background: #fff;
     display: flex;
     justify-content: space-around;
-    align-items: center;
-    box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
+    padding: 8px 0;
+    box-shadow: 0 -2px 8px rgba(0,0,0,0.08);
     z-index: 1000;
-    border-top: 1px solid #eee;
 }
 .bottom-nav-item {
+    text-decoration: none;
+    color: #777;
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: center;
-    text-decoration: none;
-    color: #666;
-    font-size: 12px;
-    font-weight: 500;
-    flex: 1;
-    height: 100%;
-    transition: color 0.2s ease;
+    font-size: 11px;
 }
 .bottom-nav-item i {
-    font-size: 20px;
-    margin-bottom: 3px;
+    font-size: 16px;
+    margin-bottom: 2px;
 }
-.bottom-nav-item.active, .bottom-nav-item:hover {
+.bottom-nav-item.active {
     color: #ff5722;
 }

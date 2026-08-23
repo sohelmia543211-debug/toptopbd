@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TopTop BD - লোকাল মার্কেটপ্লেস (নতুন ও পুরনো পণ্য)</title>
+    <title data-en="TopTop BD - Local Marketplace" data-bn="TopTop BD - লোকাল মার্কেটপ্লেস (নতুন ও পুরনো পণ্য)">TopTop BD - লোকাল মার্কেটপ্লেস (নতুন ও পুরনো পণ্য)</title>
     <!-- FontAwesome আইকন -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <!-- Supabase CDN -->
@@ -13,63 +13,60 @@
 </head>
 <body>
 
-    <!-- ১. হেডার ও সার্চ বার -->
+    <!-- ১. হেডার, সার্চ বার, লোকেশন ও ল্যাঙ্গুয়েজ সুইচার -->
     <header>
-        <h1>TopTop BD</h1>
-        <input type="text" id="searchBox" class="search-box" placeholder="আপনার পছন্দের পণ্য খুঁজুন...">
+        <div class="header-top">
+            <h1>TopTop BD</h1>
+            <button class="lang-switch-btn" id="langSwitchBtn" onclick="toggleLanguage()">English</button>
+        </div>
+        
+        <div class="search-location-bar">
+            <select id="headerLocationSelect" class="header-location-select" onchange="onHeaderLocationChange(this)">
+                <option value="সব" data-en="All Location" data-bn="📍 সব লোকেশন">📍 সব লোকেশন</option>
+                <option value="dhaka" data-en="Dhaka" data-bn="ঢাকা">ঢাকা</option>
+                <option value="chittagong" data-en="Chittagong" data-bn="চট্টগ্রাম">চট্টগ্রাম</option>
+                <option value="sylhet" data-en="Sylhet" data-bn="সিলেট">সিলেট</option>
+                <option value="rajshahi" data-en="Rajshahi" data-bn="রাজশাহী">রাজশাহী</option>
+                <option value="khulna" data-en="Khulna" data-bn="খুলনা">খুলনা</option>
+            </select>
+            <input type="text" id="searchBox" class="header-search-input" placeholder="আপনার পছন্দের পণ্য খুঁজুন..." data-en-placeholder="Search your favorite product..." data-bn-placeholder="আপনার পছন্দের পণ্য খুঁজুন...">
+            <button class="header-search-btn" onclick="handleSearch()">
+                <i class="fa-solid fa-magnifying-glass"></i>
+            </button>
+        </div>
     </header>
 
     <!-- ২. ডাইনামিক ব্যানার সেকশন -->
     <div class="banner-container" id="bannerContainer">
-        <div class="banner-slider">
+        <div class="banner-slider" data-en="Loading..." data-bn="লোড হচ্ছে...">
             লোড হচ্ছে...
         </div>
     </div>
 
-    <!-- ৩. প্রোডাক্ট টাইপ ও ডায়নামিক লোকেশন ফিল্টার সেকশন -->
-    <div class="filter-dropdown-container" style="display: flex; justify-content: center; gap: 10px; margin: 20px 10px; flex-wrap: wrap; align-items: center;">
-        
-        <!-- প্রোডাক্ট টাইপ ফিল্টার -->
-        <select id="productTypeFilter" onchange="filterProductsByType(this.value)" style="padding: 12px 15px; font-size: 15px; font-weight: bold; border-radius: 25px; border: 2px solid #ff5722; background-color: #fff; color: #333; cursor: pointer; outline: none; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
-            <option value="used_product" selected>🔄 পুরনো পণ্য</option>
-            <option value="new_product">✨ নতুন পণ্য</option>
-            <option value="land_property">🏠 জমি ও প্রপার্টি</option>
+    <!-- ৩. প্রোডাক্ট টাইপ ফিল্টার সেকশন -->
+    <div class="filter-dropdown-container">
+        <select id="productTypeFilter" onchange="filterProductsByType(this.value)">
+            <option value="used_product" selected data-en="🔄 Used Products" data-bn="🔄 পুরনো পণ্য">🔄 পুরনো পণ্য</option>
+            <option value="new_product" data-en="✨ New Products" data-bn="✨ নতুন পণ্য">✨ নতুন পণ্য</option>
+            <option value="land_property" data-en="🏠 Land & Property" data-bn="🏠 জমি ও প্রপার্টি">🏠 জমি ও প্রপার্টি</option>
         </select>
-
-        <!-- ডাইনামিক হরিজেন্টাল লোকেশন ফিল্টার বক্স (পাথ ও রিসেটসহ) -->
-        <div id="locationWrapper" style="display: flex; align-items: center; background: #fff; border: 2px solid #ff5722; border-radius: 25px; padding: 5px 15px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
-            <span id="locationPathText" style="font-size: 15px; font-weight: bold; color: #333; cursor: pointer; padding: 7px 5px;" onclick="openLocationSelector()">
-                📍 সব লোকেশন
-            </span>
-            
-            <!-- ড্রপডাউন লিস্ট (যা ডাইনামিকালি জেলা, থানা বা ইউনিয়ন দেখাবে) -->
-            <select id="dynamicLocationSelect" onchange="onLocationSelectionChange(this)" style="display: none; border: none; outline: none; font-size: 15px; font-weight: bold; background: transparent; color: #333; cursor: pointer; padding: 5px;">
-                <option value="" disabled selected>লোকেশন বেছে নিন</option>
-            </select>
-
-            <!-- রিসেট বাটন -->
-            <button id="locationResetBtn" onclick="resetLocationFilter()" style="display: none; background: #ff5722; color: #fff; border: none; border-radius: 15px; padding: 5px 10px; margin-left: 8px; font-size: 13px; font-weight: bold; cursor: pointer;">
-                রিসেট ✕
-            </button>
-        </div>
-
     </div>
 
     <!-- ৪. মেইন ক্যাটাগরি সেকশন -->
     <div class="categories-container">
-        <div class="section-title">ক্যাটাগরি সমূহ</div>
+        <div class="section-title" data-en="Categories" data-bn="ক্যাটাগরি সমূহ">ক্যাটাগরি সমূহ</div>
         <div class="categories-grid" id="mainCategories"></div>
     </div>
 
     <!-- ৫. সাব-ক্যাটাগরি সেকশন -->
     <div class="sub-categories-container">
-        <div class="section-title">সাব-ক্যাটাগরি সমূহ</div>
+        <div class="section-title" data-en="Sub-Categories" data-bn="সাব-ক্যাটাগরি সমূহ">সাব-ক্যাটাগরি সমূহ</div>
         <div class="sub-categories-grid" id="subCategories"></div>
     </div>
 
     <!-- ৬. প্রোডাক্ট সেকশন -->
     <div class="container">
-        <div class="section-title">প্রোডাক্টসমূহ</div>
+        <div class="section-title" data-en="Products" data-bn="প্রোডাক্টসমূহ">প্রোডাক্টসমূহ</div>
         <div class="product-grid" id="productGrid"></div>
     </div>
 
@@ -77,22 +74,79 @@
     <nav class="bottom-nav">
         <a href="index.html" class="bottom-nav-item active">
             <i class="fa-solid fa-house"></i>
-            <span>Home</span>
+            <span data-en="Home" data-bn="হোম">হোম</span>
         </a>
         <a href="categories.html" class="bottom-nav-item">
             <i class="fa-solid fa-list"></i>
-            <span>Category</span>
+            <span data-en="Category" data-bn="ক্যাটাগরি">ক্যাটাগরি</span>
         </a>
         <a href="favorites.html" class="bottom-nav-item">
             <i class="fa-solid fa-heart"></i>
-            <span>Favorite</span>
+            <span data-en="Favorite" data-bn="পছন্দ">পছন্দ</span>
         </a>
         <a href="seller_login.html" class="bottom-nav-item">
             <i class="fa-solid fa-user-tie"></i>
-            <span>Seller Login</span>
+            <span data-en="Seller Login" data-bn="সেলার লগইন">সেলার লগইন</span>
         </a>
     </nav>
 
+    <!-- ভাষা ও অন্যান্য স্ক্রিপ্ট -->
+    <script>
+        let currentLang = localStorage.getItem('toptop_lang') || 'bn';
+
+        function toggleLanguage() {
+            currentLang = currentLang === 'bn' ? 'en' : 'bn';
+            localStorage.setItem('toptop_lang', currentLang);
+            applyLanguage();
+            if (typeof renderMainCategories === 'function') renderMainCategories();
+            if (typeof renderSubCategories === 'function') renderSubCategories();
+            if (typeof renderProducts === 'function') renderProducts();
+        }
+
+        function applyLanguage() {
+            const langBtn = document.getElementById('langSwitchBtn');
+            if(langBtn) langBtn.innerText = currentLang === 'bn' ? 'English' : 'বাংলা';
+            document.documentElement.setAttribute('lang', currentLang);
+
+            document.querySelectorAll('[data-bn]').forEach(el => {
+                if (currentLang === 'en' && el.getAttribute('data-en')) {
+                    el.innerText = el.getAttribute('data-en');
+                } else if (currentLang === 'bn' && el.getAttribute('data-bn')) {
+                    el.innerText = el.getAttribute('data-bn');
+                }
+            });
+
+            document.querySelectorAll('[data-bn-placeholder]').forEach(el => {
+                if (currentLang === 'en' && el.getAttribute('data-en-placeholder')) {
+                    el.placeholder = el.getAttribute('data-en-placeholder');
+                } else if (currentLang === 'bn' && el.getAttribute('data-bn-placeholder')) {
+                    el.placeholder = el.getAttribute('data-bn-placeholder');
+                }
+            });
+            
+            document.querySelectorAll('option[data-bn]').forEach(opt => {
+                if (currentLang === 'en' && opt.getAttribute('data-en')) {
+                    opt.innerText = opt.getAttribute('data-en');
+                } else if (currentLang === 'bn' && opt.getAttribute('data-bn')) {
+                    opt.innerText = opt.getAttribute('data-bn');
+                }
+            });
+        }
+
+        function handleSearch() {
+            const keyword = document.getElementById('searchBox').value;
+            if (typeof renderProducts === 'function') {
+                renderProducts(keyword);
+            }
+        }
+
+        function onHeaderLocationChange(selectEl) {
+            currentDistrict = selectEl.value;
+            if (typeof renderProducts === 'function') {
+                renderProducts();
+            }
+        }
+    </script>
     <script src="script.js"></script>
 </body>
 </html>

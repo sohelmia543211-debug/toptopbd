@@ -7,88 +7,125 @@ let currentMainCategory = "সব";
 let currentSubCategory = "সব";
 let currentProductType = "used_product"; 
 let currentDistrict = "সব"; 
-let currentThana = "সব";     
-let currentUnion = "সব";     
 let globalProducts = [];
-let globalLocations = [];   
 
-// ১২টি হার্ডকোডেড মেইন ক্যাটাগরি এবং সাব-ক্যাটাগরি লিস্ট
+// ক্যাটাগরি ডেটা (ভাষা সাপোর্ট সহ ঠিক করা হয়েছে)
 const hardcodedCategories = [
   {
     id: "mobiles",
-    name: "মোবাইল ও ট্যাব",
+    name: { bn: "মোবাইল ও ট্যাব", en: "Mobiles & Tablets" },
     icon: "fa-mobile-screen-button",
-    subcategories: ["স্মার্টফোন", "ফিচার ফোন", "ট্যাব ও আইপ্যাড", "মোবাইল এক্সেসরিজ"]
+    subcategories: [
+      { name: { bn: "স্মার্টফোন", en: "Smartphones" }, icon: "fa-mobile" },
+      { name: { bn: "ফিচার ফোন", en: "Feature Phones" }, icon: "fa-phone-flip" },
+      { name: { bn: "ট্যাব ও আইপ্যাড", en: "Tablets & iPads" }, icon: "fa-tablet" },
+      { name: { bn: "মোবাইল এক্সেসরিজ", en: "Mobile Accessories" }, icon: "fa-headphones" },
+      { name: { bn: "পাওয়ার ব্যাংক", en: "Power Banks" }, icon: "fa-battery-full" },
+      { name: { bn: "স্মার্টওয়াচ", en: "Smartwatches" }, icon: "fa-clock" }
+    ]
   },
   {
     id: "electronics",
-    name: "ইলেকট্রনিক্স",
+    name: { bn: "ইলেকট্রনিক্স", en: "Electronics" },
     icon: "fa-laptop",
-    subcategories: ["ল্যাপটপ ও কম্পিউটার", "টিভি ও সাউন্ড সিস্টেম", "এসি ও ফ্রিজ", "হোম অ্যাপ্লায়েন্সেস"]
+    subcategories: [
+      { name: { bn: "ল্যাপটপ ও কম্পিউটার", en: "Laptops & Computers" }, icon: "fa-computer" },
+      { name: { bn: "টিভি ও সাউন্ড সিস্টেম", en: "TV & Sound Systems" }, icon: "fa-tv" },
+      { name: { bn: "এসি ও ফ্রিজ", en: "AC & Refrigerators" }, icon: "fa-snowflake" },
+      { name: { bn: "হোম অ্যাপ্লায়েন্সেস", en: "Home Appliances" }, icon: "fa-blender" },
+      { name: { bn: "ক্যামেরা ও ড্রোন", en: "Cameras & Drones" }, icon: "fa-camera" }
+    ]
   },
   {
     id: "vehicles",
-    name: "যানবাহন",
+    name: { bn: "যানবাহন", en: "Vehicles" },
     icon: "fa-motorcycle",
-    subcategories: ["মোটরসাইকেল", "বাইসাইকেল", "প্রাইভেট কার", "অন্যান্য যান ও পার্টস"]
+    subcategories: [
+      { name: { bn: "মোটরসাইকেল", en: "Motorcycles" }, icon: "fa-motorcycle" },
+      { name: { bn: "বাইসাইকেল", en: "Bicycles" }, icon: "fa-bicycle" },
+      { name: { bn: "প্রাইভেট কার", en: "Private Cars" }, icon: "fa-car" }
+    ]
   },
   {
     id: "property",
-    name: "প্রপার্টি",
+    name: { bn: "প্রপার্টি", en: "Property" },
     icon: "fa-building",
-    subcategories: ["বাসা/ফ্লাট ভাড়া", "জমি বা প্লট বিক্রি", "সাবলেট রুম", "দোকান বা অফিস স্পেস"]
+    subcategories: [
+      { name: { bn: "বাসা/ফ্লাট ভাড়া", en: "House/Flat Rent" }, icon: "fa-house-chimney" },
+      { name: { bn: "জমি বা প্লট বিক্রি", en: "Land/Plot Sale" }, icon: "fa-earth-americas" }
+    ]
   },
   {
     id: "fashion",
-    name: "ফ্যাশন",
+    name: { bn: "ফ্যাশন", en: "Fashion" },
     icon: "fa-shirt",
-    subcategories: ["পুরুষদের পোশাক", "নারীদের পোশাক", "জুতো ও ব্যাগ", "প্রসাধনী ও ঘড়ি"]
+    subcategories: [
+      { name: { bn: "পুরুষদের পোশাক", en: "Men's Clothing" }, icon: "fa-user-tie" },
+      { name: { bn: "নারীদের পোশাক", en: "Women's Clothing" }, icon: "fa-person-dress" }
+    ]
   },
   {
     id: "home_living",
-    name: "হোম ও লিভিং",
+    name: { bn: "হোম ও লিভিং", en: "Home & Living" },
     icon: "fa-couch",
-    subcategories: ["ঘরের আসবাবপত্র", "হোম ডেকোর বা শোপিস", "কিচেন ও ডাইনিং", "লাইটিং ও ফ্যান"]
+    subcategories: [
+      { name: { bn: "ঘরের আসবাবপত্র", en: "Home Furniture" }, icon: "fa-bed" }
+    ]
   },
   {
     id: "pets",
-    name: "পোষা প্রাণী",
+    name: { bn: "পোষা প্রাণী", en: "Pets & Animals" },
     icon: "fa-dog",
-    subcategories: ["বিড়াল ও কুকুর", "পাখি ও মাছ", "গবাদিপশু", "পেট ফুড ও কেয়ার"]
+    subcategories: [
+      { name: { bn: "বিড়াল ও কুকুর", en: "Cats & Dogs" }, icon: "fa-paw" }
+    ]
   },
   {
     id: "books_sports",
-    name: "বই ও শখ",
+    name: { bn: "বই ও শখ", en: "Books & Hobbies" },
     icon: "fa-book",
-    subcategories: ["একাডেমিক বই ও উপন্যাস", "জিম ও স্পোর্টস আইটেম", "মিউজিক্যাল ইন্সট্রুমেন্ট", "খেলনা ও শখ"]
+    subcategories: [
+      { name: { bn: "একাডেমিক বই", en: "Academic Books" }, icon: "fa-book-open" }
+    ]
   },
   {
     id: "agriculture",
-    name: "কৃষি ও বাগান",
+    name: { bn: "কৃষি ও বাগান", en: "Agriculture & Garden" },
     icon: "fa-seedling",
-    subcategories: ["বীজ ও সার", "কৃষিকাজের যন্ত্রপাতি", "গাছের চারা ও টব", "সেচ সরঞ্জাম"]
+    subcategories: [
+      { name: { bn: "বীজ ও সার", en: "Seeds & Fertilizers" }, icon: "fa-plant-wilt" }
+    ]
   },
   {
     id: "jobs",
-    name: "চাকরি",
+    name: { bn: "চাকরি", en: "Jobs" },
     icon: "fa-briefcase",
-    subcategories: ["ফুলটাইম জব", "পার্টটাইম ও রিমোট জব", "ইন্টার্নশিপ", "কাজের লোক বা সার্ভিস"]
+    subcategories: [
+      { name: { bn: "ফুলটাইম জব", en: "Full-Time Jobs" }, icon: "fa-id-badge" }
+    ]
   },
   {
     id: "services",
-    name: "সার্ভিস",
+    name: { bn: "সার্ভিস", en: "Services" },
     icon: "fa-tools",
-    subcategories: ["আইটি ও গ্রাফিক্স ডিজাইন", "ইলেকট্রিক ও প্লাম্বিং", "ইভেন্ট ম্যানেজমেন্ট", "টিউশন বা কোচিং"]
+    subcategories: [
+      { name: { bn: "আইটি ও গ্রাফিক্স ডিজাইন", en: "IT & Graphics Design" }, icon: "fa-pen-nib" }
+    ]
   },
   {
     id: "others",
-    name: "অন্যান্য",
+    name: { bn: "অন্যান্য", en: "Others" },
     icon: "fa-box",
-    subcategories: ["মিসেলেনিয়াস বা অন্যান্য আইটেম"]
+    subcategories: [
+      { name: { bn: "অন্যান্য আইটেম", en: "Miscellaneous Items" }, icon: "fa-box-open" }
+    ]
   }
 ];
 
-// ১. ব্যানার লোড করা
+function getLang() {
+    return localStorage.getItem('toptop_lang') || 'bn';
+}
+
 async function fetchBanners() {
     try {
         const { data, error } = await supabaseClient.from('banners').select('*');
@@ -108,159 +145,52 @@ async function fetchBanners() {
     } catch (err) { console.error('ব্যানার কানেকশন এরর:', err); }
 }
 
-// লোকেশন ডাটা ফেচ করা
-async function fetchLocations() {
-    try {
-        const { data, error } = await supabaseClient.from('locations').select('*');
-        if (!error && data) {
-            globalLocations = data;
-            initLocationSelector(); 
-        }
-    } catch (err) {
-        console.error('লোকেশন লোড এরর:', err);
-    }
-}
-
-// লোকেশন সিলেক্টর ইনিশিয়ালাইজ করা (প্রথমবার জেলা লোড করা)
-function initLocationSelector() {
-    const selectTag = document.getElementById('dynamicLocationSelect');
-    if (!selectTag) return;
-
-    const uniqueDistricts = [...new Set(globalLocations.map(loc => loc.district))];
-
-    let html = `<option value="" disabled selected>জেলা বেছে নিন</option>`;
-    uniqueDistricts.forEach(district => {
-        html += `<option value="${district}">${district}</option>`;
-    });
-    selectTag.innerHTML = html;
-}
-
-// লোকেশন বক্সে ক্লিক করলে ড্রপডাউন ওপেন করা
-function openLocationSelector() {
-    const selectTag = document.getElementById('dynamicLocationSelect');
-    const textTag = document.getElementById('locationPathText');
-    
-    if (selectTag.style.display === "none" || selectTag.style.display === "") {
-        selectTag.style.display = "inline-block";
-        textTag.style.display = "none";
-    }
-}
-
-// ড্রপডাউনে পরিবর্তন হলে (জেলা ➔ থানা ➔ ইউনিয়ন হ্যান্ডেল করা)
-function onLocationSelectionChange(selectElement) {
-    const selectedValue = selectElement.value;
-    const textTag = document.getElementById('locationPathText');
-    const resetBtn = document.getElementById('locationResetBtn');
-
-    if (currentDistrict === "সব") {
-        // জেলা সিলেক্ট করা হলো
-        currentDistrict = selectedValue;
-        textTag.innerText = `📍 ${currentDistrict}`;
-        
-        // এখন থানার লিস্ট লোড করবো একই ড্রপডাউনে
-        const filteredThanas = [...new Set(globalLocations.filter(loc => loc.district === currentDistrict).map(loc => loc.thana))];
-        let html = `<option value="" disabled selected>থানা বেছে নিন</option>`;
-        filteredThanas.forEach(thana => {
-            html += `<option value="${thana}">${thana}</option>`;
-        });
-        selectElement.innerHTML = html;
-        resetBtn.style.display = "inline-block";
-
-    } else if (currentThana === "সব") {
-        // থানা সিলেক্ট করা হলো
-        currentThana = selectedValue;
-        textTag.innerText = `📍 ${currentDistrict}, ${currentThana}`;
-        
-        // এখন ইউনিয়নের লিস্ট লোড করবো একই ড্রপডাউনে
-        const filteredUnions = globalLocations.filter(loc => loc.district === currentDistrict && loc.thana === currentThana);
-        let html = `<option value="" disabled selected>ইউনিয়ন বেছে নিন</option>`;
-        filteredUnions.forEach(loc => {
-            html += `<option value="${loc.union_name}">${loc.union_name}</option>`;
-        });
-        selectElement.innerHTML = html;
-
-    } else if (currentUnion === "সব") {
-        // ইউনিয়ন সিলেক্ট করা হলো (চূড়ান্ত ধাপ)
-        currentUnion = selectedValue;
-        textTag.innerText = `📍 ${currentDistrict}, ${currentThana}, ${currentUnion}`;
-        
-        // ড্রপডাউন হাইড করে শুধু পাথ টেক্সট দেখাবে
-        selectElement.style.display = "none";
-        textTag.style.display = "inline-block";
-    }
-
-    renderProducts();
-}
-
-// লোকেশন ফিল্টার রিসেট করা
-function resetLocationFilter() {
-    currentDistrict = "সব";
-    currentThana = "সব";
-    currentUnion = "সব";
-
-    const textTag = document.getElementById('locationPathText');
-    const selectTag = document.getElementById('dynamicLocationSelect');
-    const resetBtn = document.getElementById('locationResetBtn');
-
-    textTag.innerText = "📍 সব লোকেশন";
-    textTag.style.display = "inline-block";
-    selectTag.style.display = "none";
-    resetBtn.style.display = "none";
-
-    initLocationSelector();
-    renderProducts();
-}
-
-// প্রোডাক্ট ডাটা ফেচ করা এবং ক্যাটাগরি রেন্ডার করা
 async function fetchInitialData() {
-    const productGrid = document.getElementById('productGrid');
-    if (productGrid) productGrid.innerHTML = `<div class="cat-card shimmer-card" style="height: 120px; width: 100%;"></div>`.repeat(4);
-
     try {
         renderMainCategories();
         renderSubCategories();
-        await fetchLocations(); 
 
         const { data, error } = await supabaseClient.from('products').select('*');
         if (!error && data) {
             globalProducts = data;
         }
         renderProducts();
-
     } catch (err) {
         console.error('ডাটা ফেচ এরর:', err);
     }
 }
 
-// প্রোডাক্ট টাইপ ফিল্টার করার ফাংশন
 function filterProductsByType(type) {
     currentProductType = type;
     renderProducts();
 }
 
-// মেইন ক্যাটাগরি রেন্ডার করা
 function renderMainCategories() {
     const grid = document.getElementById('mainCategories');
     if (!grid) return;
 
+    const lang = getLang();
+    const allText = lang === 'en' ? 'All' : 'সব';
     const isAllActive = currentMainCategory === "সব" ? 'active' : '';
+    
     let html = `
         <div class="cat-card ${isAllActive}" onclick="selectMainCategory('সব')">
             <div style="width: 35px; height: 35px; margin: 0 auto 3px auto; background: #ff5722; border-radius: 6px; display: flex; align-items: center; justify-content: center; color: white;">
                 <i class="fa-solid fa-border-all" style="font-size: 14px;"></i>
             </div>
-            <span>সব</span>
+            <span>${allText}</span>
         </div>
     `;
 
     hardcodedCategories.forEach(cat => {
         const isActive = (currentMainCategory !== "সব" && currentMainCategory.id === cat.id) ? 'active' : '';
+        const catName = cat.name[lang] || cat.name.bn;
         html += `
             <div class="cat-card ${isActive}" onclick="selectMainCategory('${cat.id}')">
                 <div style="width: 35px; height: 35px; margin: 0 auto 3px auto; background: #fff5f2; border-radius: 6px; display: flex; align-items: center; justify-content: center; color: #ff5722;">
                     <i class="fa-solid ${cat.icon}" style="font-size: 14px;"></i>
                 </div>
-                <span>${cat.name}</span>
+                <span>${catName}</span>
             </div>
         `;
     });
@@ -279,10 +209,12 @@ function selectMainCategory(catId) {
     renderProducts();
 }
 
-// সাব-ক্যাটাগরি রেন্ডার করা
 function renderSubCategories() {
     const grid = document.getElementById('subCategories');
     if (!grid) return;
+
+    const lang = getLang();
+    const allText = lang === 'en' ? 'All' : 'সব';
 
     let filteredSubs = [];
     if (currentMainCategory === "সব") {
@@ -297,16 +229,17 @@ function renderSubCategories() {
             <div style="width: 28px; height: 28px; margin: 0 auto 3px auto; background: #ff5722; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-size: 11px;">
                 <i class="fa-solid fa-border-all"></i>
             </div>
-            <span>সব</span>
+            <span>${allText}</span>
         </div>
     `;
 
-    filteredSubs.forEach(subName => {
+    filteredSubs.forEach(sub => {
+        const subName = sub.name[lang] || sub.name.bn;
         const isActive = subName === currentSubCategory ? 'active' : '';
         html += `
             <div class="sub-card ${isActive}" onclick="selectSubCategory('${subName}')">
                 <div style="width: 28px; height: 28px; margin: 0 auto 3px auto; background: #fff5f2; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #ff5722; font-size: 11px;">
-                    <i class="fa-solid fa-tag"></i>
+                    <i class="fa-solid ${sub.icon || 'fa-tag'}"></i>
                 </div>
                 <span>${subName}</span>
             </div>
@@ -322,17 +255,20 @@ function selectSubCategory(subName) {
     renderProducts();
 }
 
-// প্রোডাক্ট ফিল্টার করা
 function renderProducts(searchKeyword = "") {
     const grid = document.getElementById('productGrid');
     if (!grid) return;
+
+    const lang = getLang();
+    const noProductText = lang === 'en' ? 'No products found.' : 'কোনো পণ্য পাওয়া যায়নি।';
+    const keyword = searchKeyword || document.getElementById('searchBox').value;
 
     let filteredProducts = globalProducts.filter(p => {
         let matchesType = p.product_type === currentProductType;
 
         let matchesMain = true;
         if (currentMainCategory !== "সব") {
-            matchesMain = (p.category === currentMainCategory.name || p.main_category_id === currentMainCategory.id);
+            matchesMain = (p.category === currentMainCategory.name.bn || p.category === currentMainCategory.name.en || p.main_category_id === currentMainCategory.id);
         }
 
         let matchesSub = true;
@@ -340,17 +276,14 @@ function renderProducts(searchKeyword = "") {
             matchesSub = (p.sub_category === currentSubCategory || p.category === currentSubCategory);
         }
 
-        // জেলা, থানা ও ইউনিয়ন অনুযায়ী ফিল্টার শর্ত
         let matchesDistrict = (currentDistrict === "সব" || p.district === currentDistrict);
-        let matchesThana = (currentThana === "সব" || p.thana === currentThana || p.location === currentThana);
-        let matchesUnion = (currentUnion === "সব" || p.union_name === currentUnion);
+        let matchesSearch = p.name.toLowerCase().includes(keyword.toLowerCase());
 
-        let matchesSearch = p.name.toLowerCase().includes(searchKeyword.toLowerCase());
-        return matchesType && matchesMain && matchesSub && matchesDistrict && matchesThana && matchesUnion && matchesSearch;
+        return matchesType && matchesMain && matchesSub && matchesDistrict && matchesSearch;
     });
 
     if (filteredProducts.length === 0) {
-        grid.innerHTML = `<div class="no-product"><i class="fa-solid fa-box-open" style="font-size: 28px; margin-bottom: 8px; display:block; color:#ff5722;"></i>কোনো পণ্য পাওয়া যায়নি।</div>`;
+        grid.innerHTML = `<div class="no-product" style="grid-column: 1/-1; text-align:center; padding:30px;"><i class="fa-solid fa-box-open" style="font-size: 28px; margin-bottom: 8px; display:block; color:#ff5722;"></i>${noProductText}</div>`;
         return;
     }
 
@@ -372,7 +305,6 @@ function renderProducts(searchKeyword = "") {
     grid.innerHTML = productHtml;
 }
 
-// সার্চ বক্স লাইভ ফিল্টার
 const searchBox = document.getElementById('searchBox');
 if (searchBox) {
     searchBox.addEventListener('input', (e) => {
@@ -380,8 +312,8 @@ if (searchBox) {
     });
 }
 
-// উইন্ডো লোড হ্যান্ডলার
 window.onload = () => {
+    applyLanguage();
     fetchBanners();
     fetchInitialData();
 };

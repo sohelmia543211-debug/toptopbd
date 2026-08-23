@@ -262,79 +262,156 @@
     </nav>
 
     <script>
-        // আপনার দেওয়া ১২টি হার্ডকোডেড ক্যাটাগরি ও সাব-ক্যাটাগরি লিস্ট
+        // আপডেট করা পূর্ণাঙ্গ ক্যাটাগরি ও সাব-ক্যাটাগরি ডেটা
         const hardcodedCategories = [
             {
                 id: "mobiles",
                 name: "মোবাইল ও ট্যাব",
                 icon: "fa-mobile-screen-button",
-                subcategories: ["স্মার্টফোন", "ফিচার ফোন", "ট্যাব ও আইপ্যাড", "মোবাইল এক্সেসরিজ"]
+                subcategories: [
+                    { name: "স্মার্টফোন", icon: "fa-mobile" },
+                    { name: "ফিচার ফোন", icon: "fa-phone-flip" },
+                    { name: "ট্যাব ও আইপ্যাড", icon: "fa-tablet-screen-button" },
+                    { name: "মোবাইল এক্সেসরিজ", icon: "fa-headphones" },
+                    { name: "পাওয়ার ব্যাংক", icon: "fa-battery-full" },
+                    { name: "স্মার্টওয়াচ", icon: "fa-clock" }
+                ]
             },
             {
                 id: "electronics",
                 name: "ইলেকট্রনিক্স",
                 icon: "fa-laptop",
-                subcategories: ["ল্যাপটপ ও কম্পিউটার", "টিভি ও সাউন্ড সিস্টেম", "এসি ও ফ্রিজ", "হোম অ্যাপ্লায়েন্সেস"]
+                subcategories: [
+                    { name: "ল্যাপটপ ও কম্পিউটার", icon: "fa-computer" },
+                    { name: "টিভি ও সাউন্ড সিস্টেম", icon: "fa-tv" },
+                    { name: "এসি ও ফ্রিজ", icon: "fa-snowflake" },
+                    { name: "হোম অ্যাপ্লায়েন্সেস", icon: "fa-blender" },
+                    { name: "ক্যামেরা ও ড্রোন", icon: "fa-camera" },
+                    { name: "রাউটার ও নেটওয়ার্কিং", icon: "fa-wifi" },
+                    { name: "প্রিন্টার ও স্ক্যানার", icon: "fa-print" },
+                    { name: "মাইক্রোওয়েভ ও ওভেন", icon: "fa-fire-burner" },
+                    { name: "আইপিএস ও জেনারেটর", icon: "fa-bolt" },
+                    { name: "স্টাবিলাইজার ও ইউপিএস", icon: "fa-shield-halved" }
+                ]
             },
             {
                 id: "vehicles",
                 name: "যানবাহন",
                 icon: "fa-motorcycle",
-                subcategories: ["মোটরসাইকেল", "বাইসাইকেল", "প্রাইভেট কার", "অন্যান্য যান ও পার্টস"]
+                subcategories: [
+                    { name: "মোটরসাইকেল", icon: "fa-motorcycle" },
+                    { name: "বাইসাইকেল", icon: "fa-person-biking" },
+                    { name: "প্রাইভেট কার", icon: "fa-car" },
+                    { name: "ইলেকট্রিক বাইক ও স্কুটার", icon: "fa-bolt" },
+                    { name: "বাস ও ট্রাক", icon: "fa-truck" },
+                    { name: "অন্যান্য যান ও পার্টস", icon: "fa-gears" }
+                ]
             },
             {
                 id: "property",
                 name: "প্রপার্টি",
                 icon: "fa-building",
-                subcategories: ["বাসা/ফ্লাট ভাড়া", "জমি বা প্লট বিক্রি", "সাবলেট রুম", "দোকান বা অফিস স্পেস"]
+                subcategories: [
+                    { name: "বাসা/ফ্লাট ভাড়া", icon: "fa-house-chimney" },
+                    { name: "জমি বা প্লট বিক্রি", icon: "fa-map" },
+                    { name: "সাবলেট রুম", icon: "fa-door-open" },
+                    { name: "দোকান বা অফিস স্পেস", icon: "fa-shop" },
+                    { name: "মেস সিট ভাড়া", icon: "fa-bed" }
+                ]
             },
             {
                 id: "fashion",
                 name: "ফ্যাশন",
                 icon: "fa-shirt",
-                subcategories: ["পুরুষদের পোশাক", "নারীদের পোশাক", "জুতো ও ব্যাগ", "প্রসাধনী ও ঘড়ি"]
+                subcategories: [
+                    { name: "পুরুষদের পোশাক", icon: "fa-user-tie" },
+                    { name: "নারীদের পোশাক", icon: "fa-person-dress" },
+                    { name: "ছেলেদের জুতো", icon: "fa-shoe-prints" },
+                    { name: "মেয়েদের জুতো", icon: "fa-shoe-prints" },
+                    { name: "ব্যাগ ও লাগেজ", icon: "fa-bag-shopping" },
+                    { name: "পাঞ্জাবি ও শেরওয়ানি", icon: "fa-shirt" },
+                    { name: "শাড়ি ও থ্রিপিস", icon: "fa-vest" },
+                    { name: "বাচ্চাদের পোশাক", icon: "fa-child" },
+                    { name: "ঘড়ি ও সানগ্লাস", icon: "fa-glasses" },
+                    { name: "কসমেটিক্স ও মেকআপ", icon: "fa-wand-magic-sparkles" }
+                ]
             },
             {
                 id: "home_living",
                 name: "হোম ও লিভিং",
                 icon: "fa-couch",
-                subcategories: ["ঘরের আসবাবপত্র", "হোম ডেকোর বা শোপিস", "কিচেন ও ডাইনিং", "লাইটিং ও ফ্যান"]
+                subcategories: [
+                    { name: "ঘরের আসবাবপত্র", icon: "fa-bed" },
+                    { name: "হোম ডেকোর বা শোপিস", icon: "fa-image" },
+                    { name: "কিচেন ও ডাইনিং", icon: "fa-utensils" },
+                    { name: "লাইটিং ও ফ্যান", icon: "fa-lightbulb" },
+                    { name: "বেডিং ও কার্পেট", icon: "fa-mattress-pillow" }
+                ]
             },
             {
                 id: "pets",
                 name: "পোষা প্রাণী",
                 icon: "fa-dog",
-                subcategories: ["বিড়াল ও কুকুর", "পাখি ও মাছ", "গবাদিপশু", "পেট ফুড ও কেয়ার"]
+                subcategories: [
+                    { name: "বিড়াল ও কুকুর", icon: "fa-paw" },
+                    { name: "পাখি ও মাছ", icon: "fa-dove" },
+                    { name: "গবাদিপশু", icon: "fa-cow" },
+                    { name: "পেট ফুড ও কেয়ার", icon: "fa-bone" }
+                ]
             },
             {
                 id: "books_sports",
                 name: "বই ও শখ",
                 icon: "fa-book",
-                subcategories: ["একাডেমিক বই ও উপন্যাস", "জিম ও স্পোর্টস আইটেম", "মিউজিক্যাল ইন্সট্রুমেন্ট", "খেলনা ও শখ"]
+                subcategories: [
+                    { name: "একাডেমিক বই", icon: "fa-book-open" },
+                    { name: "উপন্যাস ও ইসলামিক বই", icon: "fa-book" },
+                    { name: "জিম ও স্পোর্টস আইটেম", icon: "fa-dumbbell" },
+                    { name: "মিউজিক্যাল ইন্সট্রুমেন্ট", icon: "fa-guitar" },
+                    { name: "খেলনা ও ভিডিও গেমস", icon: "fa-gamepad" }
+                ]
             },
             {
                 id: "agriculture",
                 name: "কৃষি ও বাগান",
                 icon: "fa-seedling",
-                subcategories: ["বীজ ও সার", "কৃষিকাজের যন্ত্রপাতি", "গাছের চারা ও টব", "সেচ সরঞ্জাম"]
+                subcategories: [
+                    { name: "বীজ ও সার", icon: "fa-plant-wilt" },
+                    { name: "কৃষিকাজের যন্ত্রপাতি", icon: "fa-tractor" },
+                    { name: "গাছের চারা ও টব", icon: "fa-tree" },
+                    { name: "সেচ সরঞ্জাম", icon: "fa-faucet-drip" },
+                    { name: "গবাদিপশুর খাদ্য", icon: "fa-wheat-awn" }
+                ]
             },
             {
                 id: "jobs",
                 name: "চাকরি",
                 icon: "fa-briefcase",
-                subcategories: ["ফুলটাইম জব", "পার্টটাইম ও রিমোট জব", "ইন্টার্নশিপ", "কাজের লোক বা সার্ভিস"]
+                subcategories: [
+                    { name: "ফুলটাইম জব", icon: "fa-id-badge" },
+                    { name: "পার্টটাইম ও রিমোট জব", icon: "fa-laptop-file" },
+                    { name: "ইন্টার্নশিপ", icon: "fa-graduation-cap" },
+                    { name: "কাজের লোক বা সার্ভিস", icon: "fa-user-gear" }
+                ]
             },
             {
                 id: "services",
                 name: "সার্ভিস",
                 icon: "fa-tools",
-                subcategories: ["আইটি ও গ্রাফিক্স ডিজাইন", "ইলেকট্রিক ও প্লাম্বিং", "ইভেন্ট ম্যানেজমেন্ট", "টিউশন বা কোচিং"]
+                subcategories: [
+                    { name: "আইটি ও গ্রাফিক্স ডিজাইন", icon: "fa-pen-nib" },
+                    { name: "ইলেকট্রিক ও প্লাম্বিং", icon: "fa-screwdriver-wrench" },
+                    { name: "ইভেন্ট ম্যানেজমেন্ট", icon: "fa-calendar-days" },
+                    { name: "টিউশন বা কোচিং", icon: "fa-chalkboard-user" }
+                ]
             },
             {
                 id: "others",
                 name: "অন্যান্য",
                 icon: "fa-box",
-                subcategories: ["মিসেলেনিয়াস বা অন্যান্য আইটেম"]
+                subcategories: [
+                    { name: "মিসেলেনিয়াস বা অন্যান্য আইটেম", icon: "fa-box-open" }
+                ]
             }
         ];
 
@@ -390,13 +467,13 @@
                 <div class="sub-category-grid">
             `;
 
-            subs.forEach(subName => {
+            subs.forEach(sub => {
                 gridHTML += `
-                    <a href="products.html?category=${encodeURIComponent(category.name)}&sub_category=${encodeURIComponent(subName)}" class="sub-category-card">
+                    <a href="products.html?category=${encodeURIComponent(category.name)}&sub_category=${encodeURIComponent(sub.name)}" class="sub-category-card">
                         <div class="sub-icon">
-                            <i class="fa-solid ${category.icon}"></i>
+                            <i class="fa-solid ${sub.icon}"></i>
                         </div>
-                        <span>${subName}</span>
+                        <span>${sub.name}</span>
                     </a>
                 `;
             });
@@ -405,7 +482,7 @@
             subContent.innerHTML = gridHTML;
         }
 
-        // পেজ লোড হওয়ার সাথে সাথে ক্যাটাগরি রেন্ডার হবে
+        // পেজ লোড হওয়ার সাথে সাথে ক্যাটাগরি রেন্ডার হবে
         loadCategoriesPage();
     </script>
 </body>
