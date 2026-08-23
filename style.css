@@ -290,6 +290,7 @@ header h1 {
     z-index: 1000;
 }
 .bottom-nav-item {
+    ...
     display: flex;
     flex-direction: column;
     align-items: center;

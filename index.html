@@ -4,16 +4,67 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title data-en="TopTop BD - Local Marketplace" data-bn="TopTop BD - লোকাল মার্কেটপ্লেস (নতুন ও পুরনো পণ্য)">TopTop BD - লোকাল মার্কেটপ্লেস (নতুন ও পুরনো পণ্য)</title>
+    
     <!-- FontAwesome আইকন -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
     <!-- Supabase CDN -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    
     <!-- স্টাইল ফাইল লিংক -->
     <link rel="stylesheet" href="style.css">
+    
+    <style>
+        /* প্রিমিয়াম সার্চ বারের ডিজাইন (বড় ও সুন্দর করার জন্য) */
+        .top-search-section {
+            width: 100%;
+            max-width: 950px;
+            margin: 20px auto;
+            padding: 0 15px;
+            box-sizing: border-box;
+        }
+        .top-search-box {
+            display: flex;
+            align-items: center;
+            background: #ffffff;
+            border: 2px solid #ff5722;
+            border-radius: 50px;
+            padding: 6px 6px 6px 20px;
+            box-shadow: 0 4px 15px rgba(255, 87, 34, 0.15);
+        }
+        .search-icon {
+            color: #ff5722;
+            font-size: 22px;
+            margin-right: 15px;
+        }
+        .top-search-box input {
+            flex: 1;
+            border: none;
+            outline: none;
+            font-size: 16px;
+            color: #333;
+            background: transparent;
+            padding: 10px 0;
+        }
+        .top-search-btn {
+            background: #ff5722;
+            color: white;
+            border: none;
+            padding: 12px 35px;
+            border-radius: 40px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+        .top-search-btn:hover {
+            background: #e64a19;
+        }
+    </style>
 </head>
 <body>
 
-    <!-- ১. হেডার (লোগো এবং ল্যাঙ্গুয়েজ সুইচ বাটন) -->
+    <!-- ১. হেডার -->
     <header>
         <div class="header-top">
             <h1>TopTop BD</h1>
@@ -21,7 +72,7 @@
         </div>
     </header>
 
-    <!-- ২. প্রিমিয়াম সার্চ বার (ব্যানারের উপরে) -->
+    <!-- ২. প্রিমিয়াম বড় সার্চ বার (ব্যানারের উপরে) -->
     <div class="top-search-section">
         <div class="top-search-box">
             <i class="fa-solid fa-magnifying-glass search-icon"></i>
@@ -39,9 +90,9 @@
         </div>
     </div>
 
-    <!-- ৪. ব্যানার ও ক্যাটাগরির মাঝে ফিল্টার বার (লোকেশন ও প্রোডাক্ট টাইপ) -->
-    <div class="search-location-bar" id="searchBarContainer">
-        <!-- ডাইনামিকালি জাভাস্ক্রিপ্ট দ্বারা রেন্ডার হবে -->
+    <!-- ৪. ব্যানার ও ক্যাটাগরির মাঝে ফিল্টার বার (মাত্র দুটি ড্রপডাউন) -->
+    <div class="search-location-bar" id="searchBarContainer" style="width: 100%; max-width: 950px; margin: 15px auto; padding: 0 15px; box-sizing: border-box;">
+        <!-- ডাইনামিকালি script.js দ্বারা রেন্ডার হবে -->
     </div>
 
     <!-- ৫. মেইন ক্যাটাগরি সেকশন -->
@@ -92,7 +143,7 @@
             applyLanguage();
             if (typeof renderMainCategories === 'function') renderMainCategories();
             if (typeof renderSubCategories === 'function') renderSubCategories();
-            if (typeof renderLocationDropdowns === 'function') renderLocationDropdowns();
+            if (typeof renderFilterCards === 'function') renderFilterCards();
             if (typeof renderProducts === 'function') renderProducts();
         }
 
