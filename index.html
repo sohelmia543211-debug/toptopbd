@@ -13,54 +13,56 @@
 </head>
 <body>
 
-    <!-- ১. হেডার, সার্চ বার, লোকেশন ও ল্যাঙ্গুয়েজ সুইচার -->
+    <!-- ১. হেডার (লোগো এবং ল্যাঙ্গুয়েজ সুইচ বাটন) -->
     <header>
         <div class="header-top">
             <h1>TopTop BD</h1>
             <button class="lang-switch-btn" id="langSwitchBtn" onclick="toggleLanguage()">English</button>
         </div>
-        
-        <!-- লোকেশন (জেলা > থানা > ইউনিয়ন) ও সার্চ বার সেকশন -->
-        <div class="search-location-bar" id="searchBarContainer">
-            <!-- ডাইনামিকালি জাভাস্ক্রিপ্ট দ্বারা রেন্ডার হবে -->
-        </div>
     </header>
 
-    <!-- ২. ডাইনামিক ব্যানার সেকশন -->
+    <!-- ২. প্রিমিয়াম সার্চ বার (ব্যানারের উপরে) -->
+    <div class="top-search-section">
+        <div class="top-search-box">
+            <i class="fa-solid fa-magnifying-glass search-icon"></i>
+            <input type="text" id="mainSearchInput" oninput="handleSearchInput(this.value)" data-en-placeholder="Search products..." data-bn-placeholder="পণ্য খুঁজুন..." placeholder="পণ্য খুঁজুন...">
+            <button class="top-search-btn" onclick="triggerSearch()">
+                <span data-en="Search" data-bn="সার্চ">সার্চ</span>
+            </button>
+        </div>
+    </div>
+
+    <!-- ৩. ডাইনামিক ব্যানার সেকশন -->
     <div class="banner-container" id="bannerContainer">
         <div class="banner-slider" data-en="Loading..." data-bn="লোড হচ্ছে...">
             লোড হচ্ছে...
         </div>
     </div>
 
-    <!-- ৩. প্রোডাক্ট টাইপ ফিল্টার সেকশন -->
-    <div class="filter-dropdown-container">
-        <select id="productTypeFilter" onchange="filterProductsByType(this.value)">
-            <option value="used_product" selected data-en="🔄 Used Products" data-bn="🔄 পুরনো পণ্য">🔄 পুরনো পণ্য</option>
-            <option value="new_product" data-en="✨ New Products" data-bn="✨ নতুন পণ্য">✨ নতুন পণ্য</option>
-            <option value="land_property" data-en="🏠 Land & Property" data-bn="🏠 জমি ও প্রপার্টি">🏠 জমি ও প্রপার্টি</option>
-        </select>
+    <!-- ৪. ব্যানার ও ক্যাটাগরির মাঝে ফিল্টার বার (লোকেশন ও প্রোডাক্ট টাইপ) -->
+    <div class="search-location-bar" id="searchBarContainer">
+        <!-- ডাইনামিকালি জাভাস্ক্রিপ্ট দ্বারা রেন্ডার হবে -->
     </div>
 
-    <!-- ৪. মেইন ক্যাটাগরি সেকশন -->
+    <!-- ৫. মেইন ক্যাটাগরি সেকশন -->
     <div class="categories-container">
         <div class="section-title" data-en="Categories" data-bn="ক্যাটাগরি সমূহ">ক্যাটাগরি সমূহ</div>
         <div class="categories-grid" id="mainCategories"></div>
     </div>
 
-    <!-- ৫. সাব-ক্যাটাগরি সেকশন -->
+    <!-- ৬. সাব-ক্যাটাগরি সেকশন -->
     <div class="sub-categories-container">
         <div class="section-title" data-en="Sub-Categories" data-bn="সাব-ক্যাটাগরি সমূহ">সাব-ক্যাটাগরি সমূহ</div>
         <div class="sub-categories-grid" id="subCategories"></div>
     </div>
 
-    <!-- ৬. প্রোডাক্ট সেকশন -->
+    <!-- ৭. প্রোডাক্ট সেকশন -->
     <div class="container">
         <div class="section-title" data-en="Products" data-bn="প্রোডাক্টসমূহ">প্রোডাক্টসমূহ</div>
         <div class="product-grid" id="productGrid"></div>
     </div>
 
-    <!-- ৭. বটম নেভিগেশন বার -->
+    <!-- ৮. বটম নেভিগেশন বার -->
     <nav class="bottom-nav">
         <a href="index.html" class="bottom-nav-item active">
             <i class="fa-solid fa-house"></i>

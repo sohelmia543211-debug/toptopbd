@@ -213,7 +213,7 @@ async function fetchInitialData() {
     }
 }
 
-// লোকেশন ড্রপডাউন এবং রিসেট বাটন রেন্ডারিং
+// ব্যানার ও ক্যাটাগরির মাঝখানে একটিমাত্র সুন্দর কম্প্যাক্ট ফিল্টার কার্ড
 function renderLocationDropdowns() {
     const searchBarContainer = document.getElementById('searchBarContainer');
     if (!searchBarContainer) return;
@@ -222,8 +222,6 @@ function renderLocationDropdowns() {
     const allDistText = lang === 'en' ? 'All Districts' : 'সব জেলা';
     const allThanaText = lang === 'en' ? 'All Thanas' : 'সব থানা';
     const allUnionText = lang === 'en' ? 'All Unions' : 'সব ইউনিয়ন';
-    const searchPlaceholder = lang === 'en' ? 'Search your favorite products...' : 'আপনার পছন্দের পণ্য খুঁজুন...';
-    const resetText = lang === 'en' ? 'Reset' : 'রিসেট';
 
     const districts = [...new Set(globalLocations.map(item => item.district))].filter(Boolean);
     
@@ -234,40 +232,59 @@ function renderLocationDropdowns() {
 
     let unions = [];
     if (currentThana !== "সব") {
-        unions = [...new Set(globalLocations.filter(item => item.district === currentDistrict && item.thana === currentThana).map(item => item.union_name))].filter(Boolean);
+        unions = [...new Set(globalLocations.filter(item => item.district === currentDistrict && item.thana === currentThana).map(item => item.union_name || item.union))].filter(Boolean);
     }
 
     searchBarContainer.innerHTML = `
-        <!-- জেলা ড্রপডাউন -->
-        <select id="districtSelect" class="header-location-select" onchange="onDistrictChange(this.value)">
-            <option value="সব">${allDistText}</option>
-            ${districts.map(d => `<option value="${d}" ${currentDistrict === d ? 'selected' : ''}>${d}</option>`).join('')}
-        </select>
+        <div style="width: 100%; max-width: 1200px; margin: 8px auto; background: #fff; border: 1px solid #e0e0e0; border-radius: 12px; padding: 8px 10px; box-shadow: 0 2px 6px rgba(0,0,0,0.04); position: relative;">
+            
+            <!-- কোণায় ছোট রিসেট বাটন -->
+            <button onclick="resetFilters()" title="Reset Filters" style="position: absolute; top: 6px; right: 8px; background: #fff5f2; border: 1px solid #ff5722; color: #ff5722; width: 22px; height: 22px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 10px; z-index: 2;">
+                <i class="fa-solid fa-rotate-right"></i>
+            </button>
 
-        <!-- থানা ড্রপডাউন -->
-        <select id="thanaSelect" class="header-location-select" onchange="onThanaChange(this.value)" ${currentDistrict === 'সব' ? 'disabled style="color:#aaa; cursor:not-allowed;"' : ''}>
-            <option value="সব">${allThanaText}</option>
-            ${thanas.map(t => `<option value="${t}" ${currentThana === t ? 'selected' : ''}>${t}</option>`).join('')}
-        </select>
+            <!-- ৪টি ফিল্টার অপশন (নতুন ও পুরনো পণ্য + ৩টি লোকেশন ফিল্টার) -->
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(110px, 1fr)); gap: 6px; padding-right: 24px;">
+                
+                <!-- ১. প্রোডাক্ট টাইপ (নতুন ও পুরনো পণ্য - কমলা কালার টোন) -->
+                <div style="background: #fff3ed; border: 1px solid #ffd8cc; border-radius: 8px; padding: 4px 8px; display: flex; align-items: center; gap: 4px;">
+                    <i class="fa-solid fa-box" style="font-size: 11px; color: #ff5722;"></i>
+                    <select id="productTypeSelect" onchange="filterProductsByType(this.value)" style="border: none; font-size: 11px; font-weight: 600; color: #ff5722; background: transparent; outline: none; width: 100%; cursor: pointer;">
+                        <option value="used_product" ${currentProductType === 'used_product' ? 'selected' : ''}>${lang === 'en' ? 'Used Products' : 'পুরাতন পণ্য'}</option>
+                        <option value="new_product" ${currentProductType === 'new_product' ? 'selected' : ''}>${lang === 'en' ? 'New Products' : 'নতুন পণ্য'}</option>
+                    </select>
+                </div>
 
-        <!-- ইউনিয়ন ড্রপডাউন -->
-        <select id="unionSelect" class="header-location-select" onchange="onUnionChange(this.value)" ${currentThana === 'সব' ? 'disabled style="color:#aaa; cursor:not-allowed;"' : ''}>
-            <option value="সব">${allUnionText}</option>
-            ${unions.map(u => `<option value="${u}" ${currentUnion === u ? 'selected' : ''}>${u}</option>`).join('')}
-        </select>
+                <!-- ২. জেলা ফিল্টার (নীল কালার টোন) -->
+                <div style="background: #eef4ff; border: 1px solid #d0e1fd; border-radius: 8px; padding: 4px 8px; display: flex; align-items: center; gap: 4px;">
+                    <i class="fa-solid fa-location-dot" style="font-size: 11px; color: #0066cc;"></i>
+                    <select id="districtSelect" onchange="onDistrictChange(this.value)" style="border: none; font-size: 11px; font-weight: 600; color: #0066cc; background: transparent; outline: none; width: 100%; cursor: pointer;">
+                        <option value="সব">${allDistText}</option>
+                        ${districts.map(d => `<option value="${d}" ${currentDistrict === d ? 'selected' : ''}>${d}</option>`).join('')}
+                    </select>
+                </div>
 
-        <!-- সার্চ ইনপুট ফিল্ড -->
-        <input type="text" id="searchBox" class="header-search-input" placeholder="${searchPlaceholder}" value="${document.getElementById('searchBox') ? document.getElementById('searchBox').value : ''}" oninput="renderProducts(this.value)">
+                <!-- ৩. থানা ফিল্টার (সবুজ কালার টোন) -->
+                <div style="background: #edfbf0; border: 1px solid #c9ebd3; border-radius: 8px; padding: 4px 8px; display: flex; align-items: center; gap: 4px;">
+                    <i class="fa-solid fa-map-pin" style="font-size: 11px; color: #28a745;"></i>
+                    <select id="thanaSelect" onchange="onThanaChange(this.value)" style="border: none; font-size: 11px; font-weight: 600; color: ${currentDistrict === 'সব' ? '#888' : '#28a745'}; background: transparent; outline: none; width: 100%; cursor: pointer;" ${currentDistrict === 'সব' ? 'disabled' : ''}>
+                        <option value="সব">${allThanaText}</option>
+                        ${thanas.map(t => `<option value="${t}" ${currentThana === t ? 'selected' : ''}>${t}</option>`).join('')}
+                    </select>
+                </div>
 
-        <!-- রিসেট বাটন -->
-        <button onclick="resetFilters()" class="header-reset-btn" title="Reset Filters">
-            <i class="fa-solid fa-rotate-right"></i> ${resetText}
-        </button>
+                <!-- ৪. ইউনিয়ন ফিল্টার (বেগুনি কালার টোন) -->
+                <div style="background: #f8f0ff; border: 1px solid #e5cffb; border-radius: 8px; padding: 4px 8px; display: flex; align-items: center; gap: 4px;">
+                    <i class="fa-solid fa-house" style="font-size: 11px; color: #8e44ad;"></i>
+                    <select id="unionSelect" onchange="onUnionChange(this.value)" style="border: none; font-size: 11px; font-weight: 600; color: ${currentThana === 'সব' ? '#888' : '#8e44ad'}; background: transparent; outline: none; width: 100%; cursor: pointer;" ${currentThana === 'সব' ? 'disabled' : ''}>
+                        <option value="সব">${allUnionText}</option>
+                        ${unions.map(u => `<option value="${u}" ${currentUnion === u ? 'selected' : ''}>${u}</option>`).join('')}
+                    </select>
+                </div>
 
-        <!-- সার্চ বাটন -->
-        <button class="header-search-btn" onclick="handleSearch()">
-            <i class="fa-solid fa-magnifying-glass"></i>
-        </button>
+            </div>
+
+        </div>
     `;
 }
 
@@ -291,17 +308,14 @@ function onUnionChange(val) {
     renderProducts();
 }
 
-// ফিল্টার রিসেট ফাংশন
 function resetFilters() {
     currentDistrict = "সব";
     currentThana = "সব";
     currentUnion = "সব";
     currentMainCategory = "সব";
     currentSubCategory = "সব";
+    currentProductType = "used_product";
     
-    const searchBox = document.getElementById('searchBox');
-    if (searchBox) searchBox.value = "";
-
     renderMainCategories();
     renderSubCategories();
     renderLocationDropdowns();
@@ -311,11 +325,6 @@ function resetFilters() {
 function filterProductsByType(type) {
     currentProductType = type;
     renderProducts();
-}
-
-function handleSearch() {
-    const keyword = document.getElementById('searchBox').value;
-    renderProducts(keyword);
 }
 
 function renderMainCategories() {
@@ -414,8 +423,6 @@ function renderProducts(searchKeyword = "") {
 
     const lang = getLang();
     const noProductText = lang === 'en' ? 'No products found.' : 'কোনো পণ্য পাওয়া যায়নি।';
-    const searchInput = document.getElementById('searchBox');
-    const keyword = searchKeyword || (searchInput ? searchInput.value : "");
 
     let filteredProducts = globalProducts.filter(p => {
         let matchesType = true;
@@ -440,9 +447,7 @@ function renderProducts(searchKeyword = "") {
         let matchesThana = (currentThana === "সব" || p.thana === currentThana);
         let matchesUnion = (currentUnion === "সব" || p.union_name === currentUnion || p.union === currentUnion);
 
-        let matchesSearch = p.name ? p.name.toLowerCase().includes(keyword.toLowerCase()) : true;
-
-        return matchesType && matchesMain && matchesSub && matchesDistrict && matchesThana && matchesUnion && matchesSearch;
+        return matchesType && matchesMain && matchesSub && matchesDistrict && matchesThana && matchesUnion;
     });
 
     if (filteredProducts.length === 0) {

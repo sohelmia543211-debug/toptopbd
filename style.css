@@ -8,7 +8,7 @@ body {
 
 /* হেডার ও সার্চ বার */
 header {
-    background: #ff5722; /* অরেঞ্জ কালার করা হয়েছে */
+    background: #ff5722;
     padding: 12px 15px;
     box-shadow: 0 2px 8px rgba(0,0,0,0.1);
     position: sticky;
@@ -24,7 +24,7 @@ header {
 header h1 {
     margin: 0;
     font-size: 20px;
-    color: #ffffff; /* হেডার টাইটেল সাদা করা হলো */
+    color: #ffffff;
     font-weight: 700;
 }
 
