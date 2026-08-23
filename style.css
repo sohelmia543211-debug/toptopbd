@@ -3,16 +3,14 @@ body {
     margin: 0;
     padding: 0;
     background-color: #f0f2f5;
-    /* এখানে 70px এর বদলে 80px দিলাম, যাতে কোনোভাবেই কনটেন্ট ঢেকে না যায় */
     padding-bottom: 80px; 
-    /* এটি দিলে মোবাইল ব্রাউজারে স্ক্রলিং স্মুথ হয় এবং নিচে ওভারল্যাপ হয় না */
     box-sizing: border-box; 
 }
 
 /* হেডার ও সার্চ বার */
 header {
     background: #ff5722;
-    padding: 12px 15px;
+    padding: 10px 12px;
     box-shadow: 0 2px 8px rgba(0,0,0,0.1);
     position: sticky;
     top: 0;
@@ -22,11 +20,11 @@ header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 10px;
+    margin-bottom: 8px;
 }
 header h1 {
     margin: 0;
-    font-size: 20px;
+    font-size: 18px;
     color: #ffffff;
     font-weight: 700;
 }
@@ -36,9 +34,9 @@ header h1 {
     background: #fff;
     border: 1px solid #fff;
     color: #ff5722;
-    padding: 5px 12px;
+    padding: 4px 10px;
     border-radius: 6px;
-    font-size: 12px;
+    font-size: 11px;
     font-weight: 600;
     cursor: pointer;
     transition: all 0.2s;
@@ -47,17 +45,16 @@ header h1 {
     background: #ffe0d6;
 }
 
-/* সার্চ বার ও লোকেশন একসাথে ফ্রেম */
+/* সার্চ বার ও লোকেশন একসাথে ফ্রেম (চিকন ও প্রিমিয়াম ডিজাইন) */
 .search-location-bar {
     display: flex;
     align-items: center;
     background: #ffffff;
     border: 1px solid #ddd;
-    border-radius: 8px;
+    border-radius: 6px;
     overflow: hidden;
-    transition: border-color 0.2s;
-    padding: 4px;
-    gap: 4px;
+    padding: 3px;
+    gap: 3px;
 }
 .search-location-bar:focus-within {
     border-color: #ff5722;
@@ -67,11 +64,11 @@ header h1 {
     background: transparent;
     border: none;
     border-right: 1px solid #eee;
-    padding: 8px 6px;
-    font-size: 12px;
+    padding: 6px 4px;
+    font-size: 11px;
     color: #444;
     outline: none;
-    max-width: 110px;
+    max-width: 95px;
     cursor: pointer;
 }
 
@@ -79,11 +76,11 @@ header h1 {
     flex: 1;
     border: none;
     background: transparent;
-    padding: 8px 10px;
-    font-size: 13px;
+    padding: 6px 8px;
+    font-size: 12px;
     outline: none;
     color: #333;
-    min-width: 100px;
+    min-width: 80px;
 }
 
 /* রিসেট বাটন স্টাইল */
@@ -91,15 +88,13 @@ header h1 {
     background: #f1f1f2;
     border: none;
     color: #555;
-    padding: 7px 10px;
-    border-radius: 6px;
+    padding: 5px 8px;
+    border-radius: 4px;
     cursor: pointer;
     display: flex;
     align-items: center;
-    gap: 4px;
-    font-size: 12px;
-    font-weight: 500;
-    white-space: nowrap;
+    justify-content: center;
+    font-size: 11px;
     transition: background 0.2s;
 }
 .header-reset-btn:hover {
@@ -110,10 +105,10 @@ header h1 {
     background: #ff5722;
     border: none;
     color: #fff;
-    padding: 8px 14px;
-    border-radius: 6px;
+    padding: 6px 12px;
+    border-radius: 4px;
     cursor: pointer;
-    font-size: 14px;
+    font-size: 12px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -161,25 +156,6 @@ header h1 {
 .banner-subtitle {
     font-size: 12px;
     margin: 0;
-}
-
-/* ফিল্টার ড্রপডাউন */
-.filter-dropdown-container {
-    padding: 0 10px;
-    max-width: 1200px;
-    margin: 10px auto;
-}
-.filter-dropdown-container select {
-    width: 100%;
-    padding: 10px;
-    border-radius: 8px;
-    border: 1px solid #ddd;
-    background: #fff;
-    font-size: 14px;
-    font-weight: 600;
-    color: #333;
-    cursor: pointer;
-    outline: none;
 }
 
 /* ক্যাটাগরি গ্রিড */
@@ -278,12 +254,12 @@ header h1 {
     color: #ff5722;
 }
 
-/* বটম নেভবার - এই অংশটুকু নিখুঁতভাবে ফিক্সড করা হলো */
+/* বটম নেভবার */
 .bottom-nav {
     position: fixed;
     bottom: 0;
     left: 0;
-    right: 0; /* ডান দিকেও ফিক্সড করে দেওয়া হলো */
+    right: 0;
     width: 100%;
     background: #fff;
     display: flex;
@@ -292,8 +268,9 @@ header h1 {
     padding: 8px 0;
     border-top: 1px solid #e0e0e0;
     box-shadow: 0 -2px 10px rgba(0,0,0,0.08);
-    z-index: 9999; /* z-index বাড়িয়ে দেওয়া হলো যাতে সবার ওপরে থাকে */
-    height: 60px; /* একটি নির্দিষ্ট উচ্চতা দেওয়া হলো যাতে কেটে না যায় */
+    z-index: 9999;
+    height: 60px;
+    box-sizing: border-box;
 }
 .bottom-nav-item {
     display: flex;
@@ -303,10 +280,10 @@ header h1 {
     text-decoration: none;
     color: #777;
     font-size: 11px;
-    flex: 1; /* সব আইটেম যেন সমান জায়গা নেয় */
+    flex: 1;
 }
 .bottom-nav-item i {
-    font-size: 18px; /* আইকন আরেকটু বড় করা হলো */
+    font-size: 18px;
     margin-bottom: 4px;
 }
 .bottom-nav-item.active {

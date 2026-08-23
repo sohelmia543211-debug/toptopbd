@@ -194,7 +194,7 @@ async function fetchBanners() {
 
 async function fetchInitialData() {
     try {
-        renderSearchBarAboveBanner(); 
+        renderFilterCards(); 
         renderMainCategories();
         renderSubCategories();
 
@@ -214,117 +214,71 @@ async function fetchInitialData() {
     }
 }
 
-function renderSearchBarAboveBanner() {
-    const topSearchContainer = document.getElementById('topSearchContainer') || document.querySelector('.top-search-section');
-    if (!topSearchContainer) return;
-
-    const lang = getLang();
-    const placeholderText = lang === 'en' ? 'Search your products, brands...' : 'আপনার পছন্দের পণ্য বা ব্র্যান্ড খুঁজুন...';
-
-    topSearchContainer.innerHTML = `
-        <div class="top-search-box">
-            <i class="fa-solid fa-magnifying-glass search-icon"></i>
-            <input type="text" id="mainSearchInput" value="${currentSearchKeyword}" placeholder="${placeholderText}" oninput="handleSearchInput(this.value)" />
-            ${currentSearchKeyword ? `<button onclick="clearSearchInput()" style="background: none; border: none; color: #ff5722; cursor: pointer; font-size: 16px; margin-right: 10px;"><i class="fa-solid fa-xmark"></i></button>` : ''}
-            <button class="top-search-btn" onclick="triggerSearch()">
-                <span data-en="Search" data-bn="সার্চ">সার্চ</span>
-            </button>
-        </div>
-    `;
-}
-
-function handleSearchInput(val) {
-    currentSearchKeyword = val;
-    renderProducts();
-}
-
-function triggerSearch() {
-    renderProducts();
-}
-
-function clearSearchInput() {
-    currentSearchKeyword = "";
-    const input = document.getElementById('mainSearchInput');
-    if(input) input.value = "";
-    renderProducts();
-}
-
 function renderFilterCards() {
     const searchBarContainer = document.getElementById('searchBarContainer');
     if (!searchBarContainer) return;
 
     const lang = getLang();
-    const usedText = lang === 'en' ? 'Used Products' : 'পুরাতন পণ্য';
-    const newText = lang === 'en' ? 'New Products' : 'নতুন পণ্য';
+    const usedText = lang === 'en' ? 'Used' : 'পুরাতন';
+    const newText = lang === 'en' ? 'New' : 'নতুন';
     const propText = lang === 'en' ? 'Property' : 'প্রপার্টি';
+    const placeholderText = lang === 'en' ? 'Search...' : 'পণ্য খুঁজুন...';
 
-    const allDistText = lang === 'en' ? 'All Districts' : 'সব জেলা (সকল এলাকা)';
+    const allDistText = lang === 'en' ? 'All Districts' : 'সব জেলা';
     const districts = [...new Set(globalLocations.map(item => item.district))].filter(Boolean);
 
     let locationLabel = allDistText;
     if (currentDistrict !== "সব" && currentThana === "সব") {
-        locationLabel = `📍 জেলা: ${currentDistrict}`;
+        locationLabel = currentDistrict;
     } else if (currentThana !== "সব" && currentUnion === "সব") {
-        locationLabel = `📍 থানা: ${currentThana}`;
+        locationLabel = currentThana;
     } else if (currentUnion !== "সব") {
-        locationLabel = `📍 ইউনিয়ন: ${currentUnion}`;
+        locationLabel = currentUnion;
     }
 
     searchBarContainer.innerHTML = `
-        <div style="width: 100%; max-width: 950px; margin: 10px auto; background: #fff; border: 1px solid #e0e0e0; border-radius: 12px; padding: 10px; box-shadow: 0 2px 6px rgba(0,0,0,0.04); display: flex; align-items: center; gap: 8px; position: relative;">
-            
-            <div style="flex: 1; background: #fff3ed; border: 1px solid #ffd8cc; border-radius: 8px; padding: 8px 12px; display: flex; align-items: center; gap: 8px;">
-                <i class="fa-solid fa-filter" style="color: #ff5722; font-size: 13px;"></i>
-                <select id="productTypeSelect" onchange="handleProductTypeChange(this.value)" style="border: none; font-size: 13px; font-weight: 600; color: #ff5722; background: transparent; outline: none; width: 100%; cursor: pointer;">
-                    <option value="used_product" ${currentProductType === 'used_product' ? 'selected' : ''}>📦 ${usedText}</option>
-                    <option value="new_product" ${currentProductType === 'new_product' ? 'selected' : ''}>✨ ${newText}</option>
-                    <option value="land_property" ${currentProductType === 'land_property' ? 'selected' : ''}>🏢 ${propText}</option>
-                </select>
-            </div>
+        <select class="header-location-select" id="singleLocationSelect" onchange="handleLocationSelection(this.value)">
+            <option value="ALL">${locationLabel}</option>
+            ${renderDynamicLocationOptions(districts)}
+        </select>
 
-            <div style="flex: 1; background: #eef4ff; border: 1px solid #d0e1fd; border-radius: 8px; padding: 8px 12px; display: flex; align-items: center; gap: 8px;">
-                <i class="fa-solid fa-location-dot" style="color: #0066cc; font-size: 13px;"></i>
-                <select id="singleLocationSelect" onchange="handleLocationSelection(this.value)" style="border: none; font-size: 13px; font-weight: 600; color: #0066cc; background: transparent; outline: none; width: 100%; cursor: pointer;">
-                    <option value="ALL">${locationLabel}</option>
-                    ${renderDynamicLocationOptions(districts)}
-                </select>
-            </div>
+        <select class="header-location-select" id="productTypeSelect" onchange="handleProductTypeChange(this.value)" style="max-width: 95px; color: #ff5722; font-weight: 650;">
+            <option value="used_product" ${currentProductType === 'used_product' ? 'selected' : ''}>${usedText}</option>
+            <option value="new_product" ${currentProductType === 'new_product' ? 'selected' : ''}>${newText}</option>
+            <option value="land_property" ${currentProductType === 'land_property' ? 'selected' : ''}>${propText}</option>
+        </select>
 
-            <button onclick="resetAllFilters()" title="Reset Filters" style="background: #fff5f2; border: 1px solid #ff5722; color: #ff5722; width: 32px; height: 32px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 12px; flex-shrink: 0;">
-                <i class="fa-solid fa-rotate-right"></i>
-            </button>
+        <input type="text" class="header-search-input" id="mainSearchInput" value="${currentSearchKeyword}" placeholder="${placeholderText}" oninput="handleSearchInput(this.value)" />
 
-        </div>
+        ${currentSearchKeyword ? `<button onclick="clearSearchInput()" class="header-reset-btn" style="padding: 5px 8px;"><i class="fa-solid fa-xmark"></i></button>` : ''}
+
+        <button class="header-reset-btn" onclick="resetAllFilters()" title="Reset">
+            <i class="fa-solid fa-rotate-right"></i>
+        </button>
+
+        <button class="header-search-btn" onclick="triggerSearch()">
+            <i class="fa-solid fa-magnifying-glass"></i>
+        </button>
     `;
 }
 
 function renderDynamicLocationOptions(districts) {
     let html = "";
-
     if (currentDistrict === "সব") {
-        html += `<optgroup label="--- জেলাসমূহ ---">`;
         districts.forEach(d => {
             html += `<option value="DIST_${d}">${d}</option>`;
         });
-        html += `</optgroup>`;
-    } 
-    else if (currentThana === "সব") {
+    } else if (currentThana === "সব") {
         const thanas = [...new Set(globalLocations.filter(item => item.district === currentDistrict).map(item => item.thana))].filter(Boolean);
-        html += `<optgroup label="--- ${currentDistrict} জেলার থানাসমূহ ---">`;
         thanas.forEach(t => {
             html += `<option value="THANA_${t}">👉 ${t}</option>`;
         });
-        html += `</optgroup>`;
-    } 
-    else {
+    } else {
         const unions = [...new Set(globalLocations.filter(item => item.district === currentDistrict && item.thana === currentThana).map(item => item.union_name || item.union))].filter(Boolean);
-        html += `<optgroup label="--- ${currentThana} থানার ইউনিয়নসমূহ ---">`;
         unions.forEach(u => {
             html += `<option value="UNION_${u}">⭐ ${u}</option>`;
         });
-        html += `</optgroup>`;
     }
-
     return html;
 }
 
@@ -353,6 +307,22 @@ function handleLocationSelection(val) {
 
 function handleProductTypeChange(val) {
     currentProductType = val;
+    renderProducts();
+}
+
+function handleSearchInput(val) {
+    currentSearchKeyword = val;
+    renderProducts();
+}
+
+function triggerSearch() {
+    renderProducts();
+}
+
+function clearSearchInput() {
+    currentSearchKeyword = "";
+    const input = document.getElementById('mainSearchInput');
+    if(input) input.value = "";
     renderProducts();
 }
 

@@ -13,96 +13,6 @@
     
     <!-- স্টাইল ফাইল লিংক -->
     <link rel="stylesheet" href="style.css">
-    
-    <style>
-        /* প্রিমিয়াম সার্চ বারের ডিজাইন (বড় ও সুন্দর করার জন্য) */
-        .top-search-section {
-            width: 100%;
-            max-width: 950px;
-            margin: 20px auto;
-            padding: 0 15px;
-            box-sizing: border-box;
-        }
-        .top-search-box {
-            display: flex;
-            align-items: center;
-            background: #ffffff;
-            border: 2px solid #ff5722;
-            border-radius: 50px;
-            padding: 6px 6px 6px 20px;
-            box-shadow: 0 4px 15px rgba(255, 87, 34, 0.15);
-        }
-        .search-icon {
-            color: #ff5722;
-            font-size: 22px;
-            margin-right: 15px;
-        }
-        .top-search-box input {
-            flex: 1;
-            border: none;
-            outline: none;
-            font-size: 16px;
-            color: #333;
-            background: transparent;
-            padding: 10px 0;
-        }
-        .top-search-btn {
-            background: #ff5722;
-            color: white;
-            border: none;
-            padding: 12px 35px;
-            border-radius: 40px;
-            font-size: 16px;
-            font-weight: bold;
-            cursor: pointer;
-            transition: 0.3s;
-        }
-        .top-search-btn:hover {
-            background: #e64a19;
-        }
-
-        /* ফিক্সড বটম নেভিগেশন বার যাতে কোনোভাবেই মিস না হয় */
-        html, body {
-            height: 100%;
-            margin: 0;
-            padding-bottom: 80px !important; /* নিচে যেন কনটেন্ট ঢাকা না পড়ে */
-            box-sizing: border-box;
-        }
-        .bottom-nav {
-            position: fixed !important;
-            bottom: 0 !important;
-            left: 0 !important;
-            right: 0 !important;
-            width: 100% !important;
-            height: 60px !important;
-            background: #ffffff !important;
-            border-top: 1px solid #e0e0e0 !important;
-            display: flex !important;
-            justify-content: space-around !important;
-            align-items: center !important;
-            z-index: 99999 !important;
-            box-shadow: 0 -2px 10px rgba(0,0,0,0.1) !important;
-            box-sizing: border-box !important;
-        }
-        .bottom-nav-item {
-            text-decoration: none !important;
-            text-align: center !important;
-            color: #666 !important;
-            font-size: 12px !important;
-            flex: 1 !important;
-            display: flex !important;
-            flex-direction: column !important;
-            align-items: center !important;
-            justify-content: center !important;
-        }
-        .bottom-nav-item i {
-            font-size: 18px !important;
-            margin-bottom: 3px !important;
-        }
-        .bottom-nav-item.active {
-            color: #ff5722 !important;
-        }
-    </style>
 </head>
 <body>
 
@@ -112,50 +22,38 @@
             <h1>TopTop BD</h1>
             <button class="lang-switch-btn" id="langSwitchBtn" onclick="toggleLanguage()">English</button>
         </div>
+        <!-- সার্চ বার ও লোকেশন এবার হেডারের ভেতরে সুন্দর ও চিকন আকারে রাখা হলো -->
+        <div class="search-location-bar" id="searchBarContainer">
+            <!-- script.js দ্বারা ডাইনামিকালি রেন্ডার হবে -->
+        </div>
     </header>
 
-    <!-- ২. প্রিমিয়াম বড় সার্চ বার (ব্যানারের উপরে) -->
-    <div class="top-search-section">
-        <div class="top-search-box">
-            <i class="fa-solid fa-magnifying-glass search-icon"></i>
-            <input type="text" id="mainSearchInput" oninput="handleSearchInput(this.value)" data-en-placeholder="Search products..." data-bn-placeholder="পণ্য খুঁজুন..." placeholder="পণ্য খুঁজুন...">
-            <button class="top-search-btn" onclick="triggerSearch()">
-                <span data-en="Search" data-bn="সার্চ">সার্চ</span>
-            </button>
-        </div>
-    </div>
-
-    <!-- ৩. ডাইনামিক ব্যানার সেকশন -->
+    <!-- ২. ডাইনামিক ব্যানার সেকশন -->
     <div class="banner-container" id="bannerContainer">
         <div class="banner-slider" data-en="Loading..." data-bn="লোড হচ্ছে...">
             লোড হচ্ছে...
         </div>
     </div>
 
-    <!-- ৪. ব্যানার ও ক্যাটাগরির মাঝে ফিল্টার বার -->
-    <div class="search-location-bar" id="searchBarContainer" style="width: 100%; max-width: 950px; margin: 15px auto; padding: 0 15px; box-sizing: border-box;">
-        <!-- ডাইনামিকালি script.js দ্বারা রেন্ডার হবে -->
-    </div>
-
-    <!-- ৫. মেইন ক্যাটাগরি সেকশন -->
+    <!-- ৩. মেইন ক্যাটাগরি সেকশন -->
     <div class="categories-container">
         <div class="section-title" data-en="Categories" data-bn="ক্যাটাগরি সমূহ">ক্যাটাগরি সমূহ</div>
         <div class="categories-grid" id="mainCategories"></div>
     </div>
 
-    <!-- ৬. সাব-ক্যাটাগরি সেকশন -->
+    <!-- ৪. সাব-ক্যাটাগরি সেকশন -->
     <div class="sub-categories-container">
         <div class="section-title" data-en="Sub-Categories" data-bn="সাব-ক্যাটাগরি সমূহ">সাব-ক্যাটাগরি সমূহ</div>
         <div class="sub-categories-grid" id="subCategories"></div>
     </div>
 
-    <!-- ৭. প্রোডাক্ট সেকশন -->
+    <!-- ৫. প্রোডাক্ট সেকশন -->
     <div class="container">
         <div class="section-title" data-en="Products" data-bn="প্রোডাক্টসমূহ">প্রোডাক্টসমূহ</div>
         <div class="product-grid" id="productGrid" style="min-height: 250px;"></div>
     </div>
 
-    <!-- ৮. বটম নেভিগেশন বার -->
+    <!-- ৬. বটম নেভিগেশন বার -->
     <nav class="bottom-nav">
         <a href="index.html" class="bottom-nav-item active">
             <i class="fa-solid fa-house"></i>
@@ -184,7 +82,6 @@
             localStorage.setItem('toptop_lang', currentLang);
             applyLanguage();
             
-            // রেন্ডারিংগুলো একসাথে ব্রাউজারে ওভারলোড এড়াতে সামান্য মাইক্রো-টাস্কে দেওয়া হলো
             setTimeout(() => {
                 if (typeof renderMainCategories === 'function') renderMainCategories();
                 if (typeof renderSubCategories === 'function') renderSubCategories();
@@ -211,14 +108,6 @@
                     el.placeholder = el.getAttribute('data-en-placeholder');
                 } else if (currentLang === 'bn' && el.getAttribute('data-bn-placeholder')) {
                     el.placeholder = el.getAttribute('data-bn-placeholder');
-                }
-            });
-            
-            document.querySelectorAll('option[data-bn]').forEach(opt => {
-                if (currentLang === 'en' && opt.getAttribute('data-en')) {
-                    opt.innerText = opt.getAttribute('data-en');
-                } else if (currentLang === 'bn' && opt.getAttribute('data-bn')) {
-                    opt.innerText = opt.getAttribute('data-bn');
                 }
             });
         }
