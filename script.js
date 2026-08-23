@@ -9,11 +9,11 @@ let currentProductType = "used_product";
 let currentDistrict = "সব"; 
 let currentThana = "সব";
 let currentUnion = "সব";
+let currentSearchKeyword = "";
 
 let globalProducts = [];
 let globalLocations = [];
 
-// পূর্ণাঙ্গ ১২টি ক্যাটাগরি ও সাব-ক্যাটাগরি ডেটা
 const hardcodedCategories = [
   {
     id: "mobiles",
@@ -38,11 +38,7 @@ const hardcodedCategories = [
       { name: { bn: "এসি ও ফ্রিজ", en: "AC & Refrigerators" }, icon: "fa-snowflake" },
       { name: { bn: "হোম অ্যাপ্লায়েন্সেস", en: "Home Appliances" }, icon: "fa-blender" },
       { name: { bn: "ক্যামেরা ও ড্রোন", en: "Cameras & Drones" }, icon: "fa-camera" },
-      { name: { bn: "রাউটার ও নেটওয়ার্কিং", en: "Routers & Networking" }, icon: "fa-wifi" },
-      { name: { bn: "প্রিন্টার ও স্ক্যানার", en: "Printers & Scanners" }, icon: "fa-print" },
-      { name: { bn: "মাইক্রোওয়েভ ও ওভেন", en: "Microwaves & Ovens" }, icon: "fa-fire-burner" },
-      { name: { bn: "আইপিএস ও জেনারেটর", en: "IPS & Generators" }, icon: "fa-bolt" },
-      { name: { bn: "স্টাবিলাইজার ও ইউপিএস", en: "Stabilizers & UPS" }, icon: "fa-shield-halved" }
+      { name: { bn: "রাউটার ও নেটওয়ার্কিং", en: "Routers & Networking" }, icon: "fa-wifi" }
     ]
   },
   {
@@ -52,10 +48,7 @@ const hardcodedCategories = [
     subcategories: [
       { name: { bn: "মোটরসাইকেল", en: "Motorcycles" }, icon: "fa-motorcycle" },
       { name: { bn: "বাইসাইকেল", en: "Bicycles" }, icon: "fa-person-biking" },
-      { name: { bn: "প্রাইভেট কার", en: "Private Cars" }, icon: "fa-car" },
-      { name: { bn: "ইলেকট্রিক বাইক ও স্কুটার", en: "Electric Bikes & Scooters" }, icon: "fa-bolt" },
-      { name: { bn: "বাস ও ট্রাক", en: "Buses & Trucks" }, icon: "fa-truck" },
-      { name: { bn: "অন্যান্য যান ও পার্টস", en: "Other Vehicles & Parts" }, icon: "fa-gears" }
+      { name: { bn: "প্রাইভেট কার", en: "Private Cars" }, icon: "fa-car" }
     ]
   },
   {
@@ -65,9 +58,7 @@ const hardcodedCategories = [
     subcategories: [
       { name: { bn: "বাসা/ফ্লাট ভাড়া", en: "House/Flat Rent" }, icon: "fa-house-chimney" },
       { name: { bn: "জমি বা প্লট বিক্রি", en: "Land/Plot Sale" }, icon: "fa-map" },
-      { name: { bn: "সাবলেট রুম", en: "Sublet Rooms" }, icon: "fa-door-open" },
-      { name: { bn: "দোকান বা অফিস স্পেস", en: "Shop or Office Space" }, icon: "fa-shop" },
-      { name: { bn: "মেস সিট ভাড়া", en: "Mess Seat Rent" }, icon: "fa-bed" }
+      { name: { bn: "সাবলেট রুম", en: "Sublet Rooms" }, icon: "fa-door-open" }
     ]
   },
   {
@@ -76,15 +67,7 @@ const hardcodedCategories = [
     icon: "fa-shirt",
     subcategories: [
       { name: { bn: "পুরুষদের পোশাক", en: "Men's Clothing" }, icon: "fa-user-tie" },
-      { name: { bn: "নারীদের পোশাক", en: "Women's Clothing" }, icon: "fa-person-dress" },
-      { name: { bn: "ছেলেদের জুতো", en: "Men's Shoes" }, icon: "fa-shoe-prints" },
-      { name: { bn: "মেয়েদের জুতো", en: "Women's Shoes" }, icon: "fa-shoe-prints" },
-      { name: { bn: "ব্যাগ ও লাগেজ", en: "Bags & Luggage" }, icon: "fa-bag-shopping" },
-      { name: { bn: "পাঞ্জাবি ও শেরওয়ানি", en: "Panjabis & Sherwanis" }, icon: "fa-shirt" },
-      { name: { bn: "শাড়ি ও থ্রিপিস", en: "Sarees & Three-Pieces" }, icon: "fa-vest" },
-      { name: { bn: "বাচ্চাদের পোশাক", en: "Kids' Clothing" }, icon: "fa-child" },
-      { name: { bn: "ঘড়ি ও সানগ্লাস", en: "Watches & Sunglasses" }, icon: "fa-glasses" },
-      { name: { bn: "কসমেটিক্স ও মেকআপ", en: "Cosmetics & Makeup" }, icon: "fa-wand-magic-sparkles" }
+      { name: { bn: "নারীদের পোশাক", en: "Women's Clothing" }, icon: "fa-person-dress" }
     ]
   },
   {
@@ -92,11 +75,7 @@ const hardcodedCategories = [
     name: { bn: "হোম ও লিভিং", en: "Home & Living" },
     icon: "fa-couch",
     subcategories: [
-      { name: { bn: "ঘরের আসবাবপত্র", en: "Home Furniture" }, icon: "fa-bed" },
-      { name: { bn: "হোম ডেকোর বা শোপিস", en: "Home Decor & Showpieces" }, icon: "fa-image" },
-      { name: { bn: "কিচেন ও ডাইনিং", en: "Kitchen & Dining" }, icon: "fa-utensils" },
-      { name: { bn: "লাইটিং ও ফ্যান", en: "Lighting & Fans" }, icon: "fa-lightbulb" },
-      { name: { bn: "বেডিং ও কার্পেট", en: "Bedding & Carpets" }, icon: "fa-mattress-pillow" }
+      { name: { bn: "ঘরের আসবাবপত্র", en: "Home Furniture" }, icon: "fa-bed" }
     ]
   },
   {
@@ -104,10 +83,7 @@ const hardcodedCategories = [
     name: { bn: "পোষা প্রাণী", en: "Pets & Animals" },
     icon: "fa-dog",
     subcategories: [
-      { name: { bn: "বিড়াল ও কুকুর", en: "Cats & Dogs" }, icon: "fa-paw" },
-      { name: { bn: "পাখি ও মাছ", en: "Birds & Fish" }, icon: "fa-dove" },
-      { name: { bn: "গবাদিপশু", en: "Livestock" }, icon: "fa-cow" },
-      { name: { bn: "পেট ফুড ও কেয়ার", en: "Pet Food & Care" }, icon: "fa-bone" }
+      { name: { bn: "বিড়াল ও কুকুর", en: "Cats & Dogs" }, icon: "fa-paw" }
     ]
   },
   {
@@ -115,11 +91,7 @@ const hardcodedCategories = [
     name: { bn: "বই ও শখ", en: "Books & Hobbies" },
     icon: "fa-book",
     subcategories: [
-      { name: { bn: "একাডেমিক বই", en: "Academic Books" }, icon: "fa-book-open" },
-      { name: { bn: "উপন্যাস ও ইসলামিক বই", en: "Novels & Islamic Books" }, icon: "fa-book" },
-      { name: { bn: "জিম ও স্পোর্টস আইটেম", en: "Gym & Sports Items" }, icon: "fa-dumbbell" },
-      { name: { bn: "মিউজিক্যাল ইন্সট্রুমেন্ট", en: "Musical Instruments" }, icon: "fa-guitar" },
-      { name: { bn: "খেলনা ও ভিডিও গেমস", en: "Toys & Video Games" }, icon: "fa-gamepad" }
+      { name: { bn: "একাডেমিক বই", en: "Academic Books" }, icon: "fa-book-open" }
     ]
   },
   {
@@ -127,11 +99,7 @@ const hardcodedCategories = [
     name: { bn: "কৃষি ও বাগান", en: "Agriculture & Garden" },
     icon: "fa-seedling",
     subcategories: [
-      { name: { bn: "বীজ ও সার", en: "Seeds & Fertilizers" }, icon: "fa-plant-wilt" },
-      { name: { bn: "কৃষিকাজের যন্ত্রপাতি", en: "Agricultural Machinery" }, icon: "fa-tractor" },
-      { name: { bn: "গাছের চারা ও টব", en: "Saplings & Pots" }, icon: "fa-tree" },
-      { name: { bn: "সেচ সরঞ্জাম", en: "Irrigation Equipment" }, icon: "fa-faucet-drip" },
-      { name: { bn: "গবাদিপশুর খাদ্য", en: "Animal Feed" }, icon: "fa-wheat-awn" }
+      { name: { bn: "বীজ ও সার", en: "Seeds & Fertilizers" }, icon: "fa-plant-wilt" }
     ]
   },
   {
@@ -139,10 +107,7 @@ const hardcodedCategories = [
     name: { bn: "চাকরি", en: "Jobs" },
     icon: "fa-briefcase",
     subcategories: [
-      { name: { bn: "ফুলটাইম জব", en: "Full-Time Jobs" }, icon: "fa-id-badge" },
-      { name: { bn: "পার্টটাইম ও রিমোট জব", en: "Part-Time & Remote Jobs" }, icon: "fa-laptop-file" },
-      { name: { bn: "ইন্টার্নশিপ", en: "Internships" }, icon: "fa-graduation-cap" },
-      { name: { bn: "কাজের লোক বা সার্ভিস", en: "Service Workers" }, icon: "fa-user-gear" }
+      { name: { bn: "ফুলটাইম জব", en: "Full-Time Jobs" }, icon: "fa-id-badge" }
     ]
   },
   {
@@ -150,10 +115,7 @@ const hardcodedCategories = [
     name: { bn: "সার্ভিস", en: "Services" },
     icon: "fa-tools",
     subcategories: [
-      { name: { bn: "আইটি ও গ্রাফিক্স ডিজাইন", en: "IT & Graphics Design" }, icon: "fa-pen-nib" },
-      { name: { bn: "ইলেকট্রিক ও প্লাম্বিং", en: "Electrical & Plumbing" }, icon: "fa-screwdriver-wrench" },
-      { name: { bn: "ইভেন্ট ম্যানেজমেন্ট", en: "Event Management" }, icon: "fa-calendar-days" },
-      { name: { bn: "টিউশন বা কোচিং", en: "Tuition & Coaching" }, icon: "fa-chalkboard-user" }
+      { name: { bn: "আইটি ও গ্রাফিক্স ডিজাইন", en: "IT & Graphics Design" }, icon: "fa-pen-nib" }
     ]
   },
   {
@@ -194,6 +156,7 @@ async function fetchBanners() {
 
 async function fetchInitialData() {
     try {
+        renderSearchBarAboveBanner(); 
         renderMainCategories();
         renderSubCategories();
 
@@ -201,7 +164,7 @@ async function fetchInitialData() {
         if (!locError && locData) {
             globalLocations = locData;
         }
-        renderLocationDropdowns();
+        renderFilterCards(); 
 
         const { data, error } = await supabaseClient.from('products').select('*');
         if (!error && data) {
@@ -213,117 +176,168 @@ async function fetchInitialData() {
     }
 }
 
-// ব্যানার ও ক্যাটাগরির মাঝখানে একটিমাত্র সুন্দর কম্প্যাক্ট ফিল্টার কার্ড
-function renderLocationDropdowns() {
+// ব্যানার উপরে বড় ও সুন্দর সার্চ বার
+function renderSearchBarAboveBanner() {
+    const topSearchContainer = document.getElementById('topSearchContainer');
+    if (!topSearchContainer) return;
+
+    const lang = getLang();
+    const placeholderText = lang === 'en' ? 'Search your products, brands...' : 'আপনার পছন্দের পণ্য বা ব্র্যান্ড খুঁজুন...';
+
+    topSearchContainer.innerHTML = `
+        <div style="width: 100%; max-width: 950px; margin: 12px auto; padding: 0 12px;">
+            <div style="display: flex; align-items: center; background: #fff; border: 2px solid #ff5722; border-radius: 35px; padding: 12px 20px; box-shadow: 0 4px 15px rgba(255,87,34,0.18);">
+                <i class="fa-solid fa-magnifying-glass" style="color: #ff5722; font-size: 20px; margin-right: 12px;"></i>
+                <input type="text" id="mainSearchInput" value="${currentSearchKeyword}" placeholder="${placeholderText}" oninput="handleSearchInput(this.value)" style="border: none; outline: none; width: 100%; font-size: 15px; background: transparent; color: #333;" />
+                ${currentSearchKeyword ? `<button onclick="clearSearchInput()" style="background: none; border: none; color: #ff5722; cursor: pointer; font-size: 16px;"><i class="fa-solid fa-xmark"></i></button>` : ''}
+            </div>
+        </div>
+    `;
+}
+
+function handleSearchInput(val) {
+    currentSearchKeyword = val;
+    renderProducts();
+}
+
+function clearSearchInput() {
+    currentSearchKeyword = "";
+    const input = document.getElementById('mainSearchInput');
+    if(input) input.value = "";
+    renderProducts();
+}
+
+// ব্যানার নিচে দুটি ড্রপডাউন এবং রিসেট বাটন
+function renderFilterCards() {
     const searchBarContainer = document.getElementById('searchBarContainer');
     if (!searchBarContainer) return;
 
     const lang = getLang();
-    const allDistText = lang === 'en' ? 'All Districts' : 'সব জেলা';
-    const allThanaText = lang === 'en' ? 'All Thanas' : 'সব থানা';
-    const allUnionText = lang === 'en' ? 'All Unions' : 'সব ইউনিয়ন';
+    const usedText = lang === 'en' ? 'Used Products' : 'পুরাতন পণ্য';
+    const newText = lang === 'en' ? 'New Products' : 'নতুন পণ্য';
+    const propText = lang === 'en' ? 'Property' : 'প্রপার্টি';
 
+    const allDistText = lang === 'en' ? 'All Districts (সব জেলা)' : 'সব জেলা (সকল এলাকা)';
     const districts = [...new Set(globalLocations.map(item => item.district))].filter(Boolean);
-    
-    let thanas = [];
-    if (currentDistrict !== "সব") {
-        thanas = [...new Set(globalLocations.filter(item => item.district === currentDistrict).map(item => item.thana))].filter(Boolean);
-    }
 
-    let unions = [];
-    if (currentThana !== "সব") {
-        unions = [...new Set(globalLocations.filter(item => item.district === currentDistrict && item.thana === currentThana).map(item => item.union_name || item.union))].filter(Boolean);
+    let locationLabel = allDistText;
+    if (currentDistrict !== "সব" && currentThana === "সব") {
+        locationLabel = `📍 জেলা: ${currentDistrict}`;
+    } else if (currentThana !== "সব" && currentUnion === "সব") {
+        locationLabel = `📍 থানা: ${currentThana}`;
+    } else if (currentUnion !== "সব") {
+        locationLabel = `📍 ইউনিয়ন: ${currentUnion}`;
     }
 
     searchBarContainer.innerHTML = `
-        <div style="width: 100%; max-width: 1200px; margin: 8px auto; background: #fff; border: 1px solid #e0e0e0; border-radius: 12px; padding: 8px 10px; box-shadow: 0 2px 6px rgba(0,0,0,0.04); position: relative;">
+        <div style="width: 100%; max-width: 950px; margin: 10px auto; background: #fff; border: 1px solid #e0e0e0; border-radius: 12px; padding: 10px; box-shadow: 0 2px 6px rgba(0,0,0,0.04); display: flex; align-items: center; gap: 8px; position: relative;">
             
-            <!-- কোণায় ছোট রিসেট বাটন -->
-            <button onclick="resetFilters()" title="Reset Filters" style="position: absolute; top: 6px; right: 8px; background: #fff5f2; border: 1px solid #ff5722; color: #ff5722; width: 22px; height: 22px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 10px; z-index: 2;">
+            <!-- ড্রপডাউন ১: পণ্য বা প্রপার্টি ফিল্টার -->
+            <div style="flex: 1; background: #fff3ed; border: 1px solid #ffd8cc; border-radius: 8px; padding: 8px 12px; display: flex; align-items: center; gap: 8px;">
+                <i class="fa-solid fa-filter" style="color: #ff5722; font-size: 13px;"></i>
+                <select id="productTypeSelect" onchange="handleProductTypeChange(this.value)" style="border: none; font-size: 13px; font-weight: 600; color: #ff5722; background: transparent; outline: none; width: 100%; cursor: pointer;">
+                    <option value="used_product" ${currentProductType === 'used_product' ? 'selected' : ''}>📦 ${usedText}</option>
+                    <option value="new_product" ${currentProductType === 'new_product' ? 'selected' : ''}>✨ ${newText}</option>
+                    <option value="property" ${currentProductType === 'property' ? 'selected' : ''}>🏢 ${propText}</option>
+                </select>
+            </div>
+
+            <!-- ড্রপডাউন ২: ডাইনামিক লোকেশন ড্রপডাউন (স্টেপ-বাই-স্টেপ ফিল্টার) -->
+            <div style="flex: 1; background: #eef4ff; border: 1px solid #d0e1fd; border-radius: 8px; padding: 8px 12px; display: flex; align-items: center; gap: 8px;">
+                <i class="fa-solid fa-location-dot" style="color: #0066cc; font-size: 13px;"></i>
+                <select id="singleLocationSelect" onchange="handleLocationSelection(this.value)" style="border: none; font-size: 13px; font-weight: 600; color: #0066cc; background: transparent; outline: none; width: 100%; cursor: pointer;">
+                    <option value="ALL">${locationLabel}</option>
+                    ${renderDynamicLocationOptions(districts)}
+                </select>
+            </div>
+
+            <!-- রিসেট বাটন -->
+            <button onclick="resetAllFilters()" title="Reset Filters" style="background: #fff5f2; border: 1px solid #ff5722; color: #ff5722; width: 32px; height: 32px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 12px; flex-shrink: 0;">
                 <i class="fa-solid fa-rotate-right"></i>
             </button>
-
-            <!-- ৪টি ফিল্টার অপশন (নতুন ও পুরনো পণ্য + ৩টি লোকেশন ফিল্টার) -->
-            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(110px, 1fr)); gap: 6px; padding-right: 24px;">
-                
-                <!-- ১. প্রোডাক্ট টাইপ (নতুন ও পুরনো পণ্য - কমলা কালার টোন) -->
-                <div style="background: #fff3ed; border: 1px solid #ffd8cc; border-radius: 8px; padding: 4px 8px; display: flex; align-items: center; gap: 4px;">
-                    <i class="fa-solid fa-box" style="font-size: 11px; color: #ff5722;"></i>
-                    <select id="productTypeSelect" onchange="filterProductsByType(this.value)" style="border: none; font-size: 11px; font-weight: 600; color: #ff5722; background: transparent; outline: none; width: 100%; cursor: pointer;">
-                        <option value="used_product" ${currentProductType === 'used_product' ? 'selected' : ''}>${lang === 'en' ? 'Used Products' : 'পুরাতন পণ্য'}</option>
-                        <option value="new_product" ${currentProductType === 'new_product' ? 'selected' : ''}>${lang === 'en' ? 'New Products' : 'নতুন পণ্য'}</option>
-                    </select>
-                </div>
-
-                <!-- ২. জেলা ফিল্টার (নীল কালার টোন) -->
-                <div style="background: #eef4ff; border: 1px solid #d0e1fd; border-radius: 8px; padding: 4px 8px; display: flex; align-items: center; gap: 4px;">
-                    <i class="fa-solid fa-location-dot" style="font-size: 11px; color: #0066cc;"></i>
-                    <select id="districtSelect" onchange="onDistrictChange(this.value)" style="border: none; font-size: 11px; font-weight: 600; color: #0066cc; background: transparent; outline: none; width: 100%; cursor: pointer;">
-                        <option value="সব">${allDistText}</option>
-                        ${districts.map(d => `<option value="${d}" ${currentDistrict === d ? 'selected' : ''}>${d}</option>`).join('')}
-                    </select>
-                </div>
-
-                <!-- ৩. থানা ফিল্টার (সবুজ কালার টোন) -->
-                <div style="background: #edfbf0; border: 1px solid #c9ebd3; border-radius: 8px; padding: 4px 8px; display: flex; align-items: center; gap: 4px;">
-                    <i class="fa-solid fa-map-pin" style="font-size: 11px; color: #28a745;"></i>
-                    <select id="thanaSelect" onchange="onThanaChange(this.value)" style="border: none; font-size: 11px; font-weight: 600; color: ${currentDistrict === 'সব' ? '#888' : '#28a745'}; background: transparent; outline: none; width: 100%; cursor: pointer;" ${currentDistrict === 'সব' ? 'disabled' : ''}>
-                        <option value="সব">${allThanaText}</option>
-                        ${thanas.map(t => `<option value="${t}" ${currentThana === t ? 'selected' : ''}>${t}</option>`).join('')}
-                    </select>
-                </div>
-
-                <!-- ৪. ইউনিয়ন ফিল্টার (বেগুনি কালার টোন) -->
-                <div style="background: #f8f0ff; border: 1px solid #e5cffb; border-radius: 8px; padding: 4px 8px; display: flex; align-items: center; gap: 4px;">
-                    <i class="fa-solid fa-house" style="font-size: 11px; color: #8e44ad;"></i>
-                    <select id="unionSelect" onchange="onUnionChange(this.value)" style="border: none; font-size: 11px; font-weight: 600; color: ${currentThana === 'সব' ? '#888' : '#8e44ad'}; background: transparent; outline: none; width: 100%; cursor: pointer;" ${currentThana === 'সব' ? 'disabled' : ''}>
-                        <option value="সব">${allUnionText}</option>
-                        ${unions.map(u => `<option value="${u}" ${currentUnion === u ? 'selected' : ''}>${u}</option>`).join('')}
-                    </select>
-                </div>
-
-            </div>
 
         </div>
     `;
 }
 
-function onDistrictChange(val) {
-    currentDistrict = val;
-    currentThana = "সব";
-    currentUnion = "সব";
-    renderLocationDropdowns();
+// আপনার চাহিদা অনুযায়ী স্টেপ-বাই-স্টেপ লোকেশন দেখানোর লজিক
+function renderDynamicLocationOptions(districts) {
+    let html = "";
+
+    // যদি জেলা সিলেক্ট করা না থাকে, তবে শুধু জেলাগুলো দেখাবে
+    if (currentDistrict === "সব") {
+        html += `<optgroup label="--- জেলাসমূহ ---">`;
+        districts.forEach(d => {
+            html += `<option value="DIST_${d}">${d}</option>`;
+        });
+        html += `</optgroup>`;
+    } 
+    // যদি জেলা সিলেক্ট করা থাকে কিন্তু থানা সিলেক্ট করা না থাকে, তবে শুধু সেই জেলার থানাসমূহ দেখাবে (জেলা দেখাবে না)
+    else if (currentThana === "সব") {
+        const thanas = [...new Set(globalLocations.filter(item => item.district === currentDistrict).map(item => item.thana))].filter(Boolean);
+        html += `<optgroup label="--- ${currentDistrict} জেলার থানাসমূহ ---">`;
+        thanas.forEach(t => {
+            html += `<option value="THANA_${t}">👉 ${t}</option>`;
+        });
+        html += `</optgroup>`;
+    } 
+    // যদি থানা সিলেক্ট করা থাকে, তবে শুধু সেই থানার ইউনিয়নসমূহ দেখাবে
+    else {
+        const unions = [...new Set(globalLocations.filter(item => item.district === currentDistrict && item.thana === currentThana).map(item => item.union_name || item.union))].filter(Boolean);
+        html += `<optgroup label="--- ${currentThana} থানার ইউনিয়নসমূহ ---">`;
+        unions.forEach(u => {
+            html += `<option value="UNION_${u}">⭐ ${u}</option>`;
+        });
+        html += `</optgroup>`;
+    }
+
+    return html;
+}
+
+function handleLocationSelection(val) {
+    if (val === "ALL") {
+        // ড্রপডাউন থেকে রিসেট বা ডিফল্ট সিলেক্ট করলে এক ধাপ পেছনে যাবে বা রিসেট হবে
+        if (currentUnion !== "সব") {
+            currentUnion = "সব";
+        } else if (currentThana !== "সব") {
+            currentThana = "সব";
+        } else {
+            currentDistrict = "সব";
+        }
+    } else if (val.startsWith("DIST_")) {
+        currentDistrict = val.replace("DIST_", "");
+        currentThana = "সব";
+        currentUnion = "সব";
+    } else if (val.startsWith("THANA_")) {
+        currentThana = val.replace("THANA_", "");
+        currentUnion = "সব";
+    } else if (val.startsWith("UNION_")) {
+        currentUnion = val.replace("UNION_", "");
+    }
+    renderFilterCards();
     renderProducts();
 }
 
-function onThanaChange(val) {
-    currentThana = val;
-    currentUnion = "সব";
-    renderLocationDropdowns();
+function handleProductTypeChange(val) {
+    currentProductType = val;
     renderProducts();
 }
 
-function onUnionChange(val) {
-    currentUnion = val;
-    renderProducts();
-}
-
-function resetFilters() {
+function resetAllFilters() {
     currentDistrict = "সব";
     currentThana = "সব";
     currentUnion = "সব";
     currentMainCategory = "সব";
     currentSubCategory = "সব";
     currentProductType = "used_product";
+    currentSearchKeyword = "";
     
+    const input = document.getElementById('mainSearchInput');
+    if(input) input.value = "";
+
     renderMainCategories();
     renderSubCategories();
-    renderLocationDropdowns();
-    renderProducts();
-}
-
-function filterProductsByType(type) {
-    currentProductType = type;
+    renderFilterCards();
     renderProducts();
 }
 
@@ -417,7 +431,7 @@ function selectSubCategory(subName) {
     renderProducts();
 }
 
-function renderProducts(searchKeyword = "") {
+function renderProducts() {
     const grid = document.getElementById('productGrid');
     if (!grid) return;
 
@@ -426,8 +440,10 @@ function renderProducts(searchKeyword = "") {
 
     let filteredProducts = globalProducts.filter(p => {
         let matchesType = true;
-        if (p.product_type && currentProductType) {
-            matchesType = p.product_type === currentProductType;
+        if (currentProductType === 'property') {
+            matchesType = (p.category === 'প্রপার্টি' || p.category_id === 'property' || p.main_category_id === 'property');
+        } else if (p.product_type && currentProductType) {
+            matchesType = (p.product_type === currentProductType);
         }
 
         let matchesMain = true;
@@ -447,7 +463,15 @@ function renderProducts(searchKeyword = "") {
         let matchesThana = (currentThana === "সব" || p.thana === currentThana);
         let matchesUnion = (currentUnion === "সব" || p.union_name === currentUnion || p.union === currentUnion);
 
-        return matchesType && matchesMain && matchesSub && matchesDistrict && matchesThana && matchesUnion;
+        let matchesSearch = true;
+        if (currentSearchKeyword.trim() !== "") {
+            const keyword = currentSearchKeyword.toLowerCase();
+            const nameMatch = p.name ? p.name.toLowerCase().includes(keyword) : false;
+            const descMatch = p.short_description ? p.short_description.toLowerCase().includes(keyword) : false;
+            matchesSearch = nameMatch || descMatch;
+        }
+
+        return matchesType && matchesMain && matchesSub && matchesDistrict && matchesThana && matchesUnion && matchesSearch;
     });
 
     if (filteredProducts.length === 0) {
@@ -479,4 +503,4 @@ window.onload = () => {
     }
     fetchBanners();
     fetchInitialData();
-};
+}
