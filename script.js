@@ -197,7 +197,6 @@ async function fetchInitialData() {
         renderMainCategories();
         renderSubCategories();
 
-        // লোকেশন টেবিল থেকে ডাটা ফেচ করা
         const { data: locData, error: locError } = await supabaseClient.from('locations').select('*');
         if (!locError && locData) {
             globalLocations = locData;
@@ -214,73 +213,75 @@ async function fetchInitialData() {
     }
 }
 
-// সার্চবার এবং চেইন লোকেশন ড্রপডাউন (জেলা -> থানা -> ইউনিয়ন) ও রিসেট বাটন রেন্ডার করার ফাংশন
+// সার্চবার, চেইন লোকেশন ড্রপডাউন ও রিসেট বাটন সম্পূর্ণ আলাদা কালার ও সুন্দর ডিজাইনে রেন্ডার করার ফাংশন
 function renderLocationDropdowns() {
-    const searchBarContainer = document.querySelector('.search-bar-container') || document.getElementById('searchBarContainer');
+    const searchBarContainer = document.getElementById('searchBarContainer');
     if (!searchBarContainer) return;
 
     const lang = getLang();
     const allDistText = lang === 'en' ? 'All Districts' : 'সব জেলা';
     const allThanaText = lang === 'en' ? 'All Thanas' : 'সব থানা';
-    const allUnionText = lang === 'en' ? 'All Unions' : 'সব ইউনিয়ন';
+    const allUnionText = lang === 'en' ? 'All Unions' : 'সব ইউনিয়ন';
     const searchPlaceholder = lang === 'en' ? 'Search your favorite products...' : 'আপনার পছন্দের পণ্য খুঁজুন...';
     const resetText = lang === 'en' ? 'Reset' : 'রিসেট';
 
-    // ইউনিক জেলাগুলো বের করা
     const districts = [...new Set(globalLocations.map(item => item.district))].filter(Boolean);
     
-    // সিলেক্ট করা জেলার ওপর ভিত্তি করে থানা বের করা
     let thanas = [];
     if (currentDistrict !== "সব") {
         thanas = [...new Set(globalLocations.filter(item => item.district === currentDistrict).map(item => item.thana))].filter(Boolean);
     }
 
-    // সিলেক্ট করা থানার ওপর ভিত্তি করে ইউনিয়ন বের করা
     let unions = [];
     if (currentThana !== "সব") {
-        unions = [...new Set(globalLocations.filter(item => item.district === currentDistrict && item.thana === currentThana).map(item => item.union_name))].filter(Boolean);
+        unions = [...new Set(globalLocations.filter(item => item.district === currentDistrict && item.thana === currentThana).map(item => item.union_name || item.union))].filter(Boolean);
     }
 
+    const existingSearchVal = document.getElementById('searchBox') ? document.getElementById('searchBox').value : '';
+
     searchBarContainer.innerHTML = `
-        <div class="search-box-wrapper" style="display: flex; align-items: center; background: #fff; border: 1px solid #ddd; border-radius: 8px; padding: 6px 12px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); gap: 8px; width: 100%; max-width: 1050px; margin: 0 auto; flex-wrap: wrap;">
+        <div class="search-box-wrapper" style="display: flex; align-items: center; background: #ffffff; border: 2px solid #e0e0e0; border-radius: 12px; padding: 8px 14px; box-shadow: 0 4px 12px rgba(0,0,0,0.08); gap: 10px; width: 100%; max-width: 1100px; margin: 15px auto; flex-wrap: wrap;">
             
-            <!-- জেলা ড্রপডাউন -->
-            <div style="display: flex; align-items: center; gap: 5px; border-right: 1px solid #eee; padding-right: 8px;">
-                <i class="fa-solid fa-location-dot" style="color: #ff5722; font-size: 14px;"></i>
-                <select id="districtSelect" onchange="onDistrictChange(this.value)" style="border: none; outline: none; background: transparent; font-size: 13px; font-weight: 500; cursor: pointer; color: #333;">
+            <!-- জেলা বক্স (আলাদা কালার ব্যাকগ্রাউন্ড) -->
+            <div style="display: flex; align-items: center; gap: 6px; background: #eef2ff; border: 1px solid #c7d2fe; border-radius: 8px; padding: 6px 10px;">
+                <i class="fa-solid fa-location-dot" style="color: #4f46e5; font-size: 14px;"></i>
+                <select id="districtSelect" onchange="onDistrictChange(this.value)" style="border: none; outline: none; background: transparent; font-size: 13px; font-weight: 600; cursor: pointer; color: #312e81;">
                     <option value="সব">${allDistText}</option>
                     ${districts.map(d => `<option value="${d}" ${currentDistrict === d ? 'selected' : ''}>${d}</option>`).join('')}
                 </select>
             </div>
 
-            <!-- থানা ড্রপডাউন -->
-            <div style="display: flex; align-items: center; gap: 5px; border-right: 1px solid #eee; padding-right: 8px;">
-                <select id="thanaSelect" onchange="onThanaChange(this.value)" style="border: none; outline: none; background: transparent; font-size: 13px; font-weight: 500; cursor: pointer; color: ${currentDistrict === 'সব' ? '#999' : '#333'};" ${currentDistrict === 'সব' ? 'disabled' : ''}>
+            <!-- থানা বক্স (আলাদা কালার ব্যাকগ্রাউন্ড) -->
+            <div style="display: flex; align-items: center; gap: 6px; background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 8px; padding: 6px 10px;">
+                <i class="fa-solid fa-map-pin" style="color: #16a34a; font-size: 14px;"></i>
+                <select id="thanaSelect" onchange="onThanaChange(this.value)" style="border: none; outline: none; background: transparent; font-size: 13px; font-weight: 600; cursor: pointer; color: ${currentDistrict === 'সব' ? '#9ca3af' : '#14532d'};" ${currentDistrict === 'সব' ? 'disabled' : ''}>
                     <option value="সব">${allThanaText}</option>
                     ${thanas.map(t => `<option value="${t}" ${currentThana === t ? 'selected' : ''}>${t}</option>`).join('')}
                 </select>
             </div>
 
-            <!-- ইউনিয়ন ড্রপডাউন -->
-            <div style="display: flex; align-items: center; gap: 5px; border-right: 1px solid #eee; padding-right: 8px;">
-                <select id="unionSelect" onchange="onUnionChange(this.value)" style="border: none; outline: none; background: transparent; font-size: 13px; font-weight: 500; cursor: pointer; color: ${currentThana === 'সব' ? '#999' : '#333'};" ${currentThana === 'সব' ? 'disabled' : ''}>
+            <!-- ইউনিয়ন বক্স (আলাদা কালার ব্যাকগ্রাউন্ড) -->
+            <div style="display: flex; align-items: center; gap: 6px; background: #fdf4ff; border: 1px solid #f5d0fe; border-radius: 8px; padding: 6px 10px;">
+                <i class="fa-solid fa-building-flag" style="color: #c026d3; font-size: 14px;"></i>
+                <select id="unionSelect" onchange="onUnionChange(this.value)" style="border: none; outline: none; background: transparent; font-size: 13px; font-weight: 600; cursor: pointer; color: ${currentThana === 'সব' ? '#9ca3af' : '#701a75'};" ${currentThana === 'সব' ? 'disabled' : ''}>
                     <option value="সব">${allUnionText}</option>
                     ${unions.map(u => `<option value="${u}" ${currentUnion === u ? 'selected' : ''}>${u}</option>`).join('')}
                 </select>
             </div>
 
-            <!-- সার্চ ইনপুট ফিল্ড -->
-            <div style="display: flex; align-items: center; gap: 8px; flex: 1; min-width: 150px;">
-                <input type="text" id="searchBox" placeholder="${searchPlaceholder}" value="${document.getElementById('searchBox') ? document.getElementById('searchBox').value : ''}" oninput="renderProducts(this.value)" style="border: none; outline: none; width: 100%; font-size: 14px; background: transparent;">
-            </div>
-
-            <!-- রিসেট বাটন -->
-            <button onclick="resetFilters()" title="Reset Filters" style="background: #f1f1f2; border: none; color: #555; padding: 8px 12px; border-radius: 6px; cursor: pointer; display: flex; align-items: center; gap: 5px; font-size: 13px; font-weight: 500;">
-                <i class="fa-solid fa-rotate-right" style="font-size: 12px;"></i> ${resetText}
+            <!-- রিসেট বাটন (আলাদা কালার ও ডিজাইন) -->
+            <button onclick="resetFilters()" title="Reset Filters" style="background: #fff1f2; border: 1px solid #fecdd3; color: #e11d48; padding: 7px 12px; border-radius: 8px; cursor: pointer; display: flex; align-items: center; gap: 5px; font-size: 12px; font-weight: 600; transition: 0.2s;">
+                <i class="fa-solid fa-rotate-right" style="font-size: 11px;"></i> ${resetText}
             </button>
 
+            <!-- সার্চ ইনপুট ফিল্ড -->
+            <div style="display: flex; align-items: center; gap: 8px; flex: 1; min-width: 180px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 6px 10px;">
+                <i class="fa-solid fa-magnifying-glass" style="color: #64748b; font-size: 14px;"></i>
+                <input type="text" id="searchBox" placeholder="${searchPlaceholder}" value="${existingSearchVal}" oninput="renderProducts(this.value)" style="border: none; outline: none; width: 100%; font-size: 14px; background: transparent; color: #1e293b;">
+            </div>
+
             <!-- সার্চ বাটন -->
-            <button onclick="renderProducts()" style="background: #ff5722; border: none; color: white; padding: 8px 16px; border-radius: 6px; cursor: pointer; display: flex; align-items: center; justify-content: center;">
+            <button onclick="renderProducts()" style="background: #ff5722; border: none; color: white; padding: 9px 18px; border-radius: 8px; cursor: pointer; display: flex; align-items: center; justify-content: center; font-weight: 600; box-shadow: 0 2px 5px rgba(255,87,34,0.3);">
                 <i class="fa-solid fa-magnifying-glass" style="font-size: 14px;"></i>
             </button>
         </div>
@@ -485,4 +486,4 @@ window.onload = () => {
     }
     fetchBanners();
     fetchInitialData();
-};
+}
