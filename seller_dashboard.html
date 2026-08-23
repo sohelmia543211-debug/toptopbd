@@ -1,0 +1,506 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title data-en="Seller Dashboard - TopTop BD" data-bn="সেলার ড্যাশবোর্ড - TopTop BD">সেলার ড্যাশবোর্ড - TopTop BD</title>
+    
+    <!-- FontAwesome আইকন -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Google Fonts (Inter & Poppins) -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Supabase CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    
+    <!-- স্টাইল ফাইল লিংক -->
+    <link rel="stylesheet" href="style.css">
+    <style>
+        :root {
+            --primary: #ff5722;
+            --primary-gradient: linear-gradient(135deg, #ff5722 0%, #ff8a50 100%);
+            --bg-color: #f4f7f6;
+            --card-bg: #ffffff;
+            --text-main: #2d3748;
+            --text-muted: #718096;
+            --border-color: #e2e8f0;
+            --radius: 14px;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            margin: 0;
+            padding: 0;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* প্রিমিয়াম হেডার */
+        header {
+            background: var(--primary-gradient);
+            color: white;
+            padding: 15px 20px;
+            box-shadow: 0 4px 20px rgba(255, 87, 34, 0.2);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        .header-top {
+            max-width: 900px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .header-top h1 a {
+            color: white;
+            text-decoration: none;
+            font-size: 20px;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+        }
+        .logout-btn {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            padding: 7px 16px;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            backdrop-filter: blur(5px);
+            transition: all 0.3s ease;
+        }
+        .logout-btn:hover {
+            background: #fff;
+            color: #d32f2f;
+            border-color: #fff;
+        }
+
+        /* মূল ড্যাশবোর্ড কন্টেইনার */
+        .dashboard-container {
+            max-width: 850px;
+            margin: 30px auto;
+            padding: 0 15px;
+        }
+
+        /* সেলার ইনফো প্রোফাইল কার্ড */
+        .profile-card {
+            background: var(--card-bg);
+            padding: 24px;
+            border-radius: var(--radius);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+            margin-bottom: 25px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border: 1px solid var(--border-color);
+            position: relative;
+            overflow: hidden;
+        }
+        .profile-card::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            height: 100%;
+            width: 5px;
+            background: var(--primary-gradient);
+        }
+        .profile-info h3 {
+            margin: 0 0 6px 0;
+            color: var(--text-main);
+            font-size: 20px;
+            font-weight: 700;
+        }
+        .profile-info p {
+            margin: 3px 0;
+            color: var(--text-muted);
+            font-size: 13px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .coin-badge {
+            background: #fff3ed;
+            color: #ff5722;
+            padding: 8px 16px;
+            border-radius: 30px;
+            font-size: 14px;
+            font-weight: 700;
+            border: 1px solid #ffd8cc;
+            box-shadow: 0 4px 10px rgba(255, 87, 34, 0.1);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        /* গ্রিড লেআউট (পিসি ও ট্যাবলেটের জন্য ফর্ম এবং লিস্ট পাশাপাশি বা সুন্দরভাবে সাজানো) */
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 25px;
+        }
+        @media (max-width: 768px) {
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .card-box {
+            background: var(--card-bg);
+            padding: 24px;
+            border-radius: var(--radius);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+            border: 1px solid var(--border-color);
+        }
+
+        .section-title {
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--text-main);
+            margin-bottom: 18px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            border-bottom: 2px solid #f7fafc;
+            padding-bottom: 10px;
+        }
+        .section-title i {
+            color: var(--primary);
+        }
+
+        /* ফর্ম স্টাইল */
+        .form-group {
+            margin-bottom: 15px;
+        }
+        .form-group label {
+            display: block;
+            font-size: 12px;
+            font-weight: 600;
+            color: #4a5568;
+            margin-bottom: 6px;
+        }
+        .form-control {
+            width: 100%;
+            padding: 12px 14px;
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            font-size: 13px;
+            outline: none;
+            box-sizing: border-box;
+            background: #fbfcfd;
+            transition: all 0.3s;
+        }
+        .form-control:focus {
+            border-color: var(--primary);
+            background: #fff;
+            box-shadow: 0 0 0 3px rgba(255, 87, 34, 0.1);
+        }
+        .submit-btn {
+            width: 100%;
+            background: var(--primary-gradient);
+            color: white;
+            border: none;
+            padding: 13px;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: 700;
+            cursor: pointer;
+            margin-top: 5px;
+            box-shadow: 0 4px 15px rgba(255, 87, 34, 0.3);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .submit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(255, 87, 34, 0.4);
+        }
+
+        /* আপলোড করা পণ্যের লিস্ট ডিজাইন */
+        #myProductsList {
+            max-height: 380px;
+            overflow-y: auto;
+            padding-right: 5px;
+        }
+        #myProductsList::-webkit-scrollbar {
+            width: 5px;
+        }
+        #myProductsList::-webkit-scrollbar-thumb {
+            background: #cbd5e0;
+            border-radius: 10px;
+        }
+
+        .product-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: #f8fafc;
+            padding: 12px 15px;
+            border-radius: 10px;
+            margin-bottom: 10px;
+            border: 1px solid var(--border-color);
+            transition: background 0.2s;
+        }
+        .product-item:hover {
+            background: #edf2f7;
+        }
+        .prod-info-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .prod-thumb {
+            width: 45px;
+            height: 45px;
+            border-radius: 8px;
+            object-fit: cover;
+            border: 1px solid #cbd5e0;
+        }
+        .prod-details h4 {
+            margin: 0 0 3px 0;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-main);
+        }
+        .prod-details span {
+            font-size: 12px;
+            color: var(--primary);
+            font-weight: 700;
+        }
+        .delete-btn {
+            background: #fff5f5;
+            color: #e53e3e;
+            border: 1px solid #fed7d7;
+            padding: 6px 10px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 600;
+            transition: all 0.2s;
+        }
+        .delete-btn:hover {
+            background: #e53e3e;
+            color: white;
+        }
+        .empty-text {
+            text-align: center;
+            color: var(--text-muted);
+            font-size: 13px;
+            padding: 30px 0;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- হেডার -->
+    <header>
+        <div class="header-top">
+            <h1><a href="index.html">TopTop BD <span style="font-size: 12px; font-weight: 400; opacity: 0.8;">| Seller 2050</span></a></h1>
+            <button class="logout-btn" onclick="logoutSeller()"><i class="fa-solid fa-right-from-bracket"></i> <span data-en="Logout" data-bn="লগআউট">লগআউট</span></button>
+        </div>
+    </header>
+
+    <!-- মূল ড্যাশবোর্ড কন্টেইনার -->
+    <div class="dashboard-container">
+        
+        <!-- সেলার ইনফো কার্ড -->
+        <div class="profile-card">
+            <div class="profile-info">
+                <h3 id="shopNameDisplay">দোকানের নাম</h3>
+                <p><i class="fa-solid fa-user-tie" style="color: #ff5722;"></i> <span id="ownerNameDisplay">মালিক: -</span></p>
+                <p><i class="fa-solid fa-location-dot" style="color: #ff5722;"></i> <span id="locationDisplay">এলাকা: -</span></p>
+            </div>
+            <div>
+                <div class="coin-badge">
+                    <i class="fa-solid fa-coins" style="color: #f6ad55;"></i> 
+                    <span><span id="coinCount">0</span> কয়েন</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- গ্রিড সেকশন: ফর্ম এবং লিস্ট -->
+        <div class="dashboard-grid">
+            
+            <!-- ১. পণ্য আপলোড ফর্ম -->
+            <div class="card-box">
+                <div class="section-title">
+                    <i class="fa-solid fa-circle-plus"></i>
+                    <span data-en="Upload New Product (1 Coin)" data-bn="নতুন পণ্য আপলোড (১ কয়েন)">নতুন পণ্য আপলোড (১ কয়েন)</span>
+                </div>
+                <form onsubmit="handleProductUpload(event)">
+                    <div class="form-group">
+                        <label data-en="Product Name" data-bn="পণ্যের নাম">পণ্যের নাম</label>
+                        <input type="text" id="prodName" class="form-control" placeholder="যেমন: প্রিমিয়াম শার্ট" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label data-en="Price (Tk)" data-bn="মূল্য (টাকা)">মূল্য (টাকা)</label>
+                        <input type="number" id="prodPrice" class="form-control" placeholder="যেমন: ৫০০" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label data-en="Image URL" data-bn="ছবির লিংক (Image URL)">ছবির লিংক (Image URL)</label>
+                        <input type="text" id="prodImage" class="form-control" placeholder="https://..." required>
+                    </div>
+
+                    <button type="submit" class="submit-btn">
+                        <i class="fa-solid fa-cloud-arrow-up"></i> <span data-en="Upload Product" data-bn="পণ্য আপলোড করুন">পণ্য আপলোড করুন</span>
+                    </button>
+                </form>
+            </div>
+
+            <!-- ২. আমার পণ্যসমূহ -->
+            <div class="card-box">
+                <div class="section-title">
+                    <i class="fa-solid fa-box-open"></i>
+                    <span data-en="My Uploaded Products" data-bn="আমার আপলোড করা পণ্যসমূহ">আমার আপলোড করা পণ্যসমূহ</span>
+                </div>
+                <div id="myProductsList">
+                    <div class="empty-text">
+                        <i class="fa-solid fa-spinner fa-spin" style="font-size: 20px; color: #ff5722; margin-bottom: 8px;"></i><br>
+                        <span data-en="Loading products..." data-bn="পণ্য লোড হচ্ছে...">পণ্য লোড হচ্ছে...</span>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- স্ক্রিপ্ট -->
+    <script>
+        const SUPABASE_URL = 'https://mzqqkkgdggwmpegvqaol.supabase.co';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im16cXFra2dkZ2d3bXBlZ3ZxYW9sIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODY4MDU4NDUsImV4cCI6MjEwMjM4MTg0NX0.hbUQ4dKjX2iXTF-ugi7JkV_-J5gKIpSEsPN8RpJ0EEo';
+        const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+        let currentSeller = JSON.parse(localStorage.getItem('current_seller'));
+
+        if (!currentSeller) {
+            alert('প্রথমে সেলার লগইন করুন!');
+            window.location.href = 'seller_login.html';
+        }
+
+        function loadSellerInfo() {
+            document.getElementById('shopNameDisplay').innerText = currentSeller.shop_name;
+            document.getElementById('ownerNameDisplay').innerText = currentSeller.owner_name;
+            document.getElementById('locationDisplay').innerText = `${currentSeller.union_name || ''}, ${currentSeller.thana || ''}, ${currentSeller.district || ''}`;
+            document.getElementById('coinCount').innerText = currentSeller.coins;
+            fetchMyProducts();
+        }
+
+        async function handleProductUpload(e) {
+            e.preventDefault();
+
+            if (currentSeller.coins < 1) {
+                alert('আপনার পর্যাপ্ত কয়েন নেই! পণ্য আপলোড করতে কমপক্ষে ১টি কয়েন লাগবে।');
+                return;
+            }
+
+            const name = document.getElementById('prodName').value;
+            const price = parseFloat(document.getElementById('prodPrice').value);
+            const image_url = document.getElementById('prodImage').value;
+
+            try {
+                const { error: prodError } = await supabaseClient.from('products').insert([
+                    {
+                        name,
+                        price,
+                        image_url,
+                        seller_id: currentSeller.id,
+                        district: currentSeller.district,
+                        thana: currentSeller.thana,
+                        union_name: currentSeller.union_name
+                    }
+                ]);
+
+                if (prodError) {
+                    alert('পণ্য আপলোড ব্যর্থ হয়েছে: ' + prodError.message);
+                    return;
+                }
+
+                const updatedCoins = currentSeller.coins - 1;
+                const { error: updateError } = await supabaseClient
+                    .from('sellers')
+                    .update({ coins: updatedCoins })
+                    .eq('id', currentSeller.id);
+
+                if (updateError) {
+                    alert('কয়েন আপডেট করতে সমস্যা হয়েছে!');
+                    return;
+                }
+
+                currentSeller.coins = updatedCoins;
+                localStorage.setItem('current_seller', JSON.stringify(currentSeller));
+
+                alert('সফলভাবে পণ্য আপলোড হয়েছে! ১টি কয়েন কাটা হয়েছে।');
+                document.getElementById('prodName').value = '';
+                document.getElementById('prodPrice').value = '';
+                document.getElementById('prodImage').value = '';
+
+                loadSellerInfo();
+
+            } catch (err) {
+                console.error('আপলোড এরর:', err);
+            }
+        }
+
+        async function fetchMyProducts() {
+            const listDiv = document.getElementById('myProductsList');
+            try {
+                const { data, error } = await supabaseClient
+                    .from('products')
+                    .select('*')
+                    .eq('seller_id', currentSeller.id);
+
+                if (error || !data || data.length === 0) {
+                    listDiv.innerHTML = '<div class="empty-text">আপনি এখনো কোনো পণ্য আপলোড করেননি।</div>';
+                    return;
+                }
+
+                let html = '';
+                data.forEach(p => {
+                    html += `
+                        <div class="product-item">
+                            <div class="prod-info-left">
+                                <img src="${p.image_url}" class="prod-thumb" onerror="this.src='https://via.placeholder.com/45'">
+                                <div class="prod-details">
+                                    <h4>${p.name}</h4>
+                                    <span>৳${p.price}</span>
+                                </div>
+                            </div>
+                            <button class="delete-btn" onclick="deleteProduct(${p.id})"><i class="fa-solid fa-trash"></i> ডিলিট</button>
+                        </div>
+                    `;
+                });
+                listDiv.innerHTML = html;
+
+            } catch (err) {
+                console.error('প্রোডাক্ট ফেচ এরর:', err);
+            }
+        }
+
+        async function deleteProduct(prodId) {
+            if (!confirm('আপনি কি এই পণ্যটি ডিলিট করতে চান?')) return;
+
+            const { error } = await supabaseClient.from('products').delete().eq('id', prodId);
+            if (error) {
+                alert('ডিলিট করতে সমস্যা হয়েছে: ' + error.message);
+            } else {
+                alert('পণ্যটি সফলভাবে ডিলিট করা হয়েছে!');
+                fetchMyProducts();
+            }
+        }
+
+        function logoutSeller() {
+            localStorage.removeItem('current_seller');
+            window.location.href = 'seller_login.html';
+        }
+
+        window.onload = () => {
+            loadSellerInfo();
+        };
+    </script>
+</body>
+</html>

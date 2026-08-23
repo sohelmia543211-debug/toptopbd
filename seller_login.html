@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title data-en="Seller Portal - TopTop BD" data-bn="সেলার পোর্টাল - TopTop BD">সেলার পোর্টাল - TopTop BD</title>
+    
+    <!-- FontAwesome আইকন -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Supabase CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    
+    <!-- স্টাইল ফাইল লিংক -->
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .auth-container {
+            max-width: 450px;
+            margin: 25px auto;
+            background: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+            border: 1px solid #eee;
+        }
+        .auth-tabs {
+            display: flex;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #eee;
+        }
+        .auth-tab-btn {
+            flex: 1;
+            padding: 10px;
+            background: none;
+            border: none;
+            font-size: 14px;
+            font-weight: 700;
+            color: #777;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .auth-tab-btn.active {
+            color: #ff5722;
+            border-bottom: 2px solid #ff5722;
+            margin-bottom: -2px;
+        }
+        .form-section {
+            display: none;
+        }
+        .form-section.active {
+            display: block;
+        }
+        .form-group {
+            margin-bottom: 12px;
+        }
+        .form-group label {
+            display: block;
+            font-size: 12px;
+            font-weight: 600;
+            color: #444;
+            margin-bottom: 5px;
+        }
+        .form-control {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 13px;
+            outline: none;
+            box-sizing: border-box;
+        }
+        .form-control:focus {
+            border-color: #ff5722;
+        }
+        .auth-btn {
+            width: 100%;
+            background: #ff5722;
+            color: white;
+            border: none;
+            padding: 12px;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 700;
+            cursor: pointer;
+            margin-top: 10px;
+            transition: background 0.2s;
+        }
+        .auth-btn:hover {
+            background: #e64a19;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- হেডার -->
+    <header>
+        <div class="header-top">
+            <h1><a href="index.html" style="color: white; text-decoration: none;">TopTop BD</a></h1>
+            <button class="lang-switch-btn" id="langSwitchBtn" onclick="toggleLanguage()">English</button>
+        </div>
+    </header>
+
+    <!-- মূল কন্টেইনার (লগইন ও রেজিস্ট্রেশন টগল) -->
+    <div class="auth-container">
+        <div class="auth-tabs">
+            <button class="auth-tab-btn active" id="loginTabBtn" onclick="switchTab('login')" data-en="Login" data-bn="লগইন">লগইন</button>
+            <button class="auth-tab-btn" id="registerTabBtn" onclick="switchTab('register')" data-en="Register" data-bn="রেজিস্ট্রেশন">রেজিস্ট্রেশন</button>
+        </div>
+
+        <!-- ১. লগইন ফর্ম সেকশন -->
+        <div id="loginSection" class="form-section active">
+            <form onsubmit="handleLogin(event)">
+                <div class="form-group">
+                    <label data-en="Mobile Number" data-bn="মোবাইল নম্বর">মোবাইল নম্বর</label>
+                    <input type="tel" id="loginMobile" class="form-control" placeholder="01XXXXXXXXX" required>
+                </div>
+
+                <div class="form-group">
+                    <label data-en="Password" data-bn="পাসওয়ার্ড">পাসওয়ার্ড</label>
+                    <input type="password" id="loginPassword" class="form-control" placeholder="পাসওয়ার্ড দিন" required>
+                </div>
+
+                <button type="submit" class="auth-btn" data-en="Login" data-bn="লগইন করুন">লগইন করুন</button>
+
+                <!-- পাসওয়ার্ড ভুলে গেলে রিসেট করার লিংক -->
+                <div style="text-align: center; margin-top: 15px;">
+                    <a href="#" onclick="showForgotPassword(event)" style="font-size: 13px; color: #ff5722; text-decoration: none; font-weight: 600;" data-en="Forgot Password?" data-bn="পাসওয়ার্ড ভুলে গেছেন?">পাসওয়ার্ড ভুলে গেছেন?</a>
+                </div>
+            </form>
+        </div>
+
+        <!-- ২. রেজিস্ট্রেশন ফর্ম সেকশন -->
+        <div id="registerSection" class="form-section">
+            <form onsubmit="handleRegister(event)">
+                <div class="form-group">
+                    <label data-en="Shop Name" data-bn="দোকানের নাম / ব্যবসার নাম">দোকানের নাম / ব্যবসার নাম</label>
+                    <input type="text" id="shopName" class="form-control" placeholder="দোকানের নাম লিখুন" required>
+                </div>
+
+                <div class="form-group">
+                    <label data-en="Owner Name" data-bn="মালিকের নাম">মালিকের নাম</label>
+                    <input type="text" id="ownerName" class="form-control" placeholder="আপনার নাম লিখুন" required>
+                </div>
+
+                <div class="form-group">
+                    <label data-en="Mobile Number (Login ID)" data-bn="মোবাইল নম্বর (লগইন আইডি)">মোবাইল নম্বর (লগইন আইডি)</label>
+                    <input type="tel" id="regMobile" class="form-control" placeholder="01XXXXXXXXX" required>
+                </div>
+
+                <div class="form-group">
+                    <label data-en="Password" data-bn="পাসওয়ার্ড">পাসওয়ার্ড</label>
+                    <input type="password" id="regPassword" class="form-control" placeholder="কমপক্ষে ৬ ডিজিটের পাসওয়ার্ড" required>
+                </div>
+
+                <div class="form-group">
+                    <label data-en="District" data-bn="জেলা">জেলা</label>
+                    <select id="regDistrict" class="form-control" onchange="loadRegThanas(this.value)">
+                        <option value="">জেলা নির্বাচন করুন</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label data-en="Thana / Upazila" data-bn="থানা / উপজেলা">থানা / উপজেলা</label>
+                    <select id="regThana" class="form-control" onchange="loadRegUnions(this.value)">
+                        <option value="">প্রথমে জেলা নির্বাচন করুন</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label data-en="Union / Area" data-bn="ইউনিয়ন / এলাকা">ইউনিয়ন / এলাকা</label>
+                    <select id="regUnion" class="form-control">
+                        <option value="">প্রথমে থানা নির্বাচন করুন</option>
+                    </select>
+                </div>
+
+                <button type="submit" class="auth-btn" data-en="Register (Get 3 Free Coins)" data-bn="রেজিস্ট্রেশন করুন (৩টি ফ্রি কয়েন পান)">রেজিস্ট্রেশন করুন (৩টি ফ্রি কয়েন পান)</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- বটম নেভিগেশন বার -->
+    <nav class="bottom-nav">
+        <a href="index.html" class="bottom-nav-item">
+            <i class="fa-solid fa-house"></i>
+            <span data-en="Home" data-bn="হোম">হোম</span>
+        </a>
+        <a href="categories.html" class="bottom-nav-item">
+            <i class="fa-solid fa-list"></i>
+            <span data-en="Category" data-bn="ক্যাটাগরি">ক্যাটাগরি</span>
+        </a>
+        <a href="favorites.html" class="bottom-nav-item">
+            <i class="fa-solid fa-heart"></i>
+            <span data-en="Favorite" data-bn="পছন্দ">পছন্দ</span>
+        </a>
+        <a href="seller_login.html" class="bottom-nav-item active">
+            <i class="fa-solid fa-user-tie"></i>
+            <span data-en="Seller Login" data-bn="সেলার লগইন">সেলার লগইন</span>
+        </a>
+    </nav>
+
+    <!-- স্ক্রিপ্ট -->
+    <script>
+        const SUPABASE_URL = 'https://mzqqkkgdggwmpegvqaol.supabase.co';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im16cXFra2dkZ2d3bXBlZ3ZxYW9sIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODY4MDU4NDUsImV4cCI6MjEwMjM4MTg0NX0.hbUQ4dKjX2iXTF-ugi7JkV_-J5gKIpSEsPN8RpJ0EEo';
+        const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+        let globalLocationsData = [];
+
+        // ট্যাব সুইচ করার ফাংশন
+        function switchTab(tab) {
+            const loginTab = document.getElementById('loginTabBtn');
+            const registerTab = document.getElementById('registerTabBtn');
+            const loginSec = document.getElementById('loginSection');
+            const registerSec = document.getElementById('registerSection');
+
+            if (tab === 'login') {
+                loginTab.classList.add('active');
+                registerTab.classList.remove('active');
+                loginSec.classList.add('active');
+                registerSec.classList.remove('active');
+            } else {
+                registerTab.classList.add('active');
+                loginTab.classList.remove('active');
+                registerSec.classList.add('active');
+                loginSec.classList.remove('active');
+            }
+        }
+
+        async function fetchLocationDropdowns() {
+            try {
+                const { data, error } = await supabaseClient.from('locations').select('*');
+                if (!error && data) {
+                    globalLocationsData = data;
+                    const districts = [...new Set(data.map(item => item.district))].filter(Boolean);
+                    let distSelect = document.getElementById('regDistrict');
+                    let html = '<option value="">জেলা নির্বাচন করুন</option>';
+                    districts.forEach(d => {
+                        html += `<option value="${d}">${d}</option>`;
+                    });
+                    distSelect.innerHTML = html;
+                }
+            } catch (err) {
+                console.error('লোকেশন লোড এরর:', err);
+            }
+        }
+
+        function loadRegThanas(district) {
+            let thanaSelect = document.getElementById('regThana');
+            let unionSelect = document.getElementById('regUnion');
+            thanaSelect.innerHTML = '<option value="">থানা নির্বাচন করুন</option>';
+            unionSelect.innerHTML = '<option value="">প্রথমে থানা নির্বাচন করুন</option>';
+            if (!district) return;
+
+            const thanas = [...new Set(globalLocationsData.filter(i => i.district === district).map(i => i.thana))].filter(Boolean);
+            let html = '<option value="">থানা নির্বাচন করুন</option>';
+            thanas.forEach(t => {
+                html += `<option value="${t}">${t}</option>`;
+            });
+            thanaSelect.innerHTML = html;
+        }
+
+        function loadRegUnions(thana) {
+            let district = document.getElementById('regDistrict').value;
+            let unionSelect = document.getElementById('regUnion');
+            unionSelect.innerHTML = '<option value="">ইউনিয়ন নির্বাচন করুন</option>';
+            if (!thana) return;
+
+            const unions = [...new Set(globalLocationsData.filter(i => i.district === district && i.thana === thana).map(i => i.union_name || i.union))].filter(Boolean);
+            let html = '<option value="">ইউনিয়ন নির্বাচন করুন</option>';
+            unions.forEach(u => {
+                html += `<option value="${u}">${u}</option>`;
+            });
+            unionSelect.innerHTML = html;
+        }
+
+        // সেলার রেজিস্ট্রেশন হ্যান্ডলার (সফল হলে সরাসরি ড্যাশবোর্ডে পাঠাবে)
+        async function handleRegister(e) {
+            e.preventDefault();
+            const shop_name = document.getElementById('shopName').value;
+            const owner_name = document.getElementById('ownerName').value;
+            const mobile = document.getElementById('regMobile').value;
+            const password = document.getElementById('regPassword').value;
+            const district = document.getElementById('regDistrict').value;
+            const thana = document.getElementById('regThana').value;
+            const union_name = document.getElementById('regUnion').value;
+
+            try {
+                const { data: existing } = await supabaseClient.from('sellers').select('*').eq('mobile', mobile);
+                if (existing && existing.length > 0) {
+                    alert('এই মোবাইল নম্বর দিয়ে ইতিমধ্যে একটি অ্যাকাউন্ট রয়েছে!');
+                    return;
+                }
+
+                // ডাটাবেজে নতুন সেলার ইনসার্ট করা (Returning data সহ)
+                const { data, error } = await supabaseClient.from('sellers').insert([
+                    {
+                        shop_name,
+                        owner_name,
+                        mobile,
+                        password,
+                        district,
+                        thana,
+                        union_name,
+                        coins: 3, 
+                        wallet_balance: 0
+                    }
+                ]).select();
+
+                if (error) {
+                    alert('রেজিস্ট্রেশন সফল হয়নি: ' + error.message);
+                } else {
+                    // সফল হলে লোকাল স্টোরেজে সেভার ইনফো সেভ করে সরাসরি ড্যাশবোর্ডে রিডাইরেক্ট করা
+                    const newSeller = data && data.length > 0 ? data[0] : { shop_name, owner_name, mobile, district, thana, union_name, coins: 3, wallet_balance: 0 };
+                    localStorage.setItem('current_seller', JSON.stringify(newSeller));
+                    
+                    alert('স্বাগতম! সফলভাবে রেজিস্ট্রেশন সম্পন্ন হয়েছে এবং আপনি ৩টি ফ্রি কয়েন পেয়েছেন।');
+                    window.location.href = 'seller_dashboard.html';
+                }
+            } catch (err) {
+                console.error('রেজিস্ট্রেশন এরর:', err);
+            }
+        }
+
+        // সেলার লগইন হ্যান্ডলার
+        async function handleLogin(e) {
+            e.preventDefault();
+            const mobile = document.getElementById('loginMobile').value;
+            const password = document.getElementById('loginPassword').value;
+
+            try {
+                const { data, error } = await supabaseClient
+                    .from('sellers')
+                    .select('*')
+                    .eq('mobile', mobile)
+                    .eq('password', password);
+
+                if (error || !data || data.length === 0) {
+                    alert('মোবাইল নম্বর বা পাসওয়ার্ড ভুল হয়েছে!');
+                } else {
+                    const seller = data[0];
+                    localStorage.setItem('current_seller', JSON.stringify(seller));
+                    alert('স্বাগতম ' + seller.shop_name + '!');
+                    window.location.href = 'seller_dashboard.html';
+                }
+            } catch (err) {
+                console.error('লগইন এরর:', err);
+            }
+        }
+
+        // পাসওয়ার্ড ভুলে গেলে রিসেট করার ফাংশন
+        async function showForgotPassword(e) {
+            e.preventDefault();
+            const mobile = prompt("আপনার রেজিস্টার্ড মোবাইল নম্বরটি দিন:");
+            if (!mobile) return;
+
+            try {
+                const { data: seller, error } = await supabaseClient
+                    .from('sellers')
+                    .select('*')
+                    .eq('mobile', mobile)
+                    .single();
+
+                if (error || !seller) {
+                    alert('এই মোবাইল নম্বর দিয়ে কোনো সেলার অ্যাকাউন্ট পাওয়া যায়নি!');
+                    return;
+                }
+
+                const newPassword = prompt("দোকানের নাম: " + seller.shop_name + "\nনতুন পাসওয়ার্ডটি লিখুন:");
+                if (!newPassword) return;
+
+                const { error: updateError } = await supabaseClient
+                    .from('sellers')
+                    .update({ password: newPassword })
+                    .eq('mobile', mobile);
+
+                if (updateError) {
+                    alert('পাসওয়ার্ড আপডেট করতে সমস্যা হয়েছে: ' + updateError.message);
+                } else {
+                    alert('পাসওয়ার্ড সফলভাবে পরিবর্তন করা হয়েছে! এখন নতুন পাসওয়ার্ড দিয়ে লগইন করুন।');
+                }
+
+            } catch (err) {
+                console.error('রিসেট এরর:', err);
+                alert('কোথাও একটি সমস্যা হয়েছে। আবার চেষ্টা করুন।');
+            }
+        }
+
+        // ভাষা পরিবর্তন স্ক্রিপ্ট
+        let currentLang = localStorage.getItem('toptop_lang') || 'bn';
+        function toggleLanguage() {
+            currentLang = currentLang === 'bn' ? 'en' : 'bn';
+            localStorage.setItem('toptop_lang', currentLang);
+            applyLanguage();
+        }
+        function applyLanguage() {
+            const langBtn = document.getElementById('langSwitchBtn');
+            if(langBtn) langBtn.innerText = currentLang === 'bn' ? 'English' : 'বাংলা';
+            document.querySelectorAll('[data-bn]').forEach(el => {
+                if (currentLang === 'en' && el.getAttribute('data-en')) el.innerText = el.getAttribute('data-en');
+                else if (currentLang === 'bn' && el.getAttribute('data-bn')) el.innerText = el.getAttribute('data-bn');
+            });
+        }
+
+        window.onload = () => {
+            applyLanguage();
+            fetchLocationDropdowns();
+        };
+    </script>
+</body>
+</html>
