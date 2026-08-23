@@ -20,19 +20,9 @@
             <button class="lang-switch-btn" id="langSwitchBtn" onclick="toggleLanguage()">English</button>
         </div>
         
-        <div class="search-location-bar">
-            <select id="headerLocationSelect" class="header-location-select" onchange="onHeaderLocationChange(this)">
-                <option value="সব" data-en="All Location" data-bn="📍 সব লোকেশন">📍 সব লোকেশন</option>
-                <option value="dhaka" data-en="Dhaka" data-bn="ঢাকা">ঢাকা</option>
-                <option value="chittagong" data-en="Chittagong" data-bn="চট্টগ্রাম">চট্টগ্রাম</option>
-                <option value="sylhet" data-en="Sylhet" data-bn="সিলেট">সিলেট</option>
-                <option value="rajshahi" data-en="Rajshahi" data-bn="রাজশাহী">রাজশাহী</option>
-                <option value="khulna" data-en="Khulna" data-bn="খুলনা">খুলনা</option>
-            </select>
-            <input type="text" id="searchBox" class="header-search-input" placeholder="আপনার পছন্দের পণ্য খুঁজুন..." data-en-placeholder="Search your favorite product..." data-bn-placeholder="আপনার পছন্দের পণ্য খুঁজুন...">
-            <button class="header-search-btn" onclick="handleSearch()">
-                <i class="fa-solid fa-magnifying-glass"></i>
-            </button>
+        <!-- লোকেশন (জেলা > থানা > ইউনিয়ন) ও সার্চ বার সেকশন -->
+        <div class="search-location-bar" id="searchBarContainer">
+            <!-- ডাইনামিকালি জাভাস্ক্রিপ্ট দ্বারা রেন্ডার হবে -->
         </div>
     </header>
 
@@ -100,6 +90,7 @@
             applyLanguage();
             if (typeof renderMainCategories === 'function') renderMainCategories();
             if (typeof renderSubCategories === 'function') renderSubCategories();
+            if (typeof renderLocationDropdowns === 'function') renderLocationDropdowns();
             if (typeof renderProducts === 'function') renderProducts();
         }
 
@@ -131,20 +122,6 @@
                     opt.innerText = opt.getAttribute('data-bn');
                 }
             });
-        }
-
-        function handleSearch() {
-            const keyword = document.getElementById('searchBox').value;
-            if (typeof renderProducts === 'function') {
-                renderProducts(keyword);
-            }
-        }
-
-        function onHeaderLocationChange(selectEl) {
-            currentDistrict = selectEl.value;
-            if (typeof renderProducts === 'function') {
-                renderProducts();
-            }
         }
     </script>
     <script src="script.js"></script>
