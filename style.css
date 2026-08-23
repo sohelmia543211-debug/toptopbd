@@ -3,7 +3,10 @@ body {
     margin: 0;
     padding: 0;
     background-color: #f0f2f5;
-    padding-bottom: 70px; 
+    /* এখানে 70px এর বদলে 80px দিলাম, যাতে কোনোভাবেই কনটেন্ট ঢেকে না যায় */
+    padding-bottom: 80px; 
+    /* এটি দিলে মোবাইল ব্রাউজারে স্ক্রলিং স্মুথ হয় এবং নিচে ওভারল্যাপ হয় না */
+    box-sizing: border-box; 
 }
 
 /* হেডার ও সার্চ বার */
@@ -56,7 +59,6 @@ header h1 {
     padding: 4px;
     gap: 4px;
 }
-
 .search-location-bar:focus-within {
     border-color: #ff5722;
 }
@@ -276,30 +278,36 @@ header h1 {
     color: #ff5722;
 }
 
-/* বটম নেভবার */
+/* বটম নেভবার - এই অংশটুকু নিখুঁতভাবে ফিক্সড করা হলো */
 .bottom-nav {
     position: fixed;
     bottom: 0;
     left: 0;
+    right: 0; /* ডান দিকেও ফিক্সড করে দেওয়া হলো */
     width: 100%;
     background: #fff;
     display: flex;
     justify-content: space-around;
+    align-items: center;
     padding: 8px 0;
+    border-top: 1px solid #e0e0e0;
     box-shadow: 0 -2px 10px rgba(0,0,0,0.08);
-    z-index: 1000;
+    z-index: 9999; /* z-index বাড়িয়ে দেওয়া হলো যাতে সবার ওপরে থাকে */
+    height: 60px; /* একটি নির্দিষ্ট উচ্চতা দেওয়া হলো যাতে কেটে না যায় */
 }
 .bottom-nav-item {
     display: flex;
     flex-direction: column;
     align-items: center;
+    justify-content: center;
     text-decoration: none;
     color: #777;
     font-size: 11px;
+    flex: 1; /* সব আইটেম যেন সমান জায়গা নেয় */
 }
 .bottom-nav-item i {
-    font-size: 16px;
-    margin-bottom: 2px;
+    font-size: 18px; /* আইকন আরেকটু বড় করা হলো */
+    margin-bottom: 4px;
 }
 .bottom-nav-item.active {
     color: #ff5722;
