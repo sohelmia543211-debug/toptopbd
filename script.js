@@ -6,7 +6,11 @@ const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 let currentMainCategory = "সব"; 
 let currentSubCategory = "সব";
 let currentProductType = "used_product"; 
+let currentDistrict = "সব"; 
+let currentThana = "সব";     
+let currentUnion = "সব";     // ইউনিয়ন ফিল্টারের জন্য ভেরিয়েবল
 let globalProducts = [];
+let globalLocations = [];   
 
 // ১২টি হার্ডকোডেড মেইন ক্যাটাগরি এবং সাব-ক্যাটাগরি লিস্ট
 const hardcodedCategories = [
@@ -32,13 +36,13 @@ const hardcodedCategories = [
     id: "property",
     name: "প্রপার্টি",
     icon: "fa-building",
-    subcategories: ["বাসা/ফ্লাট ভাড়া", "জমি বা প্লট বিক্রি", "সাবলেট রুম", "দোকান বা অফিস স্পেস"]
+    subcategories: ["বাসা/ফ্লাট ভাড়া", "জমি বা প্লট বিক্রি", "সাবলেট রুম", "দোকান বা অফিস স্পেস"]
   },
   {
     id: "fashion",
     name: "ফ্যাশন",
     icon: "fa-shirt",
-    subcategories: ["পুরুষদের পোশাক", "নারীদের পোশাক", "জুতো ও ব্যাগ", "প্রসাধনী ও ঘড়ি"]
+    subcategories: ["পুরুষদের পোশাক", "নারীদের পোশাক", "জুতো ও ব্যাগ", "প্রসাধনী ও ঘড়ি"]
   },
   {
     id: "home_living",
@@ -50,7 +54,7 @@ const hardcodedCategories = [
     id: "pets",
     name: "পোষা প্রাণী",
     icon: "fa-dog",
-    subcategories: ["বিড়াল ও কুকুর", "পাখি ও মাছ", "গবাদিপশু", "পেট ফুড ও কেয়ার"]
+    subcategories: ["বিড়াল ও কুকুর", "পাখি ও মাছ", "গবাদিপশু", "পেট ফুড ও কেয়ার"]
   },
   {
     id: "books_sports",
@@ -104,7 +108,90 @@ async function fetchBanners() {
     } catch (err) { console.error('ব্যানার কানেকশন এরর:', err); }
 }
 
-// ২. প্রোডাক্ট ডাটা ফেচ করা এবং ক্যাটাগরি রেন্ডার করা
+// লোকেশন ডাটা ফেচ করা
+async function fetchLocations() {
+    try {
+        const { data, error } = await supabaseClient.from('locations').select('*');
+        if (!error && data) {
+            globalLocations = data;
+            renderDistrictDropdown(); 
+        }
+    } catch (err) {
+        console.error('লোকেশন লোড এরর:', err);
+    }
+}
+
+// ১. ইউনিক জেলাগুলো ড্রপডাউনে লোড করা
+function renderDistrictDropdown() {
+    const districtSelect = document.getElementById('districtFilter');
+    if (!districtSelect) return;
+
+    const uniqueDistricts = [...new Set(globalLocations.map(loc => loc.district))];
+
+    let html = `<option value="সব">📍 সব জেলা</option>`;
+    uniqueDistricts.forEach(district => {
+        html += `<option value="${district}">${district}</option>`;
+    });
+    districtSelect.innerHTML = html;
+}
+
+// ২. জেলা সিলেক্ট করলে থানা ড্রপডাউন বের হবে
+function onDistrictChange(districtName) {
+    currentDistrict = districtName;
+    currentThana = "সব";
+    currentUnion = "সব";
+
+    const thanaSelect = document.getElementById('thanaFilter');
+    const unionSelect = document.getElementById('unionFilter');
+
+    if (districtName === "সব") {
+        thanaSelect.style.display = "none";
+        unionSelect.style.display = "none";
+    } else {
+        thanaSelect.style.display = "block";
+        unionSelect.style.display = "none"; 
+
+        const filteredThanas = [...new Set(globalLocations.filter(loc => loc.district === districtName).map(loc => loc.thana))];
+        
+        let html = `<option value="সব">📍 সব থানা</option>`;
+        filteredThanas.forEach(thana => {
+            html += `<option value="${thana}">${thana}</option>`;
+        });
+        thanaSelect.innerHTML = html;
+    }
+    renderProducts();
+}
+
+// ৩. থানা সিলেক্ট করলে ইউনিয়ন ড্রপডাউন বের হবে
+function onThanaChange(thanaName) {
+    currentThana = thanaName;
+    currentUnion = "সব";
+
+    const unionSelect = document.getElementById('unionFilter');
+
+    if (thanaName === "সব") {
+        unionSelect.style.display = "none";
+    } else {
+        unionSelect.style.display = "block";
+
+        const filteredUnions = globalLocations.filter(loc => loc.district === currentDistrict && loc.thana === thanaName);
+        
+        let html = `<option value="সব">📍 সব ইউনিয়ন</option>`;
+        filteredUnions.forEach(loc => {
+            html += `<option value="${loc.union_name}">${loc.union_name}</option>`;
+        });
+        unionSelect.innerHTML = html;
+    }
+    renderProducts();
+}
+
+// ৪. ইউনিয়ন সিলেক্ট করার ফাংশন
+function onUnionChange(unionName) {
+    currentUnion = unionName;
+    renderProducts();
+}
+
+// প্রোডাক্ট ডাটা ফেচ করা এবং ক্যাটাগরি রেন্ডার করা
 async function fetchInitialData() {
     const productGrid = document.getElementById('productGrid');
     if (productGrid) productGrid.innerHTML = `<div class="cat-card shimmer-card" style="height: 120px; width: 100%;"></div>`.repeat(4);
@@ -112,9 +199,10 @@ async function fetchInitialData() {
     try {
         renderMainCategories();
         renderSubCategories();
+        await fetchLocations(); 
 
         const { data, error } = await supabaseClient.from('products').select('*');
-        if (!error) {
+        if (!error && data) {
             globalProducts = data;
         }
         renderProducts();
@@ -124,13 +212,13 @@ async function fetchInitialData() {
     }
 }
 
-// ৩. ড্রপডাউন থেকে প্রোডাক্ট টাইপ ফিল্টার করার ফাংশন
+// প্রোডাক্ট টাইপ ফিল্টার করার ফাংশন
 function filterProductsByType(type) {
     currentProductType = type;
     renderProducts();
 }
 
-// ৪. মেইন ক্যাটাগরি রেন্ডার করা (হার্ডকোড ডেটা থেকে)
+// মেইন ক্যাটাগরি রেন্ডার করা
 function renderMainCategories() {
     const grid = document.getElementById('mainCategories');
     if (!grid) return;
@@ -146,9 +234,9 @@ function renderMainCategories() {
     `;
 
     hardcodedCategories.forEach(cat => {
-        const isActive = (currentMainCategory !== "সব" && cat.id === currentMainCategory.id) ? 'active' : '';
+        const isActive = (currentMainCategory !== "সব" && currentMainCategory.id === cat.id) ? 'active' : '';
         html += `
-            <div class="cat-card ${isActive}" onclick='selectMainCategory(${JSON.stringify(cat)})'>
+            <div class="cat-card ${isActive}" onclick="selectMainCategory('${cat.id}')">
                 <div style="width: 35px; height: 35px; margin: 0 auto 3px auto; background: #fff5f2; border-radius: 6px; display: flex; align-items: center; justify-content: center; color: #ff5722;">
                     <i class="fa-solid ${cat.icon}" style="font-size: 14px;"></i>
                 </div>
@@ -159,22 +247,25 @@ function renderMainCategories() {
     grid.innerHTML = html;
 }
 
-function selectMainCategory(cat) {
-    currentMainCategory = cat;
+function selectMainCategory(catId) {
+    if (catId === 'সব') {
+        currentMainCategory = "সব";
+    } else {
+        currentMainCategory = hardcodedCategories.find(c => c.id === catId) || "সব";
+    }
     currentSubCategory = "সব"; 
     renderMainCategories();
     renderSubCategories(); 
     renderProducts();
 }
 
-// ৫. সাব-ক্যাটাগরি রেন্ডার করা
+// সাব-ক্যাটাগরি রেন্ডার করা
 function renderSubCategories() {
     const grid = document.getElementById('subCategories');
     if (!grid) return;
 
     let filteredSubs = [];
     if (currentMainCategory === "সব") {
-        // সব মেইন ক্যাটাগরির সাবক্যাটাগরিগুলো একসাথে দেখানোর জন্য
         filteredSubs = hardcodedCategories.flatMap(cat => cat.subcategories);
     } else {
         filteredSubs = currentMainCategory.subcategories || [];
@@ -211,7 +302,7 @@ function selectSubCategory(subName) {
     renderProducts();
 }
 
-// ৬. প্রোডাক্ট ফিল্টার করা
+// প্রোডাক্ট ফিল্টার করা
 function renderProducts(searchKeyword = "") {
     const grid = document.getElementById('productGrid');
     if (!grid) return;
@@ -229,8 +320,13 @@ function renderProducts(searchKeyword = "") {
             matchesSub = (p.sub_category === currentSubCategory || p.category === currentSubCategory);
         }
 
+        // জেলা, থানা ও ইউনিয়ন অনুযায়ী ফিল্টার শর্ত
+        let matchesDistrict = (currentDistrict === "সব" || p.district === currentDistrict);
+        let matchesThana = (currentThana === "সব" || p.thana === currentThana || p.location === currentThana);
+        let matchesUnion = (currentUnion === "সব" || p.union_name === currentUnion);
+
         let matchesSearch = p.name.toLowerCase().includes(searchKeyword.toLowerCase());
-        return matchesType && matchesMain && matchesSub && matchesSearch;
+        return matchesType && matchesMain && matchesSub && matchesDistrict && matchesThana && matchesUnion && matchesSearch;
     });
 
     if (filteredProducts.length === 0) {
@@ -256,7 +352,7 @@ function renderProducts(searchKeyword = "") {
     grid.innerHTML = productHtml;
 }
 
-// ৭. সার্চ বক্স লাইভ ফিল্টার
+// সার্চ বক্স লাইভ ফিল্টার
 const searchBox = document.getElementById('searchBox');
 if (searchBox) {
     searchBox.addEventListener('input', (e) => {
@@ -264,6 +360,7 @@ if (searchBox) {
     });
 }
 
+// উইন্ডো লোড হ্যান্ডলার
 window.onload = () => {
     fetchBanners();
     fetchInitialData();

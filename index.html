@@ -26,12 +26,28 @@
         </div>
     </div>
 
-    <!-- ৩. প্রোডাক্ট টাইপ ড্রপডাউন ফিল্টার সেকশন -->
-    <div class="filter-dropdown-container" style="text-align: center; margin: 20px 0;">
-        <select id="productTypeFilter" onchange="filterProductsByType(this.value)" style="padding: 12px 20px; font-size: 16px; font-weight: bold; border-radius: 25px; border: 2px solid #ff5722; background-color: #fff; color: #333; cursor: pointer; outline: none; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+    <!-- ৩. প্রোডাক্ট টাইপ ও ডায়নামিক লোকেশন ফিল্টার সেকশন -->
+    <div class="filter-dropdown-container" style="display: flex; justify-content: center; gap: 10px; margin: 20px 10px; flex-wrap: wrap;">
+        <!-- প্রোডাক্ট টাইপ ফিল্টার -->
+        <select id="productTypeFilter" onchange="filterProductsByType(this.value)" style="padding: 12px 15px; font-size: 15px; font-weight: bold; border-radius: 25px; border: 2px solid #ff5722; background-color: #fff; color: #333; cursor: pointer; outline: none; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
             <option value="used_product" selected>🔄 পুরনো পণ্য</option>
             <option value="new_product">✨ নতুন পণ্য</option>
             <option value="land_property">🏠 জমি ও প্রপার্টি</option>
+        </select>
+
+        <!-- ১. জেলা (District) ড্রপডাউন (সব সময় থাকবে) -->
+        <select id="districtFilter" onchange="onDistrictChange(this.value)" style="padding: 12px 15px; font-size: 15px; font-weight: bold; border-radius: 25px; border: 2px solid #ff5722; background-color: #fff; color: #333; cursor: pointer; outline: none; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+            <option value="সব" selected>📍 সব জেলা</option>
+        </select>
+
+        <!-- ২. থানা (Thana) ড্রপডাউন (জেলা সিলেক্ট করলে দৃশ্যমান হবে) -->
+        <select id="thanaFilter" onchange="onThanaChange(this.value)" style="display: none; padding: 12px 15px; font-size: 15px; font-weight: bold; border-radius: 25px; border: 2px solid #ff5722; background-color: #fff; color: #333; cursor: pointer; outline: none; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+            <option value="সব" selected>📍 সব থানা</option>
+        </select>
+
+        <!-- ৩. ইউনিয়ন (Union) ড্রপডাউন (থানা সিলেক্ট করলে দৃশ্যমান হবে) -->
+        <select id="unionFilter" onchange="onUnionChange(this.value)" style="display: none; padding: 12px 15px; font-size: 15px; font-weight: bold; border-radius: 25px; border: 2px solid #ff5722; background-color: #fff; color: #333; cursor: pointer; outline: none; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+            <option value="সব" selected>📍 সব ইউনিয়ন</option>
         </select>
     </div>
 

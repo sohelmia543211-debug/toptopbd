@@ -81,6 +81,34 @@ header h1 {
     text-shadow: 0 2px 5px rgba(0,0,0,0.8);
 }
 
+/* ফিল্টার ড্রপডাউন কন্টেইনার ও স্টাইল (প্রোডাক্ট টাইপ, জেলা ও থানা ড্রপডাউন) */
+.filter-dropdown-container {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin: 20px 10px;
+    flex-wrap: wrap;
+}
+
+.filter-dropdown-container select {
+    padding: 12px 15px;
+    font-size: 15px;
+    font-weight: bold;
+    border-radius: 25px;
+    border: 2px solid #ff5722;
+    background-color: #fff;
+    color: #333;
+    cursor: pointer;
+    outline: none;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    transition: all 0.2s ease;
+}
+
+.filter-dropdown-container select:hover {
+    border-color: #e64a19;
+    box-shadow: 0 6px 10px rgba(0,0,0,0.15);
+}
+
 /* ক্যাটাগরি ও অন্যান্য ডিজাইন */
 .categories-container, .sub-categories-container, .container {
     max-width: 1200px;
@@ -96,14 +124,14 @@ header h1 {
     padding-left: 6px;
 }
 
-/* মেইন ক্যাটাগরি গ্রিড - সাব-ক্যাটাগরির মতো এক লাইনে (Horizontal Scrollable) ফিক্স করা হলো */
+/* মেইন ক্যাটাগরি গ্রিড - কার্ডগুলো কাছাকাছি রাখার জন্য ফিক্সড */
 .categories-grid {
-    display: flex;
-    flex-direction: row;
-    flex-wrap: nowrap;
-    gap: 8px;                         
+    display: grid;
+    grid-template-rows: repeat(2, auto);
+    grid-auto-flow: column;             
+    gap: 6px 8px;                         
     overflow-x: auto;                     
-    padding: 4px 4px 10px 4px;
+    padding: 4px;
     scrollbar-width: none;
 }
 .categories-grid::-webkit-scrollbar {
@@ -153,7 +181,7 @@ header h1 {
     transform: translateY(-2px);
 }
 
-/* সাব-ক্যাটাগরি কন্টেইনার - মেইন ক্যাটাগরি থেকে স্পষ্ট গ্যাপ সহ এক সারিতে থাকবে */
+/* সাব-ক্যাটাগরি কন্টেইনার */
 .sub-categories-container {
     padding: 10px 10px 5px 10px;
 }
