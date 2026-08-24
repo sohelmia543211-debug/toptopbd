@@ -452,7 +452,7 @@ function renderProducts() {
     let filteredProducts = globalProducts.filter(p => {
         let matchesType = true;
         if (currentProductType === 'land_property') {
-            matchesType = (p.product_type === 'land_property' || p.Maincategory === 'প্রপার্টি' || p.category === 'প্রপার্টি' || p.category_id === 'property' || p.main_category_id === 3);
+            matchesType = (p.product_type === 'land_property' || p.Maincategory === 'প্রপার্টি' || p.category === 'প্রপার্টি' || p.category_id === 'property' || p.main_category_id == 3);
         } else if (currentProductType) {
             matchesType = (p.product_type === currentProductType);
         }

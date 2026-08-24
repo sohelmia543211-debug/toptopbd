@@ -45,7 +45,7 @@ header h1 {
     background: #ffe0d6;
 }
 
-/* সার্চ বার ও লোকেশন একসাথে ফ্রেম (হাইট ও প্রিমিয়াম ডিজাইন বাড়ানো হলো) */
+/* সার্চ বার ও লোকেশন একসাথে ফ্রেম (লোকেশন ও সার্চের ব্যাকগ্রাউন্ড আলাদা করা হয়েছে) */
 .search-location-bar {
     display: flex;
     align-items: center;
@@ -61,35 +61,43 @@ header h1 {
     box-shadow: 0 0 0 2px rgba(255, 87, 34, 0.1);
 }
 
+/* লোকেশন ড্রপডাউন অংশ (হালকা অফ-হোয়াইট ব্যাকগ্রাউন্ড) */
 .header-location-select {
-    background: transparent;
-    border: none;
-    border-right: 1px solid #eee;
-    padding: 10px 8px; /* হাইট বাড়ানোর জন্য প্যাডিং বাড়ানো হলো */
-    font-size: 13px; /* ফন্ট সাইজ একটু বড় করা হলো */
-    color: #444;
+    background: #f1f5f9; 
+    border: 1px solid #e2e8f0;
+    border-radius: 6px;
+    padding: 10px 8px; 
+    font-size: 13px; 
+    color: #1e293b;
+    font-weight: 500;
     outline: none;
-    max-width: 110px; /* চওড়া একটু বাড়ানো হলো */
+    max-width: 115px; 
     cursor: pointer;
 }
 
+/* সার্চ ইনপুট ফিল্ড (একদম পরিষ্কার সাদা ব্যাকগ্রাউন্ড) */
 .header-search-input {
     flex: 1;
-    border: none;
-    background: transparent;
-    padding: 10px 8px; /* হাইট সামঞ্জস্য করা হলো */
+    border: 1px solid #e2e8f0;
+    background: #ffffff;
+    border-radius: 6px;
+    padding: 10px 10px; 
     font-size: 13px;
     outline: none;
     color: #333;
     min-width: 80px;
 }
 
+.header-search-input:focus, .header-location-select:focus {
+    border-color: #ff5722;
+}
+
 /* লোকেশন বা সার্চ রিসেট বাটন স্টাইল */
 .header-reset-btn {
     background: #f1f1f2;
-    border: none;
+    border: 1px solid #e2e8f0;
     color: #555;
-    padding: 8px 10px;
+    padding: 9px 10px;
     border-radius: 6px;
     cursor: pointer;
     display: flex;
@@ -107,7 +115,7 @@ header h1 {
     background: #ff5722;
     border: none;
     color: #fff;
-    padding: 10px 14px; /* বাটন হাইট বাড়ানো হলো */
+    padding: 10px 14px; 
     border-radius: 6px;
     cursor: pointer;
     font-size: 13px;
