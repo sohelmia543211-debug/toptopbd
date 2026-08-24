@@ -220,6 +220,7 @@ function renderFilterCards() {
 
     const lang = getLang();
     const placeholderText = lang === 'en' ? 'Search...' : 'পণ্য খুঁজুন...';
+    const resetText = lang === 'en' ? 'Reset' : 'রিসেট';
 
     const allDistText = lang === 'en' ? 'All Districts' : 'সব জেলা';
     const districts = [...new Set(globalLocations.map(item => item.district))].filter(Boolean);
@@ -239,13 +240,14 @@ function renderFilterCards() {
             ${renderDynamicLocationOptions(districts)}
         </select>
 
+        <button class="header-reset-btn" onclick="resetAllFilters()" title="Reset Filters" style="background: #e65100; color: #ffffff; border: none; border-radius: 6px; padding: 0 12px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 6px; white-space: nowrap; height: 38px;">
+            <i class="fa-solid fa-rotate-right"></i>
+            <span>${resetText}</span>
+        </button>
+
         <input type="text" class="header-search-input" id="mainSearchInput" value="${currentSearchKeyword}" placeholder="${placeholderText}" oninput="handleSearchInput(this.value)" />
 
-        ${currentSearchKeyword ? `<button onclick="clearSearchInput()" class="header-reset-btn" style="padding: 5px 8px;"><i class="fa-solid fa-xmark"></i></button>` : ''}
-
-        <button class="header-reset-btn" onclick="resetAllFilters()" title="Reset">
-            <i class="fa-solid fa-rotate-right"></i>
-        </button>
+        ${currentSearchKeyword ? `<button onclick="clearSearchInput()" class="header-reset-btn" style="padding: 5px 8px; background: transparent; border: none; cursor: pointer; color: #666;"><i class="fa-solid fa-xmark"></i></button>` : ''}
 
         <button class="header-search-btn" onclick="triggerSearch()">
             <i class="fa-solid fa-magnifying-glass"></i>
