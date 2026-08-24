@@ -209,19 +209,20 @@
                 </div>
 
                 <div class="form-group">
-                    <label>মূল ক্যাটেগরি</label>
+                    <label>মূল ক্যাটেগরি (Maincategory)</label>
                     <select id="mainCategorySelect" class="form-control" onchange="updateSubCategories()" required>
                         <option value="">ক্যাটেগরি নির্বাচন করুন</option>
                     </select>
                 </div>
 
                 <div class="form-group">
-                    <label>সাব-ক্যাটেগরি</label>
+                    <label>সাব-ক্যাটেগরি (sub_categor)</label>
                     <select id="subCategorySelect" class="form-control" required>
                         <option value="">প্রথমে মূল ক্যাটেগরি নির্বাচন করুন</option>
                     </select>
                 </div>
 
+                <!-- লোকেশন ড্রপডাউন অংশ -->
                 <div class="form-group">
                     <label>জেলা (District)</label>
                     <select id="districtSelect" class="form-control" onchange="updateThanas()" required>
@@ -242,9 +243,10 @@
                         <option value="">প্রথমে থানা নির্বাচন করুন</option>
                     </select>
                 </div>
+                <!-- লোকেশন ড্রপডাউন সমাপ্ত -->
 
                 <div class="form-group">
-                    <label>পণ্যের দাম (টাকা)</label>
+                    <label>পণ্যের দাম (টাকা) [price]</label>
                     <input type="number" id="prodPrice" class="form-control" placeholder="যেমন: ৫০০" required>
                 </div>
 
@@ -264,17 +266,17 @@
                 </div>
 
                 <div class="form-group">
-                    <label>হোয়াটসঅ্যাপ নম্বর বা লিংক (WhatsApp Number or Link)</label>
-                    <input type="text" id="whatsappLink" class="form-control" placeholder="নাম্বার দিন (যেমন: 01712345678) অথবা পুরো লিংক দিন" required>
+                    <label>হোয়াটসঅ্যাপ নম্বর বা লিংক</label>
+                    <input type="text" id="whatsappLink" class="form-control" placeholder="নাম্বার দিন অথবা পুরো লিংক দিন" required>
                 </div>
 
                 <div class="form-group">
-                    <label>মেসেঞ্জার ইউজারনেম বা লিংক (Messenger Username or Link)</label>
-                    <input type="text" id="messengerLink" class="form-control" placeholder="ইউজারনেম দিন (যেমন: username) অথবা পুরো লিংক দিন" required>
+                    <label>মেসেঞ্জার ইউজারনেম বা লিংক</label>
+                    <input type="text" id="messengerLink" class="form-control" placeholder="ইউজারনেম দিন অথবা পুরো লিংক দিন" required>
                 </div>
 
                 <div class="form-group">
-                    <label>পণ্যের বিবরণ (Description)</label>
+                    <label>পণ্যের বিবরণ (Short Description)</label>
                     <textarea id="prodDesc" class="form-control" placeholder="পণ্যের সাইজ, কালার বা অন্যান্য বিবরণ লিখুন..."></textarea>
                 </div>
 
@@ -477,6 +479,7 @@
             subSelect.innerHTML = html;
         }
 
+        // Supabase এর locations টেবিল থেকে সব ডেটা ফেচ করা
         async function fetchLocationsFromSupabase() {
             try {
                 const { data, error } = await supabaseClient.from('locations').select('*');
@@ -485,16 +488,17 @@
                     globalLocations = data;
                     loadDistricts();
                 } else {
-                    console.warn('Locations table is empty or not found.');
+                    console.warn('Locations table-এ কোনো ডাটা পাওয়া যায়নি।');
                 }
             } catch (err) {
                 console.error('লোকেশন লোড করতে সমস্যা হয়েছে:', err);
             }
         }
 
+        // জেলা ড্রপডাউন লোড করা
         function loadDistricts() {
             const districtSelect = document.getElementById('districtSelect');
-            const districts = [...new Set(globalLocations.map(item => item.district || item.district_name || item.zilla))].filter(Boolean);
+            const districts = [...new Set(globalLocations.map(item => item.district))].filter(Boolean);
             
             let html = '<option value="">জেলা নির্বাচন করুন</option>';
             districts.sort().forEach(d => {
@@ -503,6 +507,7 @@
             districtSelect.innerHTML = html;
         }
 
+        // জেলা সিলেক্ট করলে সংশ্লিষ্ট থানাগুলো দেখানো
         function updateThanas() {
             const selectedDistrict = document.getElementById('districtSelect').value;
             const thanaSelect = document.getElementById('thanaSelect');
@@ -516,10 +521,8 @@
                 return;
             }
 
-            const filteredThanas = globalLocations.filter(item => 
-                (item.district === selectedDistrict || item.district_name === selectedDistrict || item.zilla === selectedDistrict)
-            );
-            const thanas = [...new Set(filteredThanas.map(item => item.thana || item.upazila || item.thana_name))].filter(Boolean);
+            const filteredThanas = globalLocations.filter(item => item.district === selectedDistrict);
+            const thanas = [...new Set(filteredThanas.map(item => item.thana))].filter(Boolean);
             
             thanas.sort().forEach(t => {
                 html += `<option value="${t}">${t}</option>`;
@@ -527,6 +530,7 @@
             thanaSelect.innerHTML = html;
         }
 
+        // থানা সিলেক্ট করলে সংশ্লিষ্ট ইউনিয়নগুলো দেখানো
         function updateUnions() {
             const selectedDistrict = document.getElementById('districtSelect').value;
             const selectedThana = document.getElementById('thanaSelect').value;
@@ -539,10 +543,9 @@
             }
 
             const filteredUnions = globalLocations.filter(item => 
-                (item.district === selectedDistrict || item.district_name === selectedDistrict || item.zilla === selectedDistrict) && 
-                (item.thana === selectedThana || item.upazila === selectedThana || item.thana_name === selectedThana)
+                item.district === selectedDistrict && item.thana === selectedThana
             );
-            const unions = [...new Set(filteredUnions.map(item => item.union_name || item.union || item.area))].filter(Boolean);
+            const unions = [...new Set(filteredUnions.map(item => item.union_name))].filter(Boolean);
             
             unions.sort().forEach(u => {
                 html += `<option value="${u}">${u}</option>`;
@@ -569,18 +572,13 @@
             return publicUrlData.publicUrl;
         }
 
-        // WhatsApp লিংক ফরম্যাটিং ফাংশন
         function formatWhatsAppLink(input) {
             let val = input.trim();
             if (!val) return '';
-            
-            // যদি ইনপুটটি পুরো URL হয়
             if (val.startsWith('http://') || val.startsWith('https://')) {
                 return val;
             }
-            
-            // শুধুমাত্র নম্বর দিলে (যেমন: 01712...) সেটিকে wa.me ফরম্যাটে রূপান্তর করা
-            let cleanNumber = val.replace(/\D/g, ''); // শুধু ডিজিট রাখা
+            let cleanNumber = val.replace(/\D/g, '');
             if (cleanNumber.startsWith('88')) {
                 return `https://wa.me/${cleanNumber}`;
             } else if (cleanNumber.length === 11) {
@@ -590,22 +588,17 @@
             }
         }
 
-        // Messenger লিংক ফরম্যাটিং ফাংশন
         function formatMessengerLink(input) {
             let val = input.trim();
             if (!val) return '';
-            
-            // যদি ইনপুটটি পুরো URL হয়
             if (val.startsWith('http://') || val.startsWith('https://')) {
-                // facebook.com বা m.me লিংকে রূপান্তরের প্রয়োজন থাকলে তা করা যাবে, তবে ইউজার যা দেবে তা ঠিক থাকলে সরাসরি রিটার্ন করবে
                 return val;
             }
-            
-            // শুধু ইউজারনেম দিলে m.me/... ফরম্যাটে রূপান্তর করা
             let username = val.replace('@', '');
             return `https://m.me/${username}`;
         }
 
+        // পণ্য আপলোড করার সময় ইউজার যা সিলেক্ট করেছে তা products টেবিলে পাঠানো
         async function uploadProduct(event) {
             event.preventDefault();
 
@@ -635,6 +628,7 @@
                 const category = mainCatObj ? mainCatObj.name.bn : '';
                 const subCategory = document.getElementById('subCategorySelect').value;
                 
+                // ড্রপডাউন থেকে সিলেক্ট করা লোকেশন ভ্যালুগুলো নেওয়া হচ্ছে
                 const district = document.getElementById('districtSelect').value;
                 const thana = document.getElementById('thanaSelect').value;
                 const unionName = document.getElementById('unionSelect').value;
@@ -642,13 +636,13 @@
                 const price = parseFloat(document.getElementById('prodPrice').value);
                 const description = document.getElementById('prodDesc').value;
                 
-                // হোয়াটসঅ্যাপ এবং মেসেঞ্জার লিংক প্রসেসিং
                 const rawWhatsapp = document.getElementById('whatsappLink').value;
                 const rawMessenger = document.getElementById('messengerLink').value;
                 
                 const whatsappLink = formatWhatsAppLink(rawWhatsapp);
                 const messengerLink = formatMessengerLink(rawMessenger);
 
+                // products টেবিলে ডেটা ইনসার্ট করা
                 const { error: insertError } = await supabaseClient
                     .from('products')
                     .insert([
@@ -656,9 +650,8 @@
                             seller_id: currentSeller.id,
                             name: name,
                             product_type: productType,
-                            category: category,
-                            category_id: mainCatId,
-                            sub_category: subCategory,
+                            Maincategory: category,
+                            sub_categor: subCategory,
                             price: price,
                             image_url: imageUrl1,
                             image_url_1: imageUrl2,
@@ -666,14 +659,15 @@
                             whatsapp_link: whatsappLink,
                             messenger_link: messengerLink,
                             short_description: description,
-                            union_name: unionName,
-                            thana: thana,
-                            district: district
+                            District: district,
+                            Thana: thana,
+                            Union: unionName
                         }
                     ]);
 
                 if (insertError) throw insertError;
 
+                // কয়েন ১ কমানো
                 const newCoins = currentSeller.coins - 1;
                 const { error: updateError } = await supabaseClient
                     .from('sellers')
