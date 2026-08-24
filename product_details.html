@@ -150,12 +150,6 @@
         .btn:hover {
             opacity: 0.9;
         }
-        .order-btn {
-            background: #ff5722;
-            color: white;
-            padding: 12px;
-            font-size: 16px;
-        }
         .chat-buttons-row {
             display: flex;
             gap: 10px;
@@ -225,10 +219,6 @@
 
                 selectedImageUrl = images[0];
 
-                const orderAction = data.order_link 
-                    ? `href="${data.order_link}" target="_blank"` 
-                    : `onclick="alert('অর্ডার প্রসেস শুরু হয়েছে!')"`;
-
                 container.innerHTML = `
                     <div class="title-row">
                         <h1 class="product-title">${data.name}</h1>
@@ -256,10 +246,6 @@
                     <div class="product-description">${data.description || data.short_description || 'কোনো বিবরণ দেওয়া হয়নি।'}</div>
 
                     <div class="action-buttons">
-                        <a ${orderAction} class="btn order-btn" style="text-decoration: none; text-align: center; display: block;">
-                            <i class="fa-solid fa-cart-shopping"></i> অর্ডার করুন (Orders)
-                        </a>
-                        
                         <div class="chat-buttons-row">
                             <button onclick="sendToWhatsApp()" class="btn whatsapp-btn">
                                 <i class="fa-brands fa-whatsapp"></i> WhatsApp
