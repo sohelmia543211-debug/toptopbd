@@ -192,25 +192,21 @@ function renderBannerSlider() {
 
     const banner = globalBanners[bannerIndex];
     
-    let dotsHtml = '<div style="display: flex; gap: 5px; justify-content: center; margin-top: 4px;">';
+    // ডটস (Dots) তৈরি করার জন্য লুপ
+    let dotsHtml = '<div style="position: absolute; bottom: 8px; left: 50%; transform: translateX(-50%); display: flex; gap: 5px; z-index: 3;">';
     globalBanners.forEach((_, idx) => {
         const dotBg = idx === bannerIndex ? '#ff5722' : 'rgba(255,255,255,0.6)';
-        dotsHtml += `<div onclick="changeBanner(${idx})" style="width: 7px; height: 7px; border-radius: 50%; background: ${dotBg}; cursor: pointer; transition: 0.3s;"></div>`;
+        dotsHtml += `<div onclick="changeBanner(${idx})" style="width: 8px; height: 8px; border-radius: 50%; background: ${dotBg}; cursor: pointer; transition: 0.3s;"></div>`;
     });
     dotsHtml += '</div>';
 
-    const bgStyle = banner.image_url && banner.image_url.startsWith('http') 
-        ? `background-image: url('${banner.image_url}'); background-size: cover; background-position: center;`
-        : `background: linear-gradient(135deg, #ff5722, #e65100);`;
-
-    // ব্যানার বক্সের ভেতরের কন্টেন্ট ফ্লেক্স করে নিচে নামিয়ে দেওয়া হলো (justify-content: flex-end)
     bannerContainer.innerHTML = `
-        <div class="banner-slider" style="${bgStyle} position: relative; width: 100%; height: 160px; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 5px rgba(0,0,0,0.1); margin-bottom: 15px; display: flex; flex-direction: column; justify-content: flex-end; transition: all 0.5s ease-in-out;">
-            <div class="banner-overlay" style="background: rgba(0, 0, 0, 0.65); padding: 6px 10px; width: 100%; backdrop-filter: blur(2px); text-align: center;">
-                <h2 class="banner-title" style="margin: 0; font-size: 15px; font-weight: bold; color: #ffffff; line-height: 1.2;">${banner.title}</h2>
-                <p class="banner-subtitle" style="margin: 2px 0 0 0; font-size: 11px; color: #f1f1f1; line-height: 1.2;">${banner.subtitle}</p>
-                ${dotsHtml}
+        <div class="banner-slider" style="background-image: url('${banner.image_url}'); position: relative; background-size: cover; background-position: center; transition: background-image 0.5s ease-in-out;">
+            <div class="banner-overlay" style="background: rgba(0,0,0,0.3); width: 100%; height: 100%; display: flex; flex-direction: column; justify-content: center; padding: 15px; color: white;">
+                <h2 class="banner-title" style="margin: 0; font-size: 18px; font-weight: bold; text-shadow: 1px 1px 3px rgba(0,0,0,0.7);">${banner.title}</h2>
+                <p class="banner-subtitle" style="margin: 5px 0 0 0; font-size: 13px; text-shadow: 1px 1px 2px rgba(0,0,0,0.7);">${banner.subtitle}</p>
             </div>
+            ${dotsHtml}
         </div>
     `;
 }
@@ -222,13 +218,13 @@ function startBannerInterval() {
             bannerIndex = (bannerIndex + 1) % globalBanners.length;
             renderBannerSlider();
         }
-    }, 3500);
+    }, 3500); // প্রতি ৩.৫ সেকেন্ড পর পর স্লাইড পরিবর্তন হবে
 }
 
 function changeBanner(index) {
     bannerIndex = index;
     renderBannerSlider();
-    startBannerInterval();
+    startBannerInterval(); // ম্যানুয়ালি ক্লিক করলে টাইমার রিস্টার্ট হবে
 }
 
 async function fetchInitialData() {
