@@ -218,9 +218,14 @@ function renderFilterCards() {
     const searchBarContainer = document.getElementById('searchBarContainer');
     if (!searchBarContainer) return;
 
+    // দুই পাশের মার্জিন/প্যাডিং জিরো করে পুরো স্ক্রিন জুড়ে জায়গা করে দেওয়া হলো
+    searchBarContainer.style.paddingLeft = '4px';
+    searchBarContainer.style.paddingRight = '4px';
+    searchBarContainer.style.marginLeft = '0px';
+    searchBarContainer.style.marginRight = '0px';
+
     const lang = getLang();
     const placeholderText = lang === 'en' ? 'Search...' : 'পণ্য খুঁজুন...';
-    const resetText = lang === 'en' ? 'Reset' : 'রিসেট';
 
     const allDistText = lang === 'en' ? 'All Districts' : 'সব জেলা';
     const districts = [...new Set(globalLocations.map(item => item.district))].filter(Boolean);
@@ -235,23 +240,24 @@ function renderFilterCards() {
     }
 
     searchBarContainer.innerHTML = `
-        <select class="header-location-select" id="singleLocationSelect" onchange="handleLocationSelection(this.value)">
-            <option value="ALL">${locationLabel}</option>
-            ${renderDynamicLocationOptions(districts)}
-        </select>
+        <div style="display: flex; width: 100%; align-items: center; gap: 0;">
+            <select class="header-location-select" id="singleLocationSelect" onchange="handleLocationSelection(this.value)" style="background: #ff5722; color: #ffffff; border: none; border-radius: 6px 0 0 6px; padding: 0 8px; font-weight: 500; height: 40px; cursor: pointer; max-width: 115px; text-overflow: ellipsis; font-size: 13px;">
+                <option value="ALL" style="background: #ffffff; color: #333;">${locationLabel}</option>
+                ${renderDynamicLocationOptions(districts)}
+            </select>
 
-        <button class="header-reset-btn" onclick="resetAllFilters()" title="Reset Filters" style="background: #e65100; color: #ffffff; border: none; border-radius: 6px; padding: 0 12px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 6px; white-space: nowrap; height: 38px;">
-            <i class="fa-solid fa-rotate-right"></i>
-            <span>${resetText}</span>
-        </button>
+            <button class="header-reset-btn" onclick="resetAllFilters()" title="Reset Filters" style="background: #e65100; color: #ffffff; border: none; border-radius: 0; padding: 0 8px; cursor: pointer; display: flex; align-items: center; justify-content: center; height: 40px; border-left: 1px solid rgba(255,255,255,0.2);">
+                <i class="fa-solid fa-rotate-right" style="font-size: 12px;"></i>
+            </button>
 
-        <input type="text" class="header-search-input" id="mainSearchInput" value="${currentSearchKeyword}" placeholder="${placeholderText}" oninput="handleSearchInput(this.value)" />
+            <input type="text" class="header-search-input" id="mainSearchInput" value="${currentSearchKeyword}" placeholder="${placeholderText}" oninput="handleSearchInput(this.value)" style="flex: 1; border-radius: 0; height: 40px; padding: 0 10px; border: 1px solid #ddd; border-left: none; border-right: none; font-size: 14px;" />
 
-        ${currentSearchKeyword ? `<button onclick="clearSearchInput()" class="header-reset-btn" style="padding: 5px 8px; background: transparent; border: none; cursor: pointer; color: #666;"><i class="fa-solid fa-xmark"></i></button>` : ''}
+            ${currentSearchKeyword ? `<button onclick="clearSearchInput()" class="header-reset-btn" style="padding: 0 8px; background: #fff; border-top: 1px solid #ddd; border-bottom: 1px solid #ddd; cursor: pointer; color: #666; height: 40px; display: flex; align-items: center;"><i class="fa-solid fa-xmark"></i></button>` : ''}
 
-        <button class="header-search-btn" onclick="triggerSearch()">
-            <i class="fa-solid fa-magnifying-glass"></i>
-        </button>
+            <button class="header-search-btn" onclick="triggerSearch()" style="border-radius: 0 6px 6px 0; height: 40px; background: #ff5722; color: white; border: none; padding: 0 12px; cursor: pointer;">
+                <i class="fa-solid fa-magnifying-glass" style="font-size: 14px;"></i>
+            </button>
+        </div>
     `;
 }
 
@@ -259,17 +265,17 @@ function renderDynamicLocationOptions(districts) {
     let html = "";
     if (currentDistrict === "সব") {
         districts.forEach(d => {
-            html += `<option value="DIST_${d}">${d}</option>`;
+            html += `<option value="DIST_${d}" style="background: #ffffff; color: #333;">${d}</option>`;
         });
     } else if (currentThana === "সব") {
         const thanas = [...new Set(globalLocations.filter(item => item.district === currentDistrict).map(item => item.thana))].filter(Boolean);
         thanas.forEach(t => {
-            html += `<option value="THANA_${t}">👉 ${t}</option>`;
+            html += `<option value="THANA_${t}" style="background: #ffffff; color: #333;">👉 ${t}</option>`;
         });
     } else {
         const unions = [...new Set(globalLocations.filter(item => item.district === currentDistrict && item.thana === currentThana).map(item => item.union_name || item.union))].filter(Boolean);
         unions.forEach(u => {
-            html += `<option value="UNION_${u}">⭐ ${u}</option>`;
+            html += `<option value="UNION_${u}" style="background: #ffffff; color: #333;">⭐ ${u}</option>`;
         });
     }
     return html;
