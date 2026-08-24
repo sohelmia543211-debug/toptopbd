@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>পণ্য খুঁজুন - TopTop</title>
+    <!-- FontAwesome & Tailwind/Custom CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: sans-serif; }
+        body { background: #f8f9fa; color: #333; }
+        
+        /* টপ সার্চ হেডার */
+        .search-header {
+            display: flex;
+            align-items: center;
+            background: #ffffff;
+            padding: 10px 15px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            gap: 10px;
+        }
+        .back-btn {
+            background: none;
+            border: none;
+            font-size: 18px;
+            color: #333;
+            cursor: pointer;
+        }
+        
+        /* সার্চ ইনপুট এবং ড্রপডাউন র‍্যাপার */
+        .search-input-wrapper {
+            flex: 1;
+            position: relative;
+        }
+        .search-input-box {
+            display: flex;
+            align-items: center;
+            background: #f1f1f1;
+            border-radius: 20px;
+            padding: 0 15px;
+            height: 40px;
+        }
+        .search-input-box input {
+            flex: 1;
+            border: none;
+            background: transparent;
+            outline: none;
+            font-size: 14px;
+            padding-left: 8px;
+        }
+        .search-input-box i {
+            color: #777;
+            font-size: 14px;
+        }
+
+        /* ড্রপডাউন সাজেশন বক্স স্টাইল */
+        .search-dropdown {
+            position: absolute;
+            top: 45px;
+            left: 0;
+            right: 0;
+            background: #ffffff;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            max-height: 350px;
+            overflow-y: auto;
+            z-index: 1000;
+            display: none;
+            border: 1px solid #eee;
+        }
+        .dropdown-item {
+            display: flex;
+            align-items: center;
+            padding: 10px 12px;
+            border-bottom: 1px solid #f1f1f1;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        .dropdown-item:last-child {
+            border-bottom: none;
+        }
+        .dropdown-item:hover {
+            background: #f8f9fa;
+        }
+        .dropdown-img {
+            width: 45px;
+            height: 45px;
+            border-radius: 6px;
+            background: #f1f1f1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            margin-right: 12px;
+            flex-shrink: 0;
+            color: #aaa;
+        }
+        .dropdown-img img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .dropdown-info {
+            flex: 1;
+            overflow: hidden;
+        }
+        .dropdown-info h4 {
+            font-size: 13px;
+            color: #333;
+            margin: 0 0 3px 0;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .dropdown-info p {
+            font-size: 11px;
+            color: #666;
+            margin: 0 0 3px 0;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .dropdown-price {
+            font-size: 12px;
+            font-weight: 700;
+            color: #ff5722;
+        }
+
+        /* সাজেশন এবং রিসেন্ট সেকশন */
+        .search-body {
+            padding: 15px;
+        }
+        .section-title {
+            font-size: 14px;
+            font-weight: bold;
+            color: #555;
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .tag-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 20px;
+        }
+        .suggestion-tag {
+            background: #ffffff;
+            border: 1px solid #ddd;
+            padding: 6px 12px;
+            border-radius: 15px;
+            font-size: 12px;
+            color: #444;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        .suggestion-tag:active {
+            background: #ff5722;
+            color: white;
+            border-color: #ff5722;
+        }
+
+        /* মেইন পেজের মতো প্রোডাক্ট গ্রিড ও কার্ড ডিজাইন (সম্পূর্ণ রেজাল্ট দেখার জন্য) */
+        .search-product-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+        }
+        @media (min-width: 768px) {
+            .search-product-grid {
+                grid-template-columns: repeat(4, 1fr);
+            }
+        }
+        .search-product-card {
+            background: #fff;
+            border-radius: 8px;
+            overflow: hidden;
+            border: 1px solid #eee;
+            transition: transform 0.2s;
+            cursor: pointer;
+        }
+        .search-product-card:hover {
+            transform: translateY(-2px);
+        }
+        .search-product-img-box {
+            width: 100%;
+            height: 140px;
+            background: #f8f9fa;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #aaa;
+        }
+        .search-product-img-box img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .search-product-info {
+            padding: 10px;
+        }
+        .search-product-info h3 {
+            font-size: 13px;
+            margin: 0 0 5px 0;
+            color: #333;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .search-product-desc {
+            font-size: 11px;
+            color: #666;
+            margin-bottom: 6px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .search-price {
+            font-size: 14px;
+            font-weight: 700;
+            color: #ff5722;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- হেডার সার্চ ইনপুট -->
+    <div class="search-header">
+        <button class="back-btn" onclick="history.back()"><i class="fa-solid fa-arrow-left"></i></button>
+        <div class="search-input-wrapper">
+            <div class="search-input-box">
+                <i class="fa-solid fa-magnifying-glass"></i>
+                <input type="text" id="searchInput" placeholder="মোবাইল, ল্যাপটপ বা পণ্য খুঁজুন..." oninput="handleLiveSearch(this.value)">
+                <i class="fa-solid fa-xmark" id="clearBtn" style="cursor: pointer; display: none;" onclick="clearInput()"></i>
+            </div>
+            <!-- ড্রপডাউন সাজেশন লিস্ট বক্স -->
+            <div id="searchDropdown" class="search-dropdown"></div>
+        </div>
+    </div>
+
+    <!-- বডি কন্টেন্ট (সাজেশন ও রেজাল্ট) -->
+    <div class="search-body">
+        <!-- ট্রেন্ডিং বা জনপ্রিয় সাজেশন -->
+        <div id="suggestionSection">
+            <div class="section-title"><span>জনপ্রিয় সার্চ (Trending)</span></div>
+            <div class="tag-container">
+                <div class="suggestion-tag" onclick="searchByKeyword('স্মার্টফোন')">স্মার্টফোন</div>
+                <div class="suggestion-tag" onclick="searchByKeyword('ল্যাপটপ')">ল্যাপটপ</div>
+                <div class="suggestion-tag" onclick="searchByKeyword('মোটরসাইকেল')">মোটরসাইকেল</div>
+                <div class="suggestion-tag" onclick="searchByKeyword('ফ্রিজ')">ফ্রিজ</div>
+                <div class="suggestion-tag" onclick="searchByKeyword('টিভি')">টিভি</div>
+                <div class="suggestion-tag" onclick="searchByKeyword('সোফা')">সোফা</div>
+            </div>
+        </div>
+
+        <!-- লাইভ সার্চ প্রোডাক্ট রেজাল্ট গ্রিড -->
+        <div id="searchResultContainer">
+            <!-- সম্পূর্ণ গ্রিড রেজাল্ট এখানে লোড হবে -->
+        </div>
+    </div>
+
+    <script>
+        const SUPABASE_URL = 'https://mzqqkkgdggwmpegvqaol.supabase.co';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im16cXFra2dkZ2d3bXBlZ3ZxYW9sIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODY4MDU4NDUsImV4cCI6MjEwMjM4MTg0NX0.hbUQ4dKjX2iXTF-ugi7JkV_-J5gKIpSEsPN8RpJ0EEo';
+        const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+        let searchTimeout;
+
+        // পেজ লোড হওয়ার সাথে সাথে ইনপুটে ফোকাস থাকবে
+        window.onload = () => {
+            document.getElementById('searchInput').focus();
+        }
+
+        function handleLiveSearch(keyword) {
+            const clearBtn = document.getElementById('clearBtn');
+            const suggestionSection = document.getElementById('suggestionSection');
+            const dropdown = document.getElementById('searchDropdown');
+            const container = document.getElementById('searchResultContainer');
+
+            clearTimeout(searchTimeout);
+
+            if (keyword.trim() !== "") {
+                clearBtn.style.display = 'block';
+                suggestionSection.style.display = 'none'; 
+                
+                // ডিবাউন্স: ৩০০ মিলি সেকেন্ড পর ডেটাবেজ থেকে ডেটা ফেচ করবে
+                searchTimeout = setTimeout(() => {
+                    fetchProductsFromDatabase(keyword.trim());
+                }, 300);
+            } else {
+                clearBtn.style.display = 'none';
+                suggestionSection.style.display = 'block';
+                dropdown.style.display = 'none';
+                dropdown.innerHTML = "";
+                container.innerHTML = "";
+            }
+        }
+
+        // সরাসরি ডেটাবেজ থেকে সার্চ এবং ড্রপডাউন পপুলেট করার ফাংশন
+        async function fetchProductsFromDatabase(keyword) {
+            const dropdown = document.getElementById('searchDropdown');
+            const container = document.getElementById('searchResultContainer');
+            const searchTerm = `%${keyword}%`;
+
+            dropdown.style.display = 'block';
+            dropdown.innerHTML = `<div style="padding: 12px; text-align: center; color: #777; font-size: 13px;">খোঁজা হচ্ছে...</div>`;
+
+            try {
+                const { data, error } = await supabaseClient
+                    .from('products')
+                    .select('*')
+                    .or(`name.ilike.${searchTerm},short_description.ilike.${searchTerm},keywords.ilike.${searchTerm},Maincategory.ilike.${searchTerm},sub_categor.ilike.${searchTerm}`)
+                    .limit(10); // ড্রপডাউনে সেরা ১০টি সাজেশন দেখাবে
+
+                if (error) {
+                    console.error('Search error:', error);
+                    dropdown.innerHTML = `<div style="padding: 12px; text-align: center; color: red; font-size: 13px;">সার্চ করতে সমস্যা হয়েছে</div>`;
+                    return;
+                }
+
+                if (!data || data.length === 0) {
+                    dropdown.innerHTML = `<div style="padding: 12px; text-align: center; color: #777; font-size: 13px;">কোনো পণ্য পাওয়া যায়নি</div>`;
+                    container.innerHTML = "";
+                    return;
+                }
+
+                // ১. ড্রপডাউন সাজেশন লিস্ট তৈরি করা
+                let dropdownHtml = '';
+                data.forEach(p => {
+                    dropdownHtml += `
+                        <div class="dropdown-item" onclick="window.location.href='product_details.html?id=${p.id}'">
+                            <div class="dropdown-img">
+                                ${p.image_url ? `<img src="${p.image_url}" alt="${p.name}">` : `<i class="fa-solid fa-image"></i>`}
+                            </div>
+                            <div class="dropdown-info">
+                                <h4>${p.name}</h4>
+                                ${p.short_description ? `<p>${p.short_description}</p>` : ''}
+                                <div class="dropdown-price">৳ ${p.price}</div>
+                            </div>
+                        </div>
+                    `;
+                });
+                dropdown.innerHTML = dropdownHtml;
+
+                // ২. নিচে মেইন গ্রিড ভিউতেও সম্পূর্ণ লিস্ট দেখানোর জন্য আপডেট করা
+                let gridHtml = `<div class="search-product-grid">`;
+                data.forEach(p => {
+                    gridHtml += `
+                        <div class="search-product-card" onclick="window.location.href='product_details.html?id=${p.id}'">
+                            <div class="search-product-img-box">
+                                ${p.image_url ? `<img src="${p.image_url}" alt="${p.name}">` : `<i class="fa-solid fa-image" style="font-size: 24px;"></i>`}
+                            </div>
+                            <div class="search-product-info">
+                                <h3>${p.name}</h3>
+                                ${p.short_description ? `<div class="search-product-desc">${p.short_description}</div>` : ''}
+                                <div class="search-price">৳ ${p.price}</div>
+                            </div>
+                        </div>
+                    `;
+                });
+                gridHtml += `</div>`;
+                container.innerHTML = gridHtml;
+
+            } catch (err) {
+                console.error('Network error:', err);
+                dropdown.innerHTML = `<div style="padding: 12px; text-align: center; color: red; font-size: 13px;">ইন্টারনেট কানেকশন চেক করুন</div>`;
+            }
+        }
+
+        function searchByKeyword(word) {
+            const input = document.getElementById('searchInput');
+            input.value = word;
+            handleLiveSearch(word);
+        }
+
+        function clearInput() {
+            const input = document.getElementById('searchInput');
+            input.value = "";
+            handleLiveSearch("");
+            input.focus();
+        }
+
+        // ডকুমেন্টের বাইরে ক্লিক করলে ড্রপডাউন বন্ধ হয়ে যাবে
+        document.addEventListener('click', function(e) {
+            const wrapper = document.querySelector('.search-input-wrapper');
+            const dropdown = document.getElementById('searchDropdown');
+            if (!wrapper.contains(e.target)) {
+                dropdown.style.display = 'none';
+            }
+        });
+    </script>
+</body>
+</html>

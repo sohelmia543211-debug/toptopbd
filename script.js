@@ -192,7 +192,6 @@ function renderBannerSlider() {
 
     const banner = globalBanners[bannerIndex];
     
-    // ডটস (Dots) তৈরি করার জন্য লুপ
     let dotsHtml = '<div style="position: absolute; bottom: 8px; left: 50%; transform: translateX(-50%); display: flex; gap: 5px; z-index: 3;">';
     globalBanners.forEach((_, idx) => {
         const dotBg = idx === bannerIndex ? '#ff5722' : 'rgba(255,255,255,0.6)';
@@ -218,13 +217,13 @@ function startBannerInterval() {
             bannerIndex = (bannerIndex + 1) % globalBanners.length;
             renderBannerSlider();
         }
-    }, 3500); // প্রতি ৩.৫ সেকেন্ড পর পর স্লাইড পরিবর্তন হবে
+    }, 3500);
 }
 
 function changeBanner(index) {
     bannerIndex = index;
     renderBannerSlider();
-    startBannerInterval(); // ম্যানুয়ালি ক্লিক করলে টাইমার রিস্টার্ট হবে
+    startBannerInterval();
 }
 
 async function fetchInitialData() {
@@ -283,11 +282,10 @@ function renderFilterCards() {
                 <i class="fa-solid fa-rotate-right" style="font-size: 12px;"></i>
             </button>
 
-            <input type="text" class="header-search-input" id="mainSearchInput" value="${currentSearchKeyword}" placeholder="${placeholderText}" oninput="handleSearchInput(this.value)" style="flex: 1; border-radius: 0; height: 40px; padding: 0 10px; border: 1px solid #ddd; border-left: none; border-right: none; font-size: 14px;" />
+            <!-- এখানে সার্চ বারে ক্লিক করলেই search.html পেজে রিডাইরেক্ট হবে -->
+            <input type="text" class="header-search-input" id="mainSearchInput" value="${currentSearchKeyword}" placeholder="${placeholderText}" readonly onclick="window.location.href='search.html'" style="flex: 1; border-radius: 0; height: 40px; padding: 0 10px; border: 1px solid #ddd; border-left: none; border-right: none; font-size: 14px; cursor: pointer;" />
 
-            ${currentSearchKeyword ? `<button onclick="clearSearchInput()" class="header-reset-btn" style="padding: 0 8px; background: #fff; border-top: 1px solid #ddd; border-bottom: 1px solid #ddd; cursor: pointer; color: #666; height: 40px; display: flex; align-items: center;"><i class="fa-solid fa-xmark"></i></button>` : ''}
-
-            <button class="header-search-btn" onclick="triggerSearch()" style="border-radius: 0 6px 6px 0; height: 40px; background: #ff5722; color: white; border: none; padding: 0 12px; cursor: pointer;">
+            <button class="header-search-btn" onclick="window.location.href='search.html'" style="border-radius: 0 6px 6px 0; height: 40px; background: #ff5722; color: white; border: none; padding: 0 12px; cursor: pointer;">
                 <i class="fa-solid fa-magnifying-glass" style="font-size: 14px;"></i>
             </button>
         </div>
@@ -355,22 +353,6 @@ function handleProductTypeChange(val) {
         tabProp.style.color = val === 'land_property' ? 'white' : '#333';
     }
 
-    renderProducts();
-}
-
-function handleSearchInput(val) {
-    currentSearchKeyword = val;
-    renderProducts();
-}
-
-function triggerSearch() {
-    renderProducts();
-}
-
-function clearSearchInput() {
-    currentSearchKeyword = "";
-    const input = document.getElementById('mainSearchInput');
-    if(input) input.value = "";
     renderProducts();
 }
 
