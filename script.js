@@ -442,30 +442,44 @@ function renderProducts() {
     const noProductText = lang === 'en' ? 'No products found.' : 'কোনো পণ্য পাওয়া যায়নি।';
 
     let filteredProducts = globalProducts.filter(p => {
+        // ১. প্রোডাক্ট টাইপ ফিল্টার
         let matchesType = true;
         if (currentProductType === 'land_property') {
-            matchesType = (p.product_type === 'land_property' || p.category === 'প্রপার্টি' || p.category_id === 'property' || p.main_category_id === 3);
-        } else if (p.product_type && currentProductType) {
+            matchesType = (p.product_type === 'land_property' || p.Maincategory === 'প্রপার্টি' || p.category === 'প্রপার্টি' || p.category_id === 'property' || p.main_category_id === 3);
+        } else if (currentProductType) {
             matchesType = (p.product_type === currentProductType);
         }
 
+        // ২. মেইন ক্যাটাগরি ফিল্টার (ডাটাবেজের Maincategory কলাম এবং hardcodedCategories এর বাংলা/ইংরেজি নাম মিলিয়ে চেক করা হলো)
         let matchesMain = true;
         if (currentMainCategory !== "সব") {
             const mBn = currentMainCategory.name.bn;
             const mEn = currentMainCategory.name.en;
             const mId = currentMainCategory.id;
-            matchesMain = (p.category === mBn || p.category === mEn || p.main_category_id == mId || p.category_id === mId);
+            matchesMain = (
+                p.Maincategory === mBn || p.Maincategory === mEn || p.Maincategory === mId ||
+                p.category === mBn || p.category === mEn || p.category === mId || 
+                p.main_category_id == mId || p.category_id === mId
+            );
         }
 
+        // ৩. সাব ক্যাটাগরি ফিল্টার (ডাটাবেজের sub_categor কলাম চেক করা হচ্ছে)
         let matchesSub = true;
         if (currentSubCategory !== "সব") {
-            matchesSub = (p.sub_category === currentSubCategory || p.category === currentSubCategory || p.subcategory === currentSubCategory);
+            matchesSub = (
+                p.sub_categor === currentSubCategory || 
+                p.sub_category === currentSubCategory || 
+                p.subcategory === currentSubCategory || 
+                p.category === currentSubCategory
+            );
         }
 
-        let matchesDistrict = (currentDistrict === "সব" || p.district === currentDistrict);
-        let matchesThana = (currentThana === "সব" || p.thana === currentThana);
-        let matchesUnion = (currentUnion === "সব" || p.union_name === currentUnion || p.union === currentUnion);
+        // ৪. লোকেশন ফিল্টার (District, Thana, Union)
+        let matchesDistrict = (currentDistrict === "সব" || p.District === currentDistrict || p.district === currentDistrict);
+        let matchesThana = (currentThana === "সব" || p.Thana === currentThana || p.thana === currentThana);
+        let matchesUnion = (currentUnion === "সব" || p.Union === currentUnion || p.union_name === currentUnion || p.union === currentUnion);
 
+        // ৫. সার্চ কিওয়ার্ড ফিল্টার
         let matchesSearch = true;
         if (currentSearchKeyword.trim() !== "") {
             const keyword = currentSearchKeyword.toLowerCase();
