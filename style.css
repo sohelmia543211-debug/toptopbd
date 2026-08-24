@@ -45,30 +45,31 @@ header h1 {
     background: #ffe0d6;
 }
 
-/* সার্চ বার ও লোকেশন একসাথে ফ্রেম (চিকন ও প্রিমিয়াম ডিজাইন) */
+/* সার্চ বার ও লোকেশন একসাথে ফ্রেম (হাইট ও প্রিমিয়াম ডিজাইন বাড়ানো হলো) */
 .search-location-bar {
     display: flex;
     align-items: center;
     background: #ffffff;
     border: 1px solid #ddd;
-    border-radius: 6px;
+    border-radius: 8px;
     overflow: hidden;
-    padding: 3px;
-    gap: 3px;
+    padding: 4px;
+    gap: 4px;
 }
 .search-location-bar:focus-within {
     border-color: #ff5722;
+    box-shadow: 0 0 0 2px rgba(255, 87, 34, 0.1);
 }
 
 .header-location-select {
     background: transparent;
     border: none;
     border-right: 1px solid #eee;
-    padding: 6px 4px;
-    font-size: 11px;
+    padding: 10px 8px; /* হাইট বাড়ানোর জন্য প্যাডিং বাড়ানো হলো */
+    font-size: 13px; /* ফন্ট সাইজ একটু বড় করা হলো */
     color: #444;
     outline: none;
-    max-width: 95px;
+    max-width: 110px; /* চওড়া একটু বাড়ানো হলো */
     cursor: pointer;
 }
 
@@ -76,42 +77,77 @@ header h1 {
     flex: 1;
     border: none;
     background: transparent;
-    padding: 6px 8px;
-    font-size: 12px;
+    padding: 10px 8px; /* হাইট সামঞ্জস্য করা হলো */
+    font-size: 13px;
     outline: none;
     color: #333;
     min-width: 80px;
 }
 
-/* রিসেট বাটন স্টাইল */
+/* লোকেশন বা সার্চ রিসেট বাটন স্টাইল */
 .header-reset-btn {
     background: #f1f1f2;
     border: none;
     color: #555;
-    padding: 5px 8px;
-    border-radius: 4px;
+    padding: 8px 10px;
+    border-radius: 6px;
     cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 11px;
+    font-size: 12px;
     transition: background 0.2s;
 }
 .header-reset-btn:hover {
     background: #e2e2e5;
+    color: #ff5722;
 }
 
 .header-search-btn {
     background: #ff5722;
     border: none;
     color: #fff;
-    padding: 6px 12px;
-    border-radius: 4px;
+    padding: 10px 14px; /* বাটন হাইট বাড়ানো হলো */
+    border-radius: 6px;
     cursor: pointer;
-    font-size: 12px;
+    font-size: 13px;
     display: flex;
     align-items: center;
     justify-content: center;
+}
+
+/* ব্যানারের নিচের নতুন-পুরাতন ফিল্টার বার ডিজাইন */
+.below-banner-filter {
+    max-width: 1200px;
+    margin: 12px auto 0 auto;
+    padding: 0 10px;
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    overflow-x: auto;
+    scrollbar-width: none;
+}
+.below-banner-filter::-webkit-scrollbar {
+    display: none;
+}
+.filter-chip {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    padding: 6px 14px;
+    border-radius: 20px;
+    font-size: 13px;
+    font-weight: 600;
+    color: #475569;
+    cursor: pointer;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.03);
+    transition: all 0.2s ease;
+    white-space: nowrap;
+    flex-shrink: 0;
+}
+.filter-chip.active, .filter-chip:hover {
+    background: #ff5722;
+    color: #ffffff;
+    border-color: #ff5722;
 }
 
 /* ডাইনামিক ব্যানার ডিজাইন */

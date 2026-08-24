@@ -219,9 +219,6 @@ function renderFilterCards() {
     if (!searchBarContainer) return;
 
     const lang = getLang();
-    const usedText = lang === 'en' ? 'Used' : 'পুরাতন';
-    const newText = lang === 'en' ? 'New' : 'নতুন';
-    const propText = lang === 'en' ? 'Property' : 'প্রপার্টি';
     const placeholderText = lang === 'en' ? 'Search...' : 'পণ্য খুঁজুন...';
 
     const allDistText = lang === 'en' ? 'All Districts' : 'সব জেলা';
@@ -240,12 +237,6 @@ function renderFilterCards() {
         <select class="header-location-select" id="singleLocationSelect" onchange="handleLocationSelection(this.value)">
             <option value="ALL">${locationLabel}</option>
             ${renderDynamicLocationOptions(districts)}
-        </select>
-
-        <select class="header-location-select" id="productTypeSelect" onchange="handleProductTypeChange(this.value)" style="max-width: 95px; color: #ff5722; font-weight: 650;">
-            <option value="used_product" ${currentProductType === 'used_product' ? 'selected' : ''}>${usedText}</option>
-            <option value="new_product" ${currentProductType === 'new_product' ? 'selected' : ''}>${newText}</option>
-            <option value="land_property" ${currentProductType === 'land_property' ? 'selected' : ''}>${propText}</option>
         </select>
 
         <input type="text" class="header-search-input" id="mainSearchInput" value="${currentSearchKeyword}" placeholder="${placeholderText}" oninput="handleSearchInput(this.value)" />
@@ -307,6 +298,22 @@ function handleLocationSelection(val) {
 
 function handleProductTypeChange(val) {
     currentProductType = val;
+    
+    const tabUsed = document.getElementById('tabUsed');
+    const tabNew = document.getElementById('tabNew');
+    const tabProp = document.getElementById('tabProp');
+
+    if(tabUsed && tabNew && tabProp) {
+        tabUsed.style.background = val === 'used_product' ? '#ff5722' : '#f1f1f1';
+        tabUsed.style.color = val === 'used_product' ? 'white' : '#333';
+
+        tabNew.style.background = val === 'new_product' ? '#ff5722' : '#f1f1f1';
+        tabNew.style.color = val === 'new_product' ? 'white' : '#333';
+
+        tabProp.style.background = val === 'land_property' ? '#ff5722' : '#f1f1f1';
+        tabProp.style.color = val === 'land_property' ? 'white' : '#333';
+    }
+
     renderProducts();
 }
 
@@ -338,6 +345,7 @@ function resetAllFilters() {
     const input = document.getElementById('mainSearchInput');
     if(input) input.value = "";
 
+    handleProductTypeChange('used_product');
     renderMainCategories();
     renderSubCategories();
     renderFilterCards();
@@ -442,7 +450,6 @@ function renderProducts() {
     const noProductText = lang === 'en' ? 'No products found.' : 'কোনো পণ্য পাওয়া যায়নি।';
 
     let filteredProducts = globalProducts.filter(p => {
-        // ১. প্রোডাক্ট টাইপ ফিল্টার
         let matchesType = true;
         if (currentProductType === 'land_property') {
             matchesType = (p.product_type === 'land_property' || p.Maincategory === 'প্রপার্টি' || p.category === 'প্রপার্টি' || p.category_id === 'property' || p.main_category_id === 3);
@@ -450,7 +457,6 @@ function renderProducts() {
             matchesType = (p.product_type === currentProductType);
         }
 
-        // ২. মেইন ক্যাটাগরি ফিল্টার (ডাটাবেজের Maincategory কলাম এবং hardcodedCategories এর বাংলা/ইংরেজি নাম মিলিয়ে চেক করা হলো)
         let matchesMain = true;
         if (currentMainCategory !== "সব") {
             const mBn = currentMainCategory.name.bn;
@@ -463,7 +469,6 @@ function renderProducts() {
             );
         }
 
-        // ৩. সাব ক্যাটাগরি ফিল্টার (ডাটাবেজের sub_categor কলাম চেক করা হচ্ছে)
         let matchesSub = true;
         if (currentSubCategory !== "সব") {
             matchesSub = (
@@ -474,12 +479,10 @@ function renderProducts() {
             );
         }
 
-        // ৪. লোকেশন ফিল্টার (District, Thana, Union)
         let matchesDistrict = (currentDistrict === "সব" || p.District === currentDistrict || p.district === currentDistrict);
         let matchesThana = (currentThana === "সব" || p.Thana === currentThana || p.thana === currentThana);
         let matchesUnion = (currentUnion === "সব" || p.Union === currentUnion || p.union_name === currentUnion || p.union === currentUnion);
 
-        // ৫. সার্চ কিওয়ার্ড ফিল্টার
         let matchesSearch = true;
         if (currentSearchKeyword.trim() !== "") {
             const keyword = currentSearchKeyword.toLowerCase();
