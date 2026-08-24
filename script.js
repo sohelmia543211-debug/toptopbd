@@ -13,6 +13,9 @@ let currentSearchKeyword = "";
 
 let globalProducts = [];
 let globalLocations = [];
+let globalBanners = [];
+let bannerIndex = 0;
+let bannerInterval = null;
 
 const hardcodedCategories = [
   {
@@ -176,20 +179,52 @@ async function fetchBanners() {
         if (error) { console.error('ব্যানার লোড এরর:', error.message); return; }
 
         if (data && data.length > 0) {
-            const banner = data[0]; 
-            const bannerContainer = document.getElementById('bannerContainer');
-            if(bannerContainer) {
-                bannerContainer.innerHTML = `
-                    <div class="banner-slider" style="background-image: url('${banner.image_url}');">
-                        <div class="banner-overlay">
-                            <h2 class="banner-title">${banner.title}</h2>
-                            <p class="banner-subtitle">${banner.subtitle}</p>
-                        </div>
-                    </div>
-                `;
-            }
+            globalBanners = data;
+            renderBannerSlider();
+            startBannerInterval();
         }
     } catch (err) { console.error('ব্যানার কানেকশন এরর:', err); }
+}
+
+function renderBannerSlider() {
+    const bannerContainer = document.getElementById('bannerContainer');
+    if (!bannerContainer || globalBanners.length === 0) return;
+
+    const banner = globalBanners[bannerIndex];
+    
+    // ডটস (Dots) তৈরি করার জন্য লুপ
+    let dotsHtml = '<div style="position: absolute; bottom: 8px; left: 50%; transform: translateX(-50%); display: flex; gap: 5px; z-index: 3;">';
+    globalBanners.forEach((_, idx) => {
+        const dotBg = idx === bannerIndex ? '#ff5722' : 'rgba(255,255,255,0.6)';
+        dotsHtml += `<div onclick="changeBanner(${idx})" style="width: 8px; height: 8px; border-radius: 50%; background: ${dotBg}; cursor: pointer; transition: 0.3s;"></div>`;
+    });
+    dotsHtml += '</div>';
+
+    bannerContainer.innerHTML = `
+        <div class="banner-slider" style="background-image: url('${banner.image_url}'); position: relative; background-size: cover; background-position: center; transition: background-image 0.5s ease-in-out;">
+            <div class="banner-overlay" style="background: rgba(0,0,0,0.3); width: 100%; height: 100%; display: flex; flex-direction: column; justify-content: center; padding: 15px; color: white;">
+                <h2 class="banner-title" style="margin: 0; font-size: 18px; font-weight: bold; text-shadow: 1px 1px 3px rgba(0,0,0,0.7);">${banner.title}</h2>
+                <p class="banner-subtitle" style="margin: 5px 0 0 0; font-size: 13px; text-shadow: 1px 1px 2px rgba(0,0,0,0.7);">${banner.subtitle}</p>
+            </div>
+            ${dotsHtml}
+        </div>
+    `;
+}
+
+function startBannerInterval() {
+    if (bannerInterval) clearInterval(bannerInterval);
+    bannerInterval = setInterval(() => {
+        if (globalBanners.length > 0) {
+            bannerIndex = (bannerIndex + 1) % globalBanners.length;
+            renderBannerSlider();
+        }
+    }, 3500); // প্রতি ৩.৫ সেকেন্ড পর পর স্লাইড পরিবর্তন হবে
+}
+
+function changeBanner(index) {
+    bannerIndex = index;
+    renderBannerSlider();
+    startBannerInterval(); // ম্যানুয়ালি ক্লিক করলে টাইমার রিস্টার্ট হবে
 }
 
 async function fetchInitialData() {
@@ -218,7 +253,6 @@ function renderFilterCards() {
     const searchBarContainer = document.getElementById('searchBarContainer');
     if (!searchBarContainer) return;
 
-    // দুই পাশের মার্জিন/প্যাডিং জিরো করে পুরো স্ক্রিন জুড়ে জায়গা করে দেওয়া হলো
     searchBarContainer.style.paddingLeft = '4px';
     searchBarContainer.style.paddingRight = '4px';
     searchBarContainer.style.marginLeft = '0px';
@@ -226,7 +260,6 @@ function renderFilterCards() {
 
     const lang = getLang();
     const placeholderText = lang === 'en' ? 'Search...' : 'পণ্য খুঁজুন...';
-
     const allDistText = lang === 'en' ? 'All Districts' : 'সব জেলা';
     const districts = [...new Set(globalLocations.map(item => item.district))].filter(Boolean);
 
