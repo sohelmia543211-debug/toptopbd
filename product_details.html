@@ -137,9 +137,9 @@
             justify-content: center;
             gap: 10px;
             width: 100%;
-            padding: 14px;
+            padding: 12px;
             border-radius: 8px;
-            font-size: 16px;
+            font-size: 15px;
             font-weight: 600;
             text-decoration: none;
             border: none;
@@ -153,8 +153,8 @@
         .order-btn {
             background: #ff5722;
             color: white;
-            padding: 16px;
-            font-size: 18px;
+            padding: 12px;
+            font-size: 16px;
         }
         .chat-buttons-row {
             display: flex;
@@ -272,7 +272,6 @@
                     </div>
                 `;
 
-                // পেজ লোড হওয়ার পর চেক করা প্রোডাক্টটি আগে থেকেই ফেভরিটে আছে কিনা
                 checkFavoriteStatus();
 
             } catch (err) {
@@ -281,24 +280,22 @@
             }
         }
 
-        // ফেভরিট টগল করার ফাংশন (localStorage এ সেভ বা রিমুভ হবে)
         function toggleFavorite(id) {
             let favorites = JSON.parse(localStorage.getItem('topTopFavorites')) || [];
             const index = favorites.indexOf(id);
             const favBtn = document.getElementById('favBtn');
 
             if (index > -1) {
-                favorites.splice(index, 1); // বাদ দেওয়া
+                favorites.splice(index, 1);
                 favBtn.classList.remove('active');
             } else {
-                favorites.push(id); // যোগ করা
+                favorites.push(id);
                 favBtn.classList.add('active');
             }
 
             localStorage.setItem('topTopFavorites', JSON.stringify(favorites));
         }
 
-        // পেজ লোড হওয়ার সময় ফেভরিট স্ট্যাটাস চেক করে আইকন লাল করার ফাংশন
         function checkFavoriteStatus() {
             if (!productId) return;
             let favorites = JSON.parse(localStorage.getItem('topTopFavorites')) || [];
@@ -319,11 +316,13 @@
 
         function sendToWhatsApp() {
             if (!currentProduct) return;
-            let dbWhatsapp = currentProduct.whatsapp_link || "https://wa.me/8801712345678";
+            let dbWhatsapp = currentProduct.whatsapp_link || "8801712345678";
             let phone = "8801712345678";
 
             if (dbWhatsapp.includes("wa.me/")) {
                 phone = dbWhatsapp.split("wa.me/")[1].split("?")[0];
+            } else {
+                phone = dbWhatsapp.replace(/[^0-9]/g, '');
             }
 
             let message = `আসসালামু আলাইকুম, আমি এই প্রোডাক্টটি কিনতে চাই:\n\n` +
@@ -338,11 +337,13 @@
 
         function sendToMessenger() {
             if (!currentProduct) return;
-            let dbMessenger = currentProduct.messenger_link || "https://m.me/yourpageusername";
-            let pageUsername = "yourpageusername";
+            let dbMessenger = currentProduct.messenger_link || "TopTopBD";
+            let pageUsername = "TopTopBD";
 
             if (dbMessenger.includes("m.me/")) {
                 pageUsername = dbMessenger.split("m.me/")[1].split("/")[0].split("?")[0];
+            } else {
+                pageUsername = dbMessenger;
             }
 
             let message = `আসসালামু আলাইকুম, আমি এই প্রোডাক্টটি কিনতে চাই:\n\n` +
@@ -351,8 +352,9 @@
                           `🖼️ প্রোডাক্ট ছবি: ${selectedImageUrl}\n\n` +
                           `দয়া করে বিষয়টি কনফার্ম করুন।`;
 
+            // টেক্সট কপি করে মেসেঞ্জারে রিডাইরেক্ট করা হচ্ছে
             navigator.clipboard.writeText(message).then(() => {
-                alert("প্রোডাক্টের বিবরণ ও ছবির লিংক কপি করা হয়েছে! মেসেঞ্জার ওপেন হলে সেখানে পেস্ট (Paste) করে দিন।");
+                alert("প্রোডাক্টের বিবরণ কপি করা হয়েছে! মেসেঞ্জার ওপেন হলে সেখানে পেস্ট (Paste) করে দিন।");
             }).catch(err => {
                 console.log('Copy failed', err);
             });
