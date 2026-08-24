@@ -292,6 +292,19 @@ header h1 {
     overflow: hidden;
     text-overflow: ellipsis;
 }
+
+/* ডেসক্রিপশন ৩ লাইনের বেশি হলে লুকানোর জন্য নতুন কোড */
+.product-info p, .product-card p {
+    font-size: 12px;
+    color: #666;
+    margin: 0 0 8px 0;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
 .price {
     font-size: 14px;
     font-weight: 700;
