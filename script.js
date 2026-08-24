@@ -5,13 +5,17 @@ const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 let currentMainCategory = "সব"; 
 let currentSubCategory = "সব";
-let currentProductType = "used_product"; 
+let currentProductType = "all"; 
 let currentDistrict = "সব"; 
 let currentThana = "সব";
 let currentUnion = "সব";
 let currentSearchKeyword = "";
 
-let globalProducts = [];
+let currentPage = 1;
+const pageSize = 12; 
+let isLoadingMore = false;
+let hasMoreData = true;
+
 let globalLocations = [];
 let globalBanners = [];
 let bannerIndex = 0;
@@ -238,11 +242,7 @@ async function fetchInitialData() {
         }
         renderFilterCards(); 
 
-        const { data, error } = await supabaseClient.from('products').select('*');
-        if (!error && data) {
-            globalProducts = data;
-        }
-        renderProducts();
+        loadProducts(false);
     } catch (err) {
         console.error('ডাটা ফেচ এরর:', err);
     }
@@ -282,7 +282,6 @@ function renderFilterCards() {
                 <i class="fa-solid fa-rotate-right" style="font-size: 12px;"></i>
             </button>
 
-            <!-- এখানে সার্চ বারে ক্লিক করলেই search.html পেজে রিডাইরেক্ট হবে -->
             <input type="text" class="header-search-input" id="mainSearchInput" value="${currentSearchKeyword}" placeholder="${placeholderText}" readonly onclick="window.location.href='search.html'" style="flex: 1; border-radius: 0; height: 40px; padding: 0 10px; border: 1px solid #ddd; border-left: none; border-right: none; font-size: 14px; cursor: pointer;" />
 
             <button class="header-search-btn" onclick="window.location.href='search.html'" style="border-radius: 0 6px 6px 0; height: 40px; background: #ff5722; color: white; border: none; padding: 0 12px; cursor: pointer;">
@@ -332,7 +331,8 @@ function handleLocationSelection(val) {
         currentUnion = val.replace("UNION_", "");
     }
     renderFilterCards();
-    renderProducts();
+    currentPage = 1;
+    loadProducts(false);
 }
 
 function handleProductTypeChange(val) {
@@ -353,7 +353,8 @@ function handleProductTypeChange(val) {
         tabProp.style.color = val === 'land_property' ? 'white' : '#333';
     }
 
-    renderProducts();
+    currentPage = 1;
+    loadProducts(false);
 }
 
 function resetAllFilters() {
@@ -362,17 +363,18 @@ function resetAllFilters() {
     currentUnion = "সব";
     currentMainCategory = "সব";
     currentSubCategory = "সব";
-    currentProductType = "used_product";
+    currentProductType = "all";
     currentSearchKeyword = "";
     
     const input = document.getElementById('mainSearchInput');
     if(input) input.value = "";
 
-    handleProductTypeChange('used_product');
+    handleProductTypeChange('all');
     renderMainCategories();
     renderSubCategories();
     renderFilterCards();
-    renderProducts();
+    currentPage = 1;
+    loadProducts(false);
 }
 
 function renderMainCategories() {
@@ -392,7 +394,7 @@ function renderMainCategories() {
         </div>
     `;
 
-    hardcodedCategories.forEach(cat => {
+    hardcodedCategories.forEach((cat) => {
         const isActive = (currentMainCategory !== "সব" && currentMainCategory.id === cat.id) ? 'active' : '';
         const catName = cat.name[lang] || cat.name.bn;
         html += `
@@ -416,7 +418,8 @@ function selectMainCategory(catId) {
     currentSubCategory = "সব"; 
     renderMainCategories();
     renderSubCategories(); 
-    renderProducts();
+    currentPage = 1;
+    loadProducts(false);
 }
 
 function renderSubCategories() {
@@ -428,14 +431,20 @@ function renderSubCategories() {
 
     let filteredSubs = [];
     if (currentMainCategory === "সব") {
-        filteredSubs = hardcodedCategories.flatMap(cat => cat.subcategories);
+        filteredSubs = hardcodedCategories.flatMap((cat) => 
+            cat.subcategories.map((sub, subIdx) => ({ ...sub, catId: cat.id, subIndex: subIdx + 1 }))
+        );
     } else {
-        filteredSubs = currentMainCategory.subcategories || [];
+        filteredSubs = (currentMainCategory.subcategories || []).map((sub, subIdx) => ({ 
+            ...sub, 
+            catId: currentMainCategory.id, 
+            subIndex: subIdx + 1 
+        }));
     }
 
     const allOptionActive = currentSubCategory === "সব" ? 'active' : '';
     let html = `
-        <div class="sub-card ${allOptionActive}" onclick="selectSubCategory('সব')">
+        <div class="sub-card ${allOptionActive}" onclick="selectSubCategory('সব', 'সব')">
             <div style="width: 28px; height: 28px; margin: 0 auto 3px auto; background: #ff5722; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-size: 11px;">
                 <i class="fa-solid fa-border-all"></i>
             </div>
@@ -445,9 +454,10 @@ function renderSubCategories() {
 
     filteredSubs.forEach(sub => {
         const subName = sub.name[lang] || sub.name.bn;
-        const isActive = subName === currentSubCategory ? 'active' : '';
+        const subBnName = sub.name.bn; // ডাটাবেজে ফিল্টার করার জন্য সবসময় আসল বাংলা নাম রাখা হলো
+        const isActive = currentSubCategory === subName ? 'active' : '';
         html += `
-            <div class="sub-card ${isActive}" onclick="selectSubCategory('${subName}')">
+            <div class="sub-card ${isActive}" onclick="selectSubCategory('${subBnName}', '${sub.subIndex}')">
                 <div style="width: 28px; height: 28px; margin: 0 auto 3px auto; background: #fff5f2; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #ff5722; font-size: 11px;">
                     <i class="fa-solid ${sub.icon || 'fa-tag'}"></i>
                 </div>
@@ -459,71 +469,107 @@ function renderSubCategories() {
     grid.innerHTML = html;
 }
 
-function selectSubCategory(subName) {
+let currentSubCategoryIndex = "সব";
+
+function selectSubCategory(subName, subIdx) {
     currentSubCategory = subName;
+    currentSubCategoryIndex = subIdx;
     renderSubCategories();
-    renderProducts();
+    currentPage = 1;
+    loadProducts(false);
 }
 
-function renderProducts() {
+// ফিক্সড ও নিরাপদ ফিল্টারিং লজিক
+async function loadProducts(isAppend = false) {
     const grid = document.getElementById('productGrid');
     if (!grid) return;
+
+    if (isLoadingMore) return;
+    isLoadingMore = true;
 
     const lang = getLang();
     const noProductText = lang === 'en' ? 'No products found.' : 'কোনো পণ্য পাওয়া যায়নি।';
 
-    let filteredProducts = globalProducts.filter(p => {
-        let matchesType = true;
+    if (!isAppend) {
+        let shimmerHtml = '';
+        for (let i = 0; i < 4; i++) {
+            shimmerHtml += `
+                <div class="shimmer-card">
+                    <div class="shimmer-img"></div>
+                    <div class="shimmer-info">
+                        <div class="shimmer-line"></div>
+                        <div class="shimmer-line short"></div>
+                    </div>
+                </div>
+            `;
+        }
+        grid.innerHTML = shimmerHtml;
+    }
+
+    let query = supabaseClient.from('products').select('*');
+
+    // ১. প্রোডাক্ট টাইপ ফিল্টার
+    if (currentProductType && currentProductType !== 'all') {
         if (currentProductType === 'land_property') {
-            matchesType = (p.product_type === 'land_property' || p.Maincategory === 'প্রপার্টি' || p.category === 'প্রপার্টি' || p.category_id === 'property' || p.main_category_id == 3);
-        } else if (currentProductType) {
-            matchesType = (p.product_type === currentProductType);
+            query = query.or('product_type.eq.land_property,Maincategory.eq.প্রপার্টি');
+        } else {
+            query = query.eq('product_type', currentProductType);
         }
+    }
 
-        let matchesMain = true;
-        if (currentMainCategory !== "সব") {
-            const mBn = currentMainCategory.name.bn;
-            const mEn = currentMainCategory.name.en;
-            const mId = currentMainCategory.id;
-            matchesMain = (
-                p.Maincategory === mBn || p.Maincategory === mEn || p.Maincategory === mId ||
-                p.category === mBn || p.category === mEn || p.category === mId || 
-                p.main_category_id == mId || p.category_id === mId
-            );
-        }
+    // ২. মেইন ক্যাটেগরি ফিল্টার 
+    if (currentMainCategory !== "সব") {
+        const mBn = currentMainCategory.name.bn;
+        const mEn = currentMainCategory.name.en;
+        query = query.or(`Maincategory.eq.${mBn},Maincategory.eq.${mEn}`);
+    }
 
-        let matchesSub = true;
-        if (currentSubCategory !== "সব") {
-            matchesSub = (
-                p.sub_categor === currentSubCategory || 
-                p.sub_category === currentSubCategory || 
-                p.subcategory === currentSubCategory || 
-                p.category === currentSubCategory
-            );
-        }
+    // ৩. সাব-ক্যাটেগরি ফিল্টার (ভাষা ইংরেজি হলেও ডাটাবেজের বাংলা নামের সাথে মিলবে)
+    if (currentSubCategory !== "সব") {
+        query = query.eq('sub_categor', currentSubCategory);
+    }
 
-        let matchesDistrict = (currentDistrict === "সব" || p.District === currentDistrict || p.district === currentDistrict);
-        let matchesThana = (currentThana === "সব" || p.Thana === currentThana || p.thana === currentThana);
-        let matchesUnion = (currentUnion === "সব" || p.Union === currentUnion || p.union_name === currentUnion || p.union === currentUnion);
+    // ৪. লোকেশন ফিল্টার
+    if (currentDistrict !== "সব") {
+        query = query.eq('District', currentDistrict);
+    }
+    if (currentThana !== "সব") {
+        query = query.eq('Thana', currentThana);
+    }
+    if (currentUnion !== "সব") {
+        query = query.eq('Union', currentUnion);
+    }
 
-        let matchesSearch = true;
-        if (currentSearchKeyword.trim() !== "") {
-            const keyword = currentSearchKeyword.toLowerCase();
-            const nameMatch = p.name ? p.name.toLowerCase().includes(keyword) : false;
-            const descMatch = p.short_description ? p.short_description.toLowerCase().includes(keyword) : false;
-            matchesSearch = nameMatch || descMatch;
-        }
+    const from = (currentPage - 1) * pageSize;
+    const to = from + pageSize - 1;
+    query = query.range(from, to);
 
-        return matchesType && matchesMain && matchesSub && matchesDistrict && matchesThana && matchesUnion && matchesSearch;
-    });
+    const { data, error } = await query;
 
-    if (filteredProducts.length === 0) {
-        grid.innerHTML = `<div class="no-product" style="grid-column: 1/-1; text-align:center; padding:30px;"><i class="fa-solid fa-box-open" style="font-size: 28px; margin-bottom: 8px; display:block; color:#ff5722;"></i>${noProductText}</div>`;
+    isLoadingMore = false;
+
+    if (error) {
+        console.error('প্রোডাক্ট লোড করতে সমস্যা হয়েছে:', error);
+        grid.innerHTML = `<div style="grid-column: 1/-1; text-align:center; color:red; padding:20px;">ফিল্টারিংয়ে ত্রুটি হয়েছে: ${error.message}</div>`;
         return;
     }
 
-    let productHtml = "";
-    filteredProducts.forEach(p => {
+    if (!isAppend) {
+        grid.innerHTML = "";
+    }
+
+    if (!data || data.length === 0) {
+        hasMoreData = false;
+        if (!isAppend) {
+            grid.innerHTML = `<div class="no-product" style="grid-column: 1/-1; text-align:center; padding:30px;"><i class="fa-solid fa-box-open" style="font-size: 28px; margin-bottom: 8px; display:block; color:#ff5722;"></i>${noProductText}</div>`;
+        }
+        return;
+    }
+
+    hasMoreData = true;
+    let productHtml = isAppend ? grid.innerHTML : "";
+    
+    data.forEach(p => {
         productHtml += `
             <div class="product-card" onclick="window.location.href='product_details.html?id=${p.id}'" style="cursor: pointer;">
                 <div class="product-img-box">
@@ -539,6 +585,15 @@ function renderProducts() {
     });
     grid.innerHTML = productHtml;
 }
+
+window.addEventListener('scroll', () => {
+    if ((window.innerHeight + window.scrollY) >= document.documentElement.scrollHeight - 150) {
+        if (!isLoadingMore && hasMoreData) {
+            currentPage++;
+            loadProducts(true);
+        }
+    }
+});
 
 window.onload = () => {
     if (typeof applyLanguage === 'function') {

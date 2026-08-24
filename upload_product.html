@@ -222,6 +222,13 @@
                     </select>
                 </div>
 
+                <!-- সার্চের জন্য কিওয়ার্ড ফিল্ড -->
+                <div class="form-group">
+                    <label>কিওয়ার্ড (Keywords) - সার্চের সুবিধার জন্য</label>
+                    <input type="text" id="prodKeywords" class="form-control" placeholder="যেমন: #Panjabi #পাঞ্জাবি #EidDress">
+                    <small style="color: var(--text-muted); font-size: 12px;">ট্যাগগুলোর আগে `#` ব্যবহার করুন এবং স্পেস দিন।</small>
+                </div>
+
                 <!-- লোকেশন ড্রপডাউন অংশ -->
                 <div class="form-group">
                     <label>জেলা (District)</label>
@@ -312,140 +319,159 @@
 
         const hardcodedCategories = [
             {
-                id: "mobiles",
+                id: 1,
+                stringId: "mobiles",
                 name: { bn: "মোবাইল ও ট্যাব", en: "Mobiles & Tablets" },
                 subcategories: [
-                    { name: { bn: "স্মার্টফোন", en: "Smartphones" } },
-                    { name: { bn: "ফিচার ফোন", en: "Feature Phones" } },
-                    { name: { bn: "ট্যাব ও আইপ্যাড", en: "Tablets & iPads" } },
-                    { name: { bn: "মোবাইল এক্সেসরিজ", en: "Mobile Accessories" } },
-                    { name: { bn: "পাওয়ার ব্যাংক", en: "Power Banks" } },
-                    { name: { bn: "স্মার্টওয়াচ", en: "Smartwatches" } }
+                    { id: 101, stringId: "smartphones", name: { bn: "স্মার্টফোন", en: "Smartphones" } },
+                    { id: 102, stringId: "feature_phones", name: { bn: "ফিচার ফোন", en: "Feature Phones" } },
+                    { id: 103, stringId: "tablets", name: { bn: "ট্যাব ও আইপ্যাড", en: "Tablets & iPads" } },
+                    { id: 104, stringId: "mobile_accessories", name: { bn: "মোবাইল এক্সেসরিজ", en: "Mobile Accessories" } },
+                    { id: 105, stringId: "power_banks", name: { bn: "পাওয়ার ব্যাংক", en: "Power Banks" } },
+                    { id: 106, stringId: "smartwatches", name: { bn: "স্মার্টওয়াচ", en: "Smartwatches" } }
                 ]
             },
             {
-                id: "electronics",
+                id: 2,
+                stringId: "electronics",
                 name: { bn: "ইলেকট্রনিক্স", en: "Electronics" },
                 subcategories: [
-                    { name: { bn: "ল্যাপটপ ও কম্পিউটার", en: "Laptops & Computers" } },
-                    { name: { bn: "টিভি ও সাউন্ড সিস্টেম", en: "TV & Sound Systems" } },
-                    { name: { bn: "এসি ও ফ্রিজ", en: "AC & Refrigerators" } },
-                    { name: { bn: "হোম অ্যাপ্লায়েন্সেস", en: "Home Appliances" } },
-                    { name: { bn: "ক্যামেরা ও ড্রোন", en: "Cameras & Drones" } },
-                    { name: { bn: "রাউটার ও নেটওয়ার্কিং", en: "Routers & Networking" } },
-                    { name: { bn: "প্রিন্টার ও স্ক্যানার", en: "Printers & Scanners" } },
-                    { name: { bn: "মাইক্রোওয়েভ ও ওভেন", en: "Microwave & Ovens" } },
-                    { name: { bn: "আইপিএস ও জেনারেটর", en: "IPS & Generators" } },
-                    { name: { bn: "স্টাবিলাইজার ও ইউপিএস", en: "Stabilizers & UPS" } }
+                    { id: 201, stringId: "laptops_computers", name: { bn: "ল্যাপটপ ও কম্পিউটার", en: "Laptops & Computers" } },
+                    { id: 202, stringId: "tv_sound", name: { bn: "টিভি ও সাউন্ড সিস্টেম", en: "TV & Sound Systems" } },
+                    { id: 203, stringId: "ac_fridge", name: { bn: "এসি ও ফ্রিজ", en: "AC & Refrigerators" } },
+                    { id: 204, stringId: "home_appliances", name: { bn: "হোম অ্যাপ্লায়েন্সেস", en: "Home Appliances" } },
+                    { id: 205, stringId: "cameras_drones", name: { bn: "ক্যামেরা ও ড্রোন", en: "Cameras & Drones" } },
+                    { id: 206, stringId: "routers", name: { bn: "রাউটার ও নেটওয়ার্কিং", en: "Routers & Networking" } },
+                    { id: 207, stringId: "printers", name: { bn: "প্রিন্টার ও স্ক্যানার", en: "Printers & Scanners" } },
+                    { id: 208, stringId: "microwave", name: { bn: "মাইক্রোওয়েভ ও ওভেন", en: "Microwave & Ovens" } },
+                    { id: 209, stringId: "ips_generators", name: { bn: "আইপিএস ও জেনারেটর", en: "IPS & Generators" } },
+                    { id: 210, stringId: "stabilizers_ups", name: { bn: "স্টাবিলাইজার ও ইউপিএস", en: "Stabilizers & UPS" } }
                 ]
             },
             {
-                id: "vehicles",
+                id: 3,
+                stringId: "vehicles",
                 name: { bn: "যানবাহন", en: "Vehicles" },
                 subcategories: [
-                    { name: { bn: "মোটরসাইকেল", en: "Motorcycles" } },
-                    { name: { bn: "বাইসাইকেল", en: "Bicycles" } },
-                    { name: { bn: "প্রাইভেট কার", en: "Private Cars" } },
-                    { name: { bn: "ইলেকট্রিক বাইক ও স্কুটার", en: "Electric Bikes & Scooters" } },
-                    { name: { bn: "বাস ও ট্রাক", en: "Buses & Trucks" } },
-                    { name: { bn: "অন্যান্য যান ও পার্টস", en: "Other Vehicles & Parts" } }
+                    { id: 301, stringId: "motorcycles", name: { bn: "মোটরসাইকেল", en: "Motorcycles" } },
+                    { id: 302, stringId: "bicycles", name: { bn: "বাইসাইকেল", en: "Bicycles" } },
+                    { id: 303, stringId: "private_cars", name: { bn: "প্রাইভেট কার", en: "Private Cars" } },
+                    { id: 304, stringId: "electric_bikes", name: { bn: "ইলেকট্রিক বাইক ও স্কুটার", en: "Electric Bikes & Scooters" } },
+                    { id: 305, stringId: "buses_trucks", name: { bn: "বাস ও ট্রাক", en: "Buses & Trucks" } },
+                    { id: 306, stringId: "other_vehicles", name: { bn: "অন্যান্য যান ও পার্টস", en: "Other Vehicles & Parts" } }
                 ]
             },
             {
-                id: "property",
+                id: 4,
+                stringId: "property",
                 name: { bn: "প্রপার্টি", en: "Property" },
                 subcategories: [
-                    { name: { bn: "বাসা/ফ্লাট ভাড়া", en: "House/Flat Rent" } },
-                    { name: { bn: "জমি বা প্লট বিক্রি", en: "Land/Plot Sale" } },
-                    { name: { bn: "সাবলেট রুম", en: "Sublet Rooms" } },
-                    { name: { bn: "দোকান বা অফিস স্পেস", en: "Shop or Office Space" } },
-                    { name: { bn: "মেস সিট ভাড়া", en: "Mess Seat Rent" } }
+                    { id: 401, stringId: "house_rent", name: { bn: "বাসা/ফ্লাট ভাড়া", en: "House/Flat Rent" } },
+                    { id: 402, stringId: "land_sale", name: { bn: "জমি বা প্লট বিক্রি", en: "Land/Plot Sale" } },
+                    { id: 403, stringId: "sublet", name: { bn: "সাবলেট রুম", en: "Sublet Rooms" } },
+                    { id: 404, stringId: "shop_office", name: { bn: "দোকান বা অফিস স্পেস", en: "Shop or Office Space" } },
+                    { id: 405, stringId: "mess_seat", name: { bn: "মেস সিট ভাড়া", en: "Mess Seat Rent" } }
                 ]
             },
             {
-                id: "fashion",
+                id: 5,
+                stringId: "fashion",
                 name: { bn: "ফ্যাশন", en: "Fashion" },
                 subcategories: [
-                    { name: { bn: "পুরুষদের পোশাক", en: "Men's Clothing" } },
-                    { name: { bn: "নারীদের পোশাক", en: "Women's Clothing" } },
-                    { name: { bn: "ছেলেদের জুতো", en: "Men's Shoes" } },
-                    { name: { bn: "মেয়েদের জুতো", en: "Women's Shoes" } },
-                    { name: { bn: "ব্যাগ ও লাগেজ", en: "Bags & Luggage" } },
-                    { name: { bn: "পাঞ্জাবি ও শেরওয়ანი", en: "Panjabi & Sherwani" } },
-                    { name: { bn: "শাড়ি ও থ্রিপিস", en: "Saree & Three-Piece" } },
-                    { name: { bn: "বাচ্চাদের পোশাক", en: "Kids' Clothing" } },
-                    { name: { bn: "ঘড়ি ও সানগ্লাস", en: "Watches & Sunglasses" } },
-                    { name: { bn: "কসমেটিক্স ও মেকআপ", en: "Cosmetics & Makeup" } }
+                    { id: 501, stringId: "mens_clothing", name: { bn: "পুরুষদের পোশাক", en: "Men's Clothing" } },
+                    { id: 502, stringId: "womens_clothing", name: { bn: "নারীদের পোশাক", en: "Women's Clothing" } },
+                    { id: 503, stringId: "mens_shoes", name: { bn: "ছেলেদের জুতো", en: "Men's Shoes" } },
+                    { id: 504, stringId: "womens_shoes", name: { bn: "মেয়েদের জুতো", en: "Women's Shoes" } },
+                    { id: 505, stringId: "bags_luggage", name: { bn: "ব্যাগ ও লাগেজ", en: "Bags & Luggage" } },
+                    { id: 506, stringId: "panjabi_sherwani", name: { bn: "পাঞ্জাবি ও শেরওয়ანი", en: "Panjabi & Sherwani" } },
+                    { id: 507, stringId: "saree_threepiece", name: { bn: "শাড়ি ও থ্রিপিস", en: "Saree & Three-Piece" } },
+                    { id: 508, stringId: "kids_clothing", name: { bn: "বাচ্চাদের পোশাক", en: "Kids' Clothing" } },
+                    { id: 509, stringId: "watches_sunglasses", name: { bn: "ঘড়ি ও সানগ্লাস", en: "Watches & Sunglasses" } },
+                    { id: 510, stringId: "cosmetics", name: { bn: "কসমেটিক্স ও মেকআপ", en: "Cosmetics & Makeup" } }
                 ]
             },
+
+
+
+
+
+
+            
             {
-                id: "home_living",
+                id: 6,
+                stringId: "home_living",
                 name: { bn: "হোম ও লিভিং", en: "Home & Living" },
                 subcategories: [
-                    { name: { bn: "ঘরের আসবাবপত্র", en: "Home Furniture" } },
-                    { name: { bn: "হোম ডেকোর বা শোপিস", en: "Home Decor & Showpieces" } },
-                    { name: { bn: "কিচেন ও ডাইনিং", en: "Kitchen & Dining" } },
-                    { name: { bn: "লাইটিং ও ফ্যান", en: "Lighting & Fans" } },
-                    { name: { bn: "বেডিং ও কার্পেট", en: "Bedding & Carpets" } }
+                    { id: 601, stringId: "furniture", name: { bn: "ঘরের আসবাবপত্র", en: "Home Furniture" } },
+                    { id: 602, stringId: "home_decor", name: { bn: "হোম ডেকোর বা শোপিস", en: "Home Decor & Showpieces" } },
+                    { id: 603, stringId: "kitchen_dining", name: { bn: "কিচেন ও ডাইনিং", en: "Kitchen & Dining" } },
+                    { id: 604, stringId: "lighting_fans", name: { bn: "লাইটিং ও ফ্যান", en: "Lighting & Fans" } },
+                    { id: 605, stringId: "bedding_carpets", name: { bn: "বেডিং ও কার্পেট", en: "Bedding & Carpets" } }
                 ]
             },
             {
-                id: "pets",
+                id: 7,
+                stringId: "pets",
                 name: { bn: "পোষা প্রাণী", en: "Pets & Animals" },
                 subcategories: [
-                    { name: { bn: "বিড়াল ও কুকুর", en: "Cats & Dogs" } },
-                    { name: { bn: "পাখি ও মাছ", en: "Birds & Fish" } },
-                    { name: { bn: "গবাদিপশু", en: "Livestock" } },
-                    { name: { bn: "পেট ফুড ও কেয়ার", en: "Pet Food & Care" } }
+                    { id: 701, stringId: "cats_dogs", name: { bn: "বিড়াল ও কুকুর", en: "Cats & Dogs" } },
+                    { id: 702, stringId: "birds_fish", name: { bn: "পাখি ও মাছ", en: "Birds & Fish" } },
+                    { id: 703, stringId: "livestock", name: { bn: "গবাদিপশু", en: "Livestock" } },
+                    { id: 704, stringId: "pet_food", name: { bn: "পেট ফুড ও কেয়ার", en: "Pet Food & Care" } }
                 ]
             },
             {
-                id: "books_sports",
+                id: 8,
+                stringId: "books_sports",
                 name: { bn: "বই ও শখ", en: "Books & Hobbies" },
                 subcategories: [
-                    { name: { bn: "একাডেমিক বই", en: "Academic Books" } },
-                    { name: { bn: "উপন্যাস ও ইসলামিক বই", en: "Novels & Islamic Books" } },
-                    { name: { bn: "জিম ও স্পোর্টস আইটেম", en: "Gym & Sports Items" } },
-                    { name: { bn: "মিউজিক্যাল ইন্সট্রুমেন্ট", en: "Musical Instruments" } },
-                    { name: { bn: "খেলনা ও ভিডিও গেমস", en: "Toys & Video Games" } }
+                    { id: 801, stringId: "academic_books", name: { bn: "একাডেমিক বই", en: "Academic Books" } },
+                    { id: 802, stringId: "novels_islamic", name: { bn: "উপন্যাস ও ইসলামিক বই", en: "Novels & Islamic Books" } },
+                    { id: 803, stringId: "gym_sports", name: { bn: "জিম ও স্পোর্টস আইটেম", en: "Gym & Sports Items" } },
+                    { id: 804, stringId: "musical_instruments", name: { bn: "মিউজিক্যাল ইন্সট্রুমেন্ট", en: "Musical Instruments" } },
+                    { id: 805, stringId: "toys_games", name: { bn: "খেলনা ও ভিডিও গেমস", en: "Toys & Video Games" } }
                 ]
             },
             {
-                id: "agriculture",
+                id: 9,
+                stringId: "agriculture",
                 name: { bn: "কৃষি ও বাগান", en: "Agriculture & Garden" },
                 subcategories: [
-                    { name: { bn: "বীজ ও সার", en: "Seeds & Fertilizers" } },
-                    { name: { bn: "কৃষিকাজের যন্ত্রপাতি", en: "Agricultural Machinery" } },
-                    { name: { bn: "গাছের চারা ও টব", en: "Saplings & Pots" } },
-                    { name: { bn: "সেচ সরঞ্জাম", en: "Irrigation Equipment" } },
-                    { name: { bn: "গবাদিপশুর খাদ্য", en: "Animal Feed" } }
+                    { id: 901, stringId: "seeds_fertilizers", name: { bn: "বীজ ও সার", en: "Seeds & Fertilizers" } },
+                    { id: 902, stringId: "agri_machinery", name: { bn: "কৃষিকাজের যন্ত্রপাতি", en: "Agricultural Machinery" } },
+                    { id: 903, stringId: "saplings_pots", name: { bn: "গাছের চারা ও টব", en: "Saplings & Pots" } },
+                    { id: 904, stringId: "irrigation", name: { bn: "সেচ সরঞ্জাম", en: "Irrigation Equipment" } },
+                    { id: 905, stringId: "animal_feed", name: { bn: "গবাদিপশুর খাদ্য", en: "Animal Feed" } }
                 ]
             },
             {
-                id: "jobs",
+                id: 10,
+                stringId: "jobs",
                 name: { bn: "চাকরি", en: "Jobs" },
                 subcategories: [
-                    { name: { bn: "ফুলটাইম জব", en: "Full-Time Jobs" } },
-                    { name: { bn: "পার্টটাইম ও রিমোট জব", en: "Part-Time & Remote Jobs" } },
-                    { name: { bn: "ইন্টার্নশিপ", en: "Internships" } },
-                    { name: { bn: "কাজের লোক বা সার্ভিস", en: "Workers or Services" } }
+                    { id: 1001, stringId: "fulltime_jobs", name: { bn: "ফুলটাইম জব", en: "Full-Time Jobs" } },
+                    { id: 1002, stringId: "parttime_jobs", name: { bn: "পার্টটাইম ও রিমোট জব", en: "Part-Time & Remote Jobs" } },
+                    { id: 1003, stringId: "internships", name: { bn: "ইন্টার্নশিপ", en: "Internships" } },
+                    { id: 1004, stringId: "workers_services", name: { bn: "কাজের লোক বা সার্ভিস", en: "Workers or Services" } }
                 ]
             },
             {
-                id: "services",
+                id: 11,
+                stringId: "services",
                 name: { bn: "সার্ভিস", en: "Services" },
                 subcategories: [
-                    { name: { bn: "আইটি ও গ্রাফিক্স ডিজাইন", en: "IT & Graphics Design" } },
-                    { name: { bn: "ইলেকট্রিক ও প্লাম্বিং", en: "Electric & Plumbing" } },
-                    { name: { bn: "ইভেন্ট ম্যানেজমেন্ট", en: "Event Management" } },
-                    { name: { bn: "টিউশন বা কোচিং", en: "Tuition or Coaching" } }
+                    { id: 1101, stringId: "it_graphics", name: { bn: "আইটি ও গ্রাফিক্স ডিজাইন", en: "IT & Graphics Design" } },
+                    { id: 1102, stringId: "electric_plumbing", name: { bn: "ইলেকট্রিক ও প্লাম্বিং", en: "Electric & Plumbing" } },
+                    { id: 1103, stringId: "event_management", name: { bn: "ইভেন্ট ম্যানেজমেন্ট", en: "Event Management" } },
+                    { id: 1104, stringId: "tuition", name: { bn: "টিউশন বা কোচিং", en: "Tuition or Coaching" } }
                 ]
             },
             {
-                id: "others",
+                id: 12,
+                stringId: "others",
                 name: { bn: "অন্যান্য", en: "Others" },
                 subcategories: [
-                    { name: { bn: "মিসেলেনিয়াস বা অন্যান্য আইটেম", en: "Miscellaneous Items" } }
+                    { id: 1201, stringId: "miscellaneous", name: { bn: "মিসেলেনিয়াস বা অন্যান্য আইটেম", en: "Miscellaneous Items" } }
                 ]
             }
         ];
@@ -459,13 +485,14 @@
             const mainSelect = document.getElementById('mainCategorySelect');
             let html = '<option value="">ক্যাটেগরি নির্বাচন করুন</option>';
             hardcodedCategories.forEach(cat => {
+                // ভ্যালুতে ক্যাটেগরির নিউমেরিক আইডি বা stringId রাখা হলো, কিন্তু ইনপুট দেওয়ার সময় সংখ্যায় কনভার্ট করা হবে
                 html += `<option value="${cat.id}">${cat.name.bn}</option>`;
             });
             mainSelect.innerHTML = html;
         }
 
         function updateSubCategories() {
-            const mainId = document.getElementById('mainCategorySelect').value;
+            const mainId = parseInt(document.getElementById('mainCategorySelect').value);
             const subSelect = document.getElementById('subCategorySelect');
             
             let html = '<option value="">সাব-ক্যাটেগরি নির্বাচন করুন</option>';
@@ -473,13 +500,12 @@
             
             if (selectedCat && selectedCat.subcategories) {
                 selectedCat.subcategories.forEach(sub => {
-                    html += `<option value="${sub.name.bn}">${sub.name.bn}</option>`;
+                    html += `<option value="${sub.name.bn}" data-subid="${sub.id}">${sub.name.bn}</option>`;
                 });
             }
             subSelect.innerHTML = html;
         }
 
-        // Supabase এর locations টেবিল থেকে সব ডেটা ফেচ করা
         async function fetchLocationsFromSupabase() {
             try {
                 const { data, error } = await supabaseClient.from('locations').select('*');
@@ -488,14 +514,13 @@
                     globalLocations = data;
                     loadDistricts();
                 } else {
-                    console.warn('Locations table-এ কোনো ডাটা পাওয়া যায়নি।');
+                    console.warn('Locations table-এ কোনো ডাটা পাওয়া যায়নি।');
                 }
             } catch (err) {
                 console.error('লোকেশন লোড করতে সমস্যা হয়েছে:', err);
             }
         }
 
-        // জেলা ড্রপডাউন লোড করা
         function loadDistricts() {
             const districtSelect = document.getElementById('districtSelect');
             const districts = [...new Set(globalLocations.map(item => item.district))].filter(Boolean);
@@ -507,7 +532,6 @@
             districtSelect.innerHTML = html;
         }
 
-        // জেলা সিলেক্ট করলে সংশ্লিষ্ট থানাগুলো দেখানো
         function updateThanas() {
             const selectedDistrict = document.getElementById('districtSelect').value;
             const thanaSelect = document.getElementById('thanaSelect');
@@ -530,7 +554,6 @@
             thanaSelect.innerHTML = html;
         }
 
-        // থানা সিলেক্ট করলে সংশ্লিষ্ট ইউনিয়নগুলো দেখানো
         function updateUnions() {
             const selectedDistrict = document.getElementById('districtSelect').value;
             const selectedThana = document.getElementById('thanaSelect').value;
@@ -598,7 +621,6 @@
             return `https://m.me/${username}`;
         }
 
-        // পণ্য আপলোড করার সময় ইউজার যা সিলেক্ট করেছে তা products টেবিলে পাঠানো
         async function uploadProduct(event) {
             event.preventDefault();
 
@@ -623,12 +645,19 @@
 
                 const name = document.getElementById('prodName').value;
                 const productType = document.getElementById('prodType').value;
-                const mainCatId = document.getElementById('mainCategorySelect').value;
-                const mainCatObj = hardcodedCategories.find(c => c.id === mainCatId);
-                const category = mainCatObj ? mainCatObj.name.bn : '';
-                const subCategory = document.getElementById('subCategorySelect').value;
                 
-                // ড্রপডাউন থেকে সিলেক্ট করা লোকেশন ভ্যালুগুলো নেওয়া হচ্ছে
+                // ১. মূল ক্যাটেগরির আইডি (সংখ্যা) এবং নাম বের করা
+                const mainCatIdNum = parseInt(document.getElementById('mainCategorySelect').value); // সংখ্যা আইডি (যেমন: 5)
+                const mainCatObj = hardcodedCategories.find(c => c.id === mainCatIdNum);
+                const categoryName = mainCatObj ? mainCatObj.name.bn : ''; // নাম (যেমন: ফ্যাশন)
+
+                // ২. সাব-ক্যাটেগরির আইডি (সংখ্যা) এবং নাম বের করা
+                const subSelectElement = document.getElementById('subCategorySelect');
+                const subCategoryName = subSelectElement.value; // নাম
+                const selectedOption = subSelectElement.options[subSelectElement.selectedIndex];
+                const subCategoryIdNum = selectedOption ? parseInt(selectedOption.getAttribute('data-subid')) : null; // সংখ্যা আইডি
+
+                const keywords = document.getElementById('prodKeywords').value;
                 const district = document.getElementById('districtSelect').value;
                 const thana = document.getElementById('thanaSelect').value;
                 const unionName = document.getElementById('unionSelect').value;
@@ -642,7 +671,7 @@
                 const whatsappLink = formatWhatsAppLink(rawWhatsapp);
                 const messengerLink = formatMessengerLink(rawMessenger);
 
-                // products টেবিলে ডেটা ইনসার্ট করা
+                // products টেবিলে নাম এবং নিউমেরিক আইডি ইনসার্ট করা হচ্ছে
                 const { error: insertError } = await supabaseClient
                     .from('products')
                     .insert([
@@ -650,8 +679,11 @@
                             seller_id: currentSeller.id,
                             name: name,
                             product_type: productType,
-                            Maincategory: category,
-                            sub_categor: subCategory,
+                            Maincategory: categoryName,         // ক্যাটেগরির নাম
+                            MainCategory_id: mainCatIdNum,      // ক্যাটেগরির নিউমেরিক আইডি (সংখ্যা)
+                            sub_categor: subCategoryName,       // সাব-ক্যাটেগরির নাম
+                            subcategory_id: subCategoryIdNum,   // সাব-ক্যাটেগরির নিউমেরিক আইডি (সংখ্যা)
+                            keywords: keywords,
                             price: price,
                             image_url: imageUrl1,
                             image_url_1: imageUrl2,
@@ -667,7 +699,6 @@
 
                 if (insertError) throw insertError;
 
-                // কয়েন ১ কমানো
                 const newCoins = currentSeller.coins - 1;
                 const { error: updateError } = await supabaseClient
                     .from('sellers')
@@ -684,7 +715,7 @@
 
             } catch (err) {
                 console.error(err);
-                alert('আপলোড করতে সমস্যা হয়েছে: ' + err.message);
+                alert('আপলোড করতে সমস্যা হয়েছে: ' + err.message);
                 submitBtn.disabled = false;
                 submitBtn.innerHTML = '<i class="fa-solid fa-upload"></i> পণ্য আপলোড করুন (১ কয়েন কাটবে)';
             }

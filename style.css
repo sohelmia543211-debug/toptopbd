@@ -45,7 +45,7 @@ header h1 {
     background: #ffe0d6;
 }
 
-/* সার্চ বার ও লোকেশন একসাথে ফ্রেম (লোকেশন ও সার্চের ব্যাকগ্রাউন্ড আলাদা করা হয়েছে) */
+/* সার্চ বার ও লোকেশন একসাথে ফ্রেম (লোকেশন ও সার্চের ব্যাকগ্রাউন্ড আলাদা করা হয়েছে) */
 .search-location-bar {
     display: flex;
     align-items: center;
@@ -61,7 +61,7 @@ header h1 {
     box-shadow: 0 0 0 2px rgba(255, 87, 34, 0.1);
 }
 
-/* লোকেশন ড্রপডাউন অংশ (হালকা অফ-হোয়াইট ব্যাকগ্রাউন্ড) */
+/* লোকেশন ড্রপডাউন অংশ (হালকা অফ-হোয়াইট ব্যাকগ্রাউন্ড) */
 .header-location-select {
     background: #f1f5f9; 
     border: 1px solid #e2e8f0;
@@ -296,6 +296,51 @@ header h1 {
     font-size: 14px;
     font-weight: 700;
     color: #ff5722;
+}
+
+/* --- প্রোডাক্ট শিমার লোডিং ইফেক্ট ডিজাইন --- */
+@keyframes shimmer {
+    0% {
+        background-position: -200px 0;
+    }
+    100% {
+        background-position: calc(200px + 100%) 0;
+    }
+}
+
+.shimmer-card {
+    background: #fff;
+    border-radius: 8px;
+    overflow: hidden;
+    border: 1px solid #eee;
+    pointer-events: none;
+}
+
+.shimmer-img {
+    width: 100%;
+    height: 140px;
+    background: #f6f7f9;
+    background-image: linear-gradient(90deg, #f6f7f9 0px, #edeef1 40px, #f6f7f9 80px);
+    background-size: 600px 140px;
+    animation: shimmer 1.5s infinite linear;
+}
+
+.shimmer-info {
+    padding: 10px;
+}
+
+.shimmer-line {
+    height: 12px;
+    background: #f6f7f9;
+    background-image: linear-gradient(90deg, #f6f7f9 0px, #edeef1 40px, #f6f7f9 80px);
+    background-size: 600px 12px;
+    animation: shimmer 1.5s infinite linear;
+    border-radius: 4px;
+    margin-bottom: 8px;
+}
+
+.shimmer-line.short {
+    width: 60%;
 }
 
 /* বটম নেভবার */
