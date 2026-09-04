@@ -36,7 +36,7 @@
         </div>
     </div>
 
-    <!-- বটম নেভবার -->
+    <!-- বটম নেভবার (এখানে 'আমার অর্ডার' বাটন যুক্ত করা হয়েছে) -->
     <nav class="bottom-nav">
         <a href="index.html" class="bottom-nav-item">
             <i class="fa-solid fa-house"></i>
@@ -45,6 +45,10 @@
         <a href="categories.html" class="bottom-nav-item active">
             <i class="fa-solid fa-list"></i>
             <span>ক্যাটাগরি</span>
+        </a>
+        <a href="my_orders.html" class="bottom-nav-item">
+            <i class="fa-solid fa-box-archive"></i>
+            <span>আমার অর্ডার</span>
         </a>
         <a href="favorites.html" class="bottom-nav-item">
             <i class="fa-solid fa-heart"></i>
@@ -140,7 +144,6 @@
                     const subName = sub.name.bn;
                     const mainCatId = sub.mainCatId;
                     
-                    // ফিক্সড: category_products.html এর বদলে সঠিক products.html এ রিডায়রেক্ট করা হলো
                     subHtml += `
                         <div onclick="window.location.href='products.html?main_category_id=${mainCatId}&sub_category_id=${sub.id}&sub_name=${encodeURIComponent(subName)}'" style="background: white; padding: 16px 12px; border-radius: 10px; border: 1px solid #eee; text-align: center; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.03); cursor: pointer; transition: all 0.2s ease;" onmouseover="this.style.borderColor='#ff5722'; this.style.transform='translateY(-2px)';" onmouseout="this.style.borderColor='#eee'; this.style.transform='translateY(0)';">
                             <div style="font-size: 24px; color: #ff5722; background: #fff5f2; width: 45px; height: 45px; display: flex; align-items: center; justify-content: center; border-radius: 50%;">

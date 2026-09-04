@@ -25,25 +25,21 @@
         </div>
     </div>
 
-    <!-- ক্যাটাগরি সেকশন -->
     <div class="categories-container">
         <div class="section-title" data-en="Categories" data-bn="ক্যাটাগরি সমূহ">ক্যাটাগরি সমূহ</div>
         <div class="categories-grid" id="mainCategories"></div>
     </div>
 
-    <!-- সাব-ক্যাটাগরি সেকশন -->
     <div class="sub-categories-container">
         <div class="section-title" data-en="Sub-Categories" data-bn="সাব-ক্যাটাগরি সমূহ">সাব-ক্যাটাগরি সমূহ</div>
         <div class="sub-categories-grid" id="subCategories"></div>
     </div>
 
-    <!-- প্রোডাক্টসমূহ সেকশন -->
     <div class="container">
         <div class="section-title" data-en="Products" data-bn="প্রোডাক্টসমূহ">প্রোডাক্টসমূহ</div>
         <div class="product-grid" id="productGrid" style="min-height: 250px;"></div>
     </div>
 
-    <!-- বটম নেভবার -->
     <nav class="bottom-nav">
         <a href="index.html" class="bottom-nav-item active">
             <i class="fa-solid fa-house"></i>
@@ -52,6 +48,10 @@
         <a href="categories.html" class="bottom-nav-item">
             <i class="fa-solid fa-list"></i>
             <span data-en="Category" data-bn="ক্যাটাগরি">ক্যাটাগরি</span>
+        </a>
+        <a href="my_orders.html" class="bottom-nav-item">
+            <i class="fa-solid fa-box-archive"></i>
+            <span data-en="My Orders" data-bn="আমার অর্ডার">আমার অর্ডার</span>
         </a>
         <a href="favorites.html" class="bottom-nav-item">
             <i class="fa-solid fa-heart"></i>
@@ -92,6 +92,7 @@
                 }
             });
         }
+        applyLanguage();
     </script>
     <script src="script.js"></script>
 </body>

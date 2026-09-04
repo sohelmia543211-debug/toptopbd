@@ -71,6 +71,13 @@
         .form-group {
             margin-bottom: 15px;
         }
+        .form-row {
+            display: flex;
+            gap: 12px;
+        }
+        .form-row .form-group {
+            flex: 1;
+        }
         .form-group label {
             display: block;
             font-weight: 600;
@@ -93,7 +100,7 @@
         }
         textarea.form-control {
             resize: vertical;
-            height: 80px;
+            height: 70px;
         }
         .delivery-options {
             display: flex;
@@ -165,7 +172,7 @@
             border: 1px solid #c8e6c9;
         }
         .submit-order-btn {
-            background: #25D366;
+            background: #ff5722;
             color: white;
             border: none;
             width: 100%;
@@ -178,11 +185,16 @@
             align-items: center;
             justify-content: center;
             gap: 10px;
-            box-shadow: 0 4px 10px rgba(37, 211, 102, 0.3);
+            box-shadow: 0 4px 10px rgba(255, 87, 34, 0.3);
             transition: opacity 0.2s;
         }
         .submit-order-btn:hover {
             opacity: 0.9;
+        }
+        .submit-order-btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            box-shadow: none;
         }
     </style>
 </head>
@@ -198,10 +210,10 @@
         </div>
 
         <div class="cod-badge">
-            <i class="fa-solid fa-truck-fast"></i> ক্যাশ অন ডেলিভারি (পণ্য হাতে পেয়ে মূল্য পরিশোধ)
+            <i class="fa-solid fa-truck-fast"></i> ক্যাশ অন ডেলিভারি (পণ্য হাতে পেয়ে মূল্য পরিশোধ)
         </div>
 
-        <form id="orderForm" onsubmit="submitOrderToWhatsApp(event)">
+        <form id="orderForm" onsubmit="submitOrderToDatabase(event)">
             <div class="form-group">
                 <label>আপনার নাম *</label>
                 <input type="text" id="customerName" class="form-control" placeholder="আপনার সম্পূর্ণ নাম লিখুন" required>
@@ -212,25 +224,33 @@
                 <input type="tel" id="customerPhone" class="form-control" placeholder="যেমন: 01712345678" required>
             </div>
 
-            <div class="form-group">
-                <label>ডেলিভারি এলাকা নির্বাচন করুন *</label>
-                <div class="delivery-options">
-                    <label class="delivery-card selected" onclick="setDeliveryCharge(80, this)">
-                        <input type="radio" name="deliveryArea" value="Dhaka" checked>
-                        <div class="area-name">ঢাকার ভেতরে</div>
-                        <div class="area-charge">৮০ টাকা</div>
-                    </label>
-                    <label class="delivery-card" onclick="setDeliveryCharge(129, this)">
-                        <input type="radio" name="deliveryArea" value="Outside">
-                        <div class="area-name">ঢাকার বাইরে</div>
-                        <div class="area-charge">১২৯ টাকা</div>
-                    </label>
+            <div class="delivery-options">
+                <label class="delivery-card selected" onclick="setDeliveryCharge(80, this)">
+                    <input type="radio" name="deliveryArea" value="Dhaka" checked>
+                    <div class="area-name">ঢাকার ভেতরে</div>
+                    <div class="area-charge">৮০ টাকা</div>
+                </label>
+                <label class="delivery-card" onclick="setDeliveryCharge(129, this)">
+                    <input type="radio" name="deliveryArea" value="Outside">
+                    <div class="area-name">ঢাকার বাইরে</div>
+                    <div class="area-charge">১২৯ টাকা</div>
+                </label>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label>জেলা (District) *</label>
+                    <input type="text" id="customerDistrict" class="form-control" placeholder="যেমন: ঢাকা" required>
+                </div>
+                <div class="form-group">
+                    <label>থানা / উপজেলা (Thana) *</label>
+                    <input type="text" id="customerThana" class="form-control" placeholder="যেমন: মিরপুর" required>
                 </div>
             </div>
 
             <div class="form-group">
-                <label>সম্পূর্ণ ঠিকানা (বাসা/রোড/থানা/জেলা) *</label>
-                <textarea id="customerAddress" class="form-control" placeholder="আপনার বাসার ঠিকানা বিস্তারিত লিখুন..." required></textarea>
+                <label>বিস্তারিত ঠিকানা (বাসা/রোড নম্বর ইত্যাদি) *</label>
+                <textarea id="customerAddress" class="form-control" placeholder="বাসা নম্বর, রোড নম্বর বা এলাকার বিবরণ..." required></textarea>
             </div>
 
             <div class="bill-summary">
@@ -243,13 +263,13 @@
                     <span id="deliveryChargeText">৳ 80</span>
                 </div>
                 <div class="bill-row total">
-                    <span>সর্বমোট প্রদেয়:</span>
+                    <span>সর্বমোট প্রদেয়:</span>
                     <span id="totalPrice">৳ 0</span>
                 </div>
             </div>
 
-            <button type="submit" class="submit-order-btn">
-                <i class="fa-brands fa-whatsapp"></i> WhatsApp এ অর্ডার কনফার্ম করুন
+            <button type="submit" id="submitBtn" class="submit-order-btn">
+                অর্ডার কনফার্ম করুন
             </button>
         </form>
     </div>
@@ -261,7 +281,7 @@
         const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
         let currentProduct = null;
-        let deliveryFee = 80; // ডিফল্ট ঢাকার ভেতরে ৮০ টাকা
+        let deliveryFee = 80;
 
         const urlParams = new URLSearchParams(window.location.search);
         const productId = urlParams.get('id');
@@ -270,7 +290,7 @@
             const summaryBox = document.getElementById('productSummaryBox');
 
             if (!productId) {
-                summaryBox.innerHTML = `<p style="color:red; margin:0;">প্রোডাক্ট আইডি পাওয়া যায়নি!</p>`;
+                summaryBox.innerHTML = `<p style="color:red; margin:0;">প্রোডাক্ট আইডি পাওয়া যায়নি!</p>`;
                 return;
             }
 
@@ -282,7 +302,7 @@
                     .single();
 
                 if (error || !data) {
-                    summaryBox.innerHTML = `<p style="color:red; margin:0;">প্রোডাক্ট ডাটা লোড করা যায়নি।</p>`;
+                    summaryBox.innerHTML = `<p style="color:red; margin:0;">প্রোডাক্ট ডাটা লোড করা যায়নি।</p>`;
                     return;
                 }
 
@@ -301,7 +321,7 @@
 
             } catch (err) {
                 console.error(err);
-                summaryBox.innerHTML = `<p style="color:red; margin:0;">কানেকশন এরর হয়েছে!</p>`;
+                summaryBox.innerHTML = `<p style="color:red; margin:0;">কানেকশন এরর হয়েছে!</p>`;
             }
         }
 
@@ -325,12 +345,18 @@
             document.getElementById('totalPrice').innerText = `৳ ${total}`;
         }
 
-        function submitOrderToWhatsApp(event) {
+        async function submitOrderToDatabase(event) {
             event.preventDefault();
             if (!currentProduct) return;
 
+            const submitBtn = document.getElementById('submitBtn');
+            submitBtn.disabled = true;
+            submitBtn.innerText = "অর্ডার প্রসেসিং হচ্ছে...";
+
             let name = document.getElementById('customerName').value.trim();
             let phone = document.getElementById('customerPhone').value.trim();
+            let district = document.getElementById('customerDistrict').value.trim();
+            let thana = document.getElementById('customerThana').value.trim();
             let address = document.getElementById('customerAddress').value.trim();
             let areaType = document.querySelector('input[name="deliveryArea"]:checked').value;
             let areaNameText = (areaType === 'Dhaka') ? 'ঢাকার ভেতরে' : 'ঢাকার বাইরে';
@@ -338,31 +364,46 @@
             let productPrice = Number(currentProduct.price) || 0;
             let totalAmount = productPrice + deliveryFee;
 
-            let whatsappPhone = "8801712345678"; 
-            if (currentProduct.whatsapp_link) {
-                if (currentProduct.whatsapp_link.includes("wa.me/")) {
-                    whatsappPhone = currentProduct.whatsapp_link.split("wa.me/")[1].split("?")[0];
-                } else {
-                    whatsappPhone = currentProduct.whatsapp_link.replace(/[^0-9]/g, '');
+            const orderData = {
+                product_id: Number(currentProduct.id),
+                product_name: String(currentProduct.name),
+                product_price: Number(productPrice),
+                product_image: String(currentProduct.image_url || ''),
+                customer_name: String(name),
+                customer_phone: String(phone),
+                delivery_area: String(areaNameText),
+                delivery_charge: String(deliveryFee),
+                total_amount: String(totalAmount),
+                address: String(`ঠিকানা: ${address}, থানা: ${thana}, জেলা: ${district}`),
+                order_status: 'Pending'
+            };
+
+            try {
+                const { data, error } = await supabaseClient
+                    .from('orders')
+                    .insert([orderData]);
+
+                if (error) {
+                    console.error("Supabase Error Details:", error);
+                    alert("অর্ডার সেভ করতে সমস্যা হয়েছে: " + error.message);
+                    submitBtn.disabled = false;
+                    submitBtn.innerText = "অর্ডার কনফার্ম করুন";
+                    return;
                 }
+
+                // লোকাল স্টোরেজে গ্রাহকের ফোন নম্বর সেভ করে রাখা যাতে 'আমার অর্ডার' পেজে সরাসরি দেখা যায়
+                localStorage.setItem('topTopCustomerPhone', phone);
+
+                // সফল মেসেজ দেখিয়ে মাই অর্ডার পেজে রিডাইরেক্ট করা
+                alert("আপনার অর্ডারটি সফলভাবে সম্পন্ন হয়েছে! ধন্যবাদ।");
+                window.location.href = "my_orders.html";
+
+            } catch (err) {
+                console.error("Network Exception:", err);
+                alert("নেটওয়ার্ক সমস্যা! দয়া করে আবার চেষ্টা করুন।");
+                submitBtn.disabled = false;
+                submitBtn.innerText = "অর্ডার কনফার্ম করুন";
             }
-
-            let message = `🛒 *নতুন অর্ডার এসেছে (TopTop BD)*\n\n` +
-                          `📌 *প্রোডাক্টের নাম:* ${currentProduct.name}\n` +
-                          `💰 *মূল্য:* ৳ ${productPrice}\n` +
-                          `🖼️ *ছবি:* ${currentProduct.image_url || 'N/A'}\n\n` +
-                          `👤 *গ্রাহকের তথ্য:*\n` +
-                          `▫️ নাম: ${name}\n` +
-                          `▫️ মোবাইল: ${phone}\n` +
-                          `▫️ এলাকা: ${areaNameText}\n` +
-                          `▫️ ঠিকানা: ${address}\n\n` +
-                          `💵 *পেমেন্ট পদ্ধতি:* ক্যাশ অন ডেলিভারি (COD)\n` +
-                          `📦 *ডেলিভারি চার্জ:* ৳ ${deliveryFee}\n` +
-                          `🏷️ *সর্বমোট বিল:* ৳ ${totalAmount}\n\n` +
-                          `দয়া করে অর্ডারটি কনফার্ম করুন।`;
-
-            let encodedMessage = encodeURIComponent(message);
-            window.open(`https://wa.me/${whatsappPhone}?text=${encodedMessage}`, '_blank');
         }
 
         window.onload = fetchCheckoutProduct;

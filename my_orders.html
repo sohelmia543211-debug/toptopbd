@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>আমার অর্ডারসমূহ - TopTop BD</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .orders-container {
+            max-width: 600px;
+            margin: 20px auto;
+            padding: 0 10px;
+            padding-bottom: 70px;
+        }
+        .search-box-card {
+            background: #fff;
+            padding: 15px;
+            border-radius: 10px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            margin-bottom: 20px;
+        }
+        .order-item-card {
+            background: #fff;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 15px;
+            border: 1px solid #eee;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.02);
+        }
+        .order-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #f0f0f0;
+            padding-bottom: 8px;
+            margin-bottom: 10px;
+            font-size: 13px;
+            color: #666;
+        }
+        .order-body {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+        .order-body img {
+            width: 65px;
+            height: 65px;
+            object-fit: cover;
+            border-radius: 6px;
+            background: #f0f0f0;
+        }
+        .order-details h4 {
+            margin: 0 0 5px 0;
+            font-size: 14px;
+            color: #222;
+        }
+        .order-details p {
+            margin: 2px 0;
+            font-size: 13px;
+            color: #555;
+        }
+        .badge-pending {
+            background: #fff3cd;
+            color: #856404;
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="header-top" style="display: flex; align-items: center; justify-content: space-between; padding: 15px; background: #ff5722; color: white;">
+            <a href="index.html" style="color:white; text-decoration:none; font-size:16px;"><i class="fa-solid fa-arrow-left"></i></a>
+            <h1 style="font-size: 18px; margin: 0;">আমার অর্ডারসমূহ</h1>
+            <div style="width: 24px;"></div>
+        </div>
+    </header>
+
+    <div class="orders-container">
+        <div class="search-box-card">
+            <label style="font-size: 13px; font-weight: 600; color: #444; display: block; margin-bottom: 6px;">অন্য ফোন বা নম্বর দিয়ে অর্ডার দেখতে:</label>
+            <div style="display: flex; gap: 8px;">
+                <input type="tel" id="searchPhoneInput" class="form-control" placeholder="যেমন: 01712345678" style="flex:1; padding: 10px; border:1px solid #ddd; border-radius:6px; outline:none;">
+                <button onclick="fetchCustomerOrdersByInput()" style="background:#ff5722; color:white; border:none; padding: 0 16px; border-radius:6px; cursor:pointer; font-weight:600;">খুঁজুন</button>
+            </div>
+        </div>
+
+        <div id="ordersResultList">
+            <p style="text-align: center; color: #777; margin-top: 30px;">অর্ডার লোড হচ্ছে...</p>
+        </div>
+    </div>
+
+    <nav class="bottom-nav" style="position: fixed; bottom: 0; left: 0; width: 100%; height: 60px; background: #fff; display: flex; justify-content: space-around; align-items: center; border-top: 1px solid #eee; z-index: 1000;">
+        <a href="index.html" class="bottom-nav-item" style="display:flex; flex-direction:column; align-items:center; text-decoration:none; color:#777; font-size:11px;">
+            <i class="fa-solid fa-house" style="font-size:18px; margin-bottom:3px;"></i>
+            <span>হোম</span>
+        </a>
+        <a href="categories.html" class="bottom-nav-item" style="display:flex; flex-direction:column; align-items:center; text-decoration:none; color:#777; font-size:11px;">
+            <i class="fa-solid fa-list" style="font-size:18px; margin-bottom:3px;"></i>
+            <span>ক্যাটাগরি</span>
+        </a>
+        <a href="my_orders.html" class="bottom-nav-item active" style="display:flex; flex-direction:column; align-items:center; text-decoration:none; color:#ff5722; font-size:11px;">
+            <i class="fa-solid fa-box-archive" style="font-size:18px; margin-bottom:3px;"></i>
+            <span>আমার অর্ডার</span>
+        </a>
+        <a href="favorites.html" class="bottom-nav-item" style="display:flex; flex-direction:column; align-items:center; text-decoration:none; color:#777; font-size:11px;">
+            <i class="fa-solid fa-heart" style="font-size:18px; margin-bottom:3px;"></i>
+            <span>পছন্দ</span>
+        </a>
+        <a href="support.html" class="bottom-nav-item" style="display:flex; flex-direction:column; align-items:center; text-decoration:none; color:#777; font-size:11px;">
+            <i class="fa-solid fa-headset" style="font-size:18px; margin-bottom:3px;"></i>
+            <span>সাপোর্ট</span>
+        </a>
+    </nav>
+
+    <script>
+        const SUPABASE_URL = 'https://mzqqkkgdggwmpegvqaol.supabase.co';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im16cXFra2dkZ2d3bXBlZ3ZxYW9sIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODY4MDU4NDUsImV4cCI6MjEwMjM4MTg0NX0.hbUQ4dKjX2iXTF-ugi7JkV_-J5gKIpSEsPN8RpJ0EEo';
+        const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+        // নির্দিষ্ট ফোন নম্বর দিয়ে Supabase থেকে ডাটা ফেচ করার ফাংশন
+        async function fetchOrdersFromSupabase(phone) {
+            const resultDiv = document.getElementById('ordersResultList');
+            resultDiv.innerHTML = `<p style="text-align:center; color:#777; margin-top:20px;">অর্ডার খোঁজা হচ্ছে...</p>`;
+
+            try {
+                const { data, error } = await supabaseClient
+                    .from('orders')
+                    .select('*')
+                    .eq('customer_phone', phone)
+                    .order('id', { ascending: false });
+
+                if (error) {
+                    resultDiv.innerHTML = `<p style="text-align:center; color:red;">অর্ডার লোড করতে সমস্যা হয়েছে!</p>`;
+                    return;
+                }
+
+                if (!data || data.length === 0) {
+                    resultDiv.innerHTML = `<p style="text-align:center; color:#777; margin-top:20px;">এই নম্বরে (<strong>${phone}</strong>) কোনো অর্ডার পাওয়া যায়নি।</p>`;
+                    return;
+                }
+
+                let html = '';
+                data.forEach(order => {
+                    let dateStr = new Date(order.created_at).toLocaleString('bn-BD');
+                    html += `
+                        <div class="order-item-card">
+                            <div class="order-header">
+                                <span>অর্ডার আইডি: #${order.id}</span>
+                                <span class="badge-pending">${order.order_status || 'Pending'}</span>
+                            </div>
+                            <div class="order-body">
+                                <img src="${order.product_image || 'https://via.placeholder.com/100'}" alt="Product">
+                                <div class="order-details">
+                                    <h4>${order.product_name}</h4>
+                                    <p><b>মূল্য:</b> ৳ ${order.product_price}</p>
+                                    <p><b>সর্বমোট বিল:</b> ৳ ${order.total_amount}</p>
+                                    <p style="font-size: 11px; color: #888; margin-top: 4px;"><i class="fa-regular fa-clock"></i> ${dateStr}</p>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                });
+
+                resultDiv.innerHTML = html;
+
+            } catch (err) {
+                console.error(err);
+                resultDiv.innerHTML = `<p style="text-align:center; color:red;">কানেকশন এরর হয়েছে!</p>`;
+            }
+        }
+
+        // ইনপুট বক্স থেকে সার্চ করার ফাংশন
+        function fetchCustomerOrdersByInput() {
+            const phone = document.getElementById('searchPhoneInput').value.trim();
+            if (!phone) {
+                alert('দয়া করে মোবাইল নম্বরটি লিখুন!');
+                return;
+            }
+            // সার্চ করলে লোকাল স্টোরেজেও নম্বরটি আপডেট হয়ে যাবে
+            localStorage.setItem('topTopCustomerPhone', phone);
+            fetchOrdersFromSupabase(phone);
+        }
+
+        // পেজ লোড হওয়ার সাথে সাথে লোকাল স্টোরেজ চেক করা
+        window.onload = function() {
+            const savedPhone = localStorage.getItem('topTopCustomerPhone');
+            const searchInput = document.getElementById('searchPhoneInput');
+
+            if (savedPhone) {
+                searchInput.value = savedPhone;
+                fetchOrdersFromSupabase(savedPhone);
+            } else {
+                document.getElementById('ordersResultList').innerHTML = `
+                    <p style="text-align: center; color: #777; margin-top: 30px;">
+                        আপনার কোনো পূর্ববর্তী অর্ডার এই ডিভাইসে পাওয়া যায়নি। দেখতে উপরে আপনার মোবাইল নম্বর লিখে 'খুঁজুন' এ ক্লিক করুন।
+                    </p>`;
+            }
+        };
+    </script>
+</body>
+</html>
