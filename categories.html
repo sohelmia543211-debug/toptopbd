@@ -22,15 +22,15 @@
         
         <!-- বাম পাশের সাইডবার (মেইন ক্যাটাগরি) -->
         <div class="main-category-sidebar" id="mainCategorySidebar" style="width: 30%; background: #fff; border-right: 1px solid #ddd; overflow-y: auto;">
-            <!-- ডাইনামিক মেইন ক্যাটাগরিগুলো এখানে জাভাস্ক্রিপ্ট দিয়ে লোড হবে -->
+            <!-- ডাইনামিক মেইন ক্যাটাগরিগুলো এখানে জাভাস্ক্রিপ্ট দিয়ে লোড হবে -->
         </div>
 
-        <!-- ডান পাশের কনটেন্ট এরিয়া (সাব-ক্যাটাগরি) -->
+        <!-- ডান পাশের কনটেন্ট এরিয়া (সাব-ক্যাটাগরি) -->
         <div class="sub-category-content" style="width: 70%; padding: 15px; overflow-y: auto;">
             <div class="section-title" style="font-size: 15px; font-weight: bold; margin-bottom: 12px; color: #333;">
                 <i class="fa-solid fa-tags" style="color: #ff5722;"></i> সাব-ক্যাটাগরি সমূহ
             </div>
-            <div class="sub-category-grid" id="subCategoryGrid" style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px;">
+            <div class="sub-category-grid" id="subCategoryGrid" style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px;">
                 <!-- সাব-ক্যাটাগরি কার্ডগুলো এখানে ডাইনামিকালি লোড হবে -->
             </div>
         </div>
@@ -56,7 +56,7 @@
         </a>
     </nav>
 
-    <!-- জাভাস্ক্রিপ্ট ফাইল (যেখানে hardcodedCategories এবং লজিক রয়েছে) -->
+    <!-- জাভাস্ক্রিপ্ট ফাইল (যেখানে hardcodedCategories এবং লজিক রয়েছে) -->
     <script src="script.js"></script>
     
     <!-- ক্যাটাগরি পেজের নিজস্ব রেন্ডারিং স্ক্রিপ্ট -->
@@ -116,14 +116,11 @@
                 subs.forEach(sub => {
                     const subName = sub.name.bn;
                     subHtml += `
-                        <div style="background: white; padding: 12px; border-radius: 8px; border: 1px solid #eee; text-align: center; display: flex; flex-direction: column; justify-content: space-between; box-shadow: 0 1px 3px rgba(0,0,0,0.05);">
-                            <div>
-                                <div style="font-size: 20px; color: #ff5722; margin-bottom: 6px;"><i class="fa-solid ${sub.icon || 'fa-tag'}"></i></div>
-                                <div style="font-size: 13px; font-weight: 500; color: #333; margin-bottom: 10px;">${subName}</div>
+                        <div onclick="window.location.href='index.html?sub=${encodeURIComponent(subName)}'" style="background: white; padding: 16px 12px; border-radius: 10px; border: 1px solid #eee; text-align: center; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.03); cursor: pointer; transition: all 0.2s ease;" onmouseover="this.style.borderColor='#ff5722'; this.style.transform='translateY(-2px)';" onmouseout="this.style.borderColor='#eee'; this.style.transform='translateY(0)';">
+                            <div style="font-size: 24px; color: #ff5722; background: #fff5f2; width: 45px; height: 45px; display: flex; align-items: center; justify-content: center; border-radius: 50%;">
+                                <i class="fa-solid ${sub.icon || 'fa-tag'}"></i>
                             </div>
-                            <button onclick="window.location.href='index.html?sub=${encodeURIComponent(subName)}'" style="background: #ff5722; color: white; border: none; padding: 6px 10px; border-radius: 4px; font-size: 12px; font-weight: bold; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 5px; width: 100%;">
-                                <i class="fa-solid fa-cart-shopping"></i> অর্ডার করুন
-                            </button>
+                            <div style="font-size: 13px; font-weight: 600; color: #333;">${subName}</div>
                         </div>
                     `;
                 });
