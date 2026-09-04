@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>অর্ডার কনফার্ম করুন - TopTop BD</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        body {
+            background-color: #f7f7f7;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+        .order-container {
+            max-width: 600px;
+            margin: 20px auto;
+            background: #fff;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            padding: 20px;
+            box-sizing: border-box;
+        }
+        .back-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            text-decoration: none;
+            color: #ff5722;
+            font-weight: 600;
+            margin-bottom: 15px;
+            font-size: 14px;
+        }
+        .page-title {
+            font-size: 20px;
+            font-weight: 700;
+            color: #222;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #eee;
+            padding-bottom: 10px;
+        }
+        .product-summary {
+            display: flex;
+            gap: 15px;
+            background: #fafafa;
+            border: 1px solid #eee;
+            border-radius: 8px;
+            padding: 12px;
+            margin-bottom: 20px;
+            align-items: center;
+        }
+        .product-summary img {
+            width: 70px;
+            height: 70px;
+            object-fit: cover;
+            border-radius: 6px;
+            background: #ddd;
+        }
+        .product-info h3 {
+            font-size: 15px;
+            margin: 0 0 5px 0;
+            color: #222;
+        }
+        .product-info .price {
+            font-size: 16px;
+            font-weight: 700;
+            color: #ff5722;
+            margin: 0;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        .form-group label {
+            display: block;
+            font-weight: 600;
+            color: #444;
+            margin-bottom: 6px;
+            font-size: 14px;
+        }
+        .form-control {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 14px;
+            box-sizing: border-box;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+        .form-control:focus {
+            border-color: #ff5722;
+        }
+        textarea.form-control {
+            resize: vertical;
+            height: 80px;
+        }
+        .delivery-options {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        .delivery-card {
+            flex: 1;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            padding: 12px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s;
+            background: #fff;
+        }
+        .delivery-card input {
+            display: none;
+        }
+        .delivery-card.selected {
+            border-color: #ff5722;
+            background: #fff5f5;
+        }
+        .delivery-card .area-name {
+            font-weight: 600;
+            font-size: 14px;
+            color: #333;
+            margin-bottom: 4px;
+        }
+        .delivery-card .area-charge {
+            font-size: 13px;
+            color: #ff5722;
+            font-weight: 700;
+        }
+        .bill-summary {
+            background: #f9f9f9;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 20px;
+            border: 1px solid #eee;
+        }
+        .bill-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            font-size: 14px;
+            color: #555;
+        }
+        .bill-row.total {
+            font-weight: 700;
+            font-size: 16px;
+            color: #222;
+            border-top: 1px dashed #ddd;
+            padding-top: 8px;
+            margin-top: 8px;
+        }
+        .bill-row.total span:last-child {
+            color: #ff5722;
+        }
+        .cod-badge {
+            background: #e8f5e9;
+            color: #2e7d32;
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-size: 13px;
+            font-weight: 600;
+            text-align: center;
+            margin-bottom: 20px;
+            border: 1px solid #c8e6c9;
+        }
+        .submit-order-btn {
+            background: #25D366;
+            color: white;
+            border: none;
+            width: 100%;
+            padding: 14px;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            box-shadow: 0 4px 10px rgba(37, 211, 102, 0.3);
+            transition: opacity 0.2s;
+        }
+        .submit-order-btn:hover {
+            opacity: 0.9;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="order-container">
+        <a href="javascript:history.back()" class="back-btn"><i class="fa-solid fa-arrow-left"></i> প্রোডাক্টে ফিরে যান</a>
+        
+        <div class="page-title"><i class="fa-solid fa-bag-shopping"></i> অর্ডার কনফার্ম করুন</div>
+
+        <div id="productSummaryBox" class="product-summary">
+            <p style="margin: 0; color: #777;">লোড হচ্ছে...</p>
+        </div>
+
+        <div class="cod-badge">
+            <i class="fa-solid fa-truck-fast"></i> ক্যাশ অন ডেলিভারি (পণ্য হাতে পেয়ে মূল্য পরিশোধ)
+        </div>
+
+        <form id="orderForm" onsubmit="submitOrderToWhatsApp(event)">
+            <div class="form-group">
+                <label>আপনার নাম *</label>
+                <input type="text" id="customerName" class="form-control" placeholder="আপনার সম্পূর্ণ নাম লিখুন" required>
+            </div>
+
+            <div class="form-group">
+                <label>মোবাইল নম্বর *</label>
+                <input type="tel" id="customerPhone" class="form-control" placeholder="যেমন: 01712345678" required>
+            </div>
+
+            <div class="form-group">
+                <label>ডেলিভারি এলাকা নির্বাচন করুন *</label>
+                <div class="delivery-options">
+                    <label class="delivery-card selected" onclick="setDeliveryCharge(80, this)">
+                        <input type="radio" name="deliveryArea" value="Dhaka" checked>
+                        <div class="area-name">ঢাকার ভেতরে</div>
+                        <div class="area-charge">৮০ টাকা</div>
+                    </label>
+                    <label class="delivery-card" onclick="setDeliveryCharge(129, this)">
+                        <input type="radio" name="deliveryArea" value="Outside">
+                        <div class="area-name">ঢাকার বাইরে</div>
+                        <div class="area-charge">১২৯ টাকা</div>
+                    </label>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>সম্পূর্ণ ঠিকানা (বাসা/রোড/থানা/জেলা) *</label>
+                <textarea id="customerAddress" class="form-control" placeholder="আপনার বাসার ঠিকানা বিস্তারিত লিখুন..." required></textarea>
+            </div>
+
+            <div class="bill-summary">
+                <div class="bill-row">
+                    <span>প্রোডাক্টের দাম:</span>
+                    <span id="subtotalPrice">৳ 0</span>
+                </div>
+                <div class="bill-row">
+                    <span>ডেলিভারি চার্জ:</span>
+                    <span id="deliveryChargeText">৳ 80</span>
+                </div>
+                <div class="bill-row total">
+                    <span>সর্বমোট প্রদেয়:</span>
+                    <span id="totalPrice">৳ 0</span>
+                </div>
+            </div>
+
+            <button type="submit" class="submit-order-btn">
+                <i class="fa-brands fa-whatsapp"></i> WhatsApp এ অর্ডার কনফার্ম করুন
+            </button>
+        </form>
+    </div>
+
+    <script>
+        const SUPABASE_URL = 'https://mzqqkkgdggwmpegvqaol.supabase.co';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im16cXFra2dkZ2d3bXBlZ3ZxYW9sIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODY4MDU4NDUsImV4cCI6MjEwMjM4MTg0NX0.hbUQ4dKjX2iXTF-ugi7JkV_-J5gKIpSEsPN8RpJ0EEo';
+
+        const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+        let currentProduct = null;
+        let deliveryFee = 80; // ডিফল্ট ঢাকার ভেতরে ৮০ টাকা
+
+        const urlParams = new URLSearchParams(window.location.search);
+        const productId = urlParams.get('id');
+
+        async function fetchCheckoutProduct() {
+            const summaryBox = document.getElementById('productSummaryBox');
+
+            if (!productId) {
+                summaryBox.innerHTML = `<p style="color:red; margin:0;">প্রোডাক্ট আইডি পাওয়া যায়নি!</p>`;
+                return;
+            }
+
+            try {
+                const { data, error } = await supabaseClient
+                    .from('products')
+                    .select('*')
+                    .eq('id', productId)
+                    .single();
+
+                if (error || !data) {
+                    summaryBox.innerHTML = `<p style="color:red; margin:0;">প্রোডাক্ট ডাটা লোড করা যায়নি।</p>`;
+                    return;
+                }
+
+                currentProduct = data;
+                let imgSrc = data.image_url || 'https://via.placeholder.com/150';
+
+                summaryBox.innerHTML = `
+                    <img src="${imgSrc}" alt="${data.name}">
+                    <div class="product-info">
+                        <h3>${data.name}</h3>
+                        <p class="price">৳ ${data.price}</p>
+                    </div>
+                `;
+
+                updateTotalCalculation();
+
+            } catch (err) {
+                console.error(err);
+                summaryBox.innerHTML = `<p style="color:red; margin:0;">কানেকশন এরর হয়েছে!</p>`;
+            }
+        }
+
+        function setDeliveryCharge(charge, element) {
+            deliveryFee = charge;
+            
+            document.querySelectorAll('.delivery-card').forEach(card => card.classList.remove('selected'));
+            element.classList.add('selected');
+            element.querySelector('input').checked = true;
+
+            updateTotalCalculation();
+        }
+
+        function updateTotalCalculation() {
+            if (!currentProduct) return;
+            let productPrice = Number(currentProduct.price) || 0;
+            let total = productPrice + deliveryFee;
+
+            document.getElementById('subtotalPrice').innerText = `৳ ${productPrice}`;
+            document.getElementById('deliveryChargeText').innerText = `৳ ${deliveryFee}`;
+            document.getElementById('totalPrice').innerText = `৳ ${total}`;
+        }
+
+        function submitOrderToWhatsApp(event) {
+            event.preventDefault();
+            if (!currentProduct) return;
+
+            let name = document.getElementById('customerName').value.trim();
+            let phone = document.getElementById('customerPhone').value.trim();
+            let address = document.getElementById('customerAddress').value.trim();
+            let areaType = document.querySelector('input[name="deliveryArea"]:checked').value;
+            let areaNameText = (areaType === 'Dhaka') ? 'ঢাকার ভেতরে' : 'ঢাকার বাইরে';
+
+            let productPrice = Number(currentProduct.price) || 0;
+            let totalAmount = productPrice + deliveryFee;
+
+            let whatsappPhone = "8801712345678"; 
+            if (currentProduct.whatsapp_link) {
+                if (currentProduct.whatsapp_link.includes("wa.me/")) {
+                    whatsappPhone = currentProduct.whatsapp_link.split("wa.me/")[1].split("?")[0];
+                } else {
+                    whatsappPhone = currentProduct.whatsapp_link.replace(/[^0-9]/g, '');
+                }
+            }
+
+            let message = `🛒 *নতুন অর্ডার এসেছে (TopTop BD)*\n\n` +
+                          `📌 *প্রোডাক্টের নাম:* ${currentProduct.name}\n` +
+                          `💰 *মূল্য:* ৳ ${productPrice}\n` +
+                          `🖼️ *ছবি:* ${currentProduct.image_url || 'N/A'}\n\n` +
+                          `👤 *গ্রাহকের তথ্য:*\n` +
+                          `▫️ নাম: ${name}\n` +
+                          `▫️ মোবাইল: ${phone}\n` +
+                          `▫️ এলাকা: ${areaNameText}\n` +
+                          `▫️ ঠিকানা: ${address}\n\n` +
+                          `💵 *পেমেন্ট পদ্ধতি:* ক্যাশ অন ডেলিভারি (COD)\n` +
+                          `📦 *ডেলিভারি চার্জ:* ৳ ${deliveryFee}\n` +
+                          `🏷️ *সর্বমোট বিল:* ৳ ${totalAmount}\n\n` +
+                          `দয়া করে অর্ডারটি কনফার্ম করুন।`;
+
+            let encodedMessage = encodeURIComponent(message);
+            window.open(`https://wa.me/${whatsappPhone}?text=${encodedMessage}`, '_blank');
+        }
+
+        window.onload = fetchCheckoutProduct;
+    </script>
+</body>
+</html>

@@ -4,9 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>প্রোডাক্ট ডিটেইলস - TopTop BD</title>
-    <!-- FontAwesome আইকন -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- Supabase CDN -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <link rel="stylesheet" href="style.css">
     <style>
@@ -15,7 +13,6 @@
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             margin: 0;
             padding: 0;
-            /* ফিক্সড বাটনের জন্য নিচে অতিরিক্ত স্পেস রাখা হলো যেন শেষ অংশ ঢাকা না পড়ে */
             padding-bottom: 90px;
         }
         .details-container {
@@ -50,7 +47,6 @@
             line-height: 1.4;
             flex-grow: 1;
         }
-        /* ফেভরিট হার্ট আইকন স্টাইল */
         .favorite-btn {
             background: #fff;
             border: 2px solid #eee;
@@ -128,8 +124,6 @@
             line-height: 1.6;
             margin-bottom: 25px;
         }
-
-        /* রিলেটেড প্রোডাক্ট সেকশন স্টাইল */
         .related-section {
             margin-top: 30px;
             border-top: 1px solid #eee;
@@ -182,8 +176,6 @@
             font-weight: 700;
             color: #ff5722;
         }
-        
-        /* ৩টি বাটন নিচে ফিক্সড রাখার জন্য স্টাইল */
         .action-buttons {
             position: fixed;
             bottom: 0;
@@ -250,27 +242,21 @@
             <p style="text-align: center; padding: 40px; color: #777;">লোড হচ্ছে...</p>
         </div>
 
-        <!-- রিলেটেড প্রোডাক্ট সেকশন কন্টেইনার -->
         <div id="relatedProductsSection" class="related-section" style="display: none;">
             <div class="related-title">সংশ্লিষ্ট পণ্যসমূহ</div>
-            <div id="relatedProductsGrid" class="related-grid">
-                <!-- ডাইনামিকালি লোড হবে -->
-            </div>
+            <div id="relatedProductsGrid" class="related-grid"></div>
         </div>
     </div>
 
-    <!-- ৩টি বাটন ফিক্সড সেকশন -->
     <div class="action-buttons" id="actionButtonsWrapper" style="display: none;">
         <div class="chat-buttons-row">
             <button onclick="sendToWhatsApp()" class="btn whatsapp-btn">
                 <i class="fa-brands fa-whatsapp"></i> WhatsApp
             </button>
-
             <button onclick="sendToMessenger()" class="btn messenger-btn">
                 <i class="fa-brands fa-facebook-messenger"></i> Messenger
             </button>
         </div>
-
         <button onclick="placeOrder()" class="btn order-btn">
             <i class="fa-solid fa-bag-shopping"></i> অর্ডার করুন
         </button>
@@ -347,12 +333,8 @@
                     <div class="product-description">${data.description || data.short_description || 'কোনো বিবরণ দেওয়া হয়নি।'}</div>
                 `;
 
-                // ডাটা লোড হওয়ার পর ফিক্সড বাটনগুলো দৃশ্যমান করা হবে
                 actionButtonsWrapper.style.display = 'flex';
-
                 checkFavoriteStatus();
-
-                // রিলেটেড বা ক্যাটাগরি অনুযায়ী প্রোডাক্ট ফেচ করা
                 fetchRelatedProducts(data.category, data.id);
 
             } catch (err) {
@@ -361,7 +343,6 @@
             }
         }
 
-        // রিলেটেড প্রোডাক্ট লোড করার ফাংশন
         async function fetchRelatedProducts(category, currentId) {
             const relatedSection = document.getElementById('relatedProductsSection');
             const relatedGrid = document.getElementById('relatedProductsGrid');
@@ -381,7 +362,7 @@
 
                 if (!error && data && data.length > 0) {
                     relatedGrid.innerHTML = data.map(item => `
-                        <a href="product-details.html?id=${item.id}" class="related-card">
+                        <a href="product_details.html?id=${item.id}" class="related-card">
                             <img src="${item.image_url || 'https://via.placeholder.com/150'}" alt="${item.name}" class="related-img">
                             <div class="related-info">
                                 <div class="related-product-name">${item.name}</div>
@@ -408,7 +389,6 @@
                 favorites.push(id);
                 favBtn.classList.add('active');
             }
-
             localStorage.setItem('topTopFavorites', JSON.stringify(favorites));
         }
 
@@ -470,13 +450,12 @@
 
             navigator.clipboard.writeText(message).then(() => {
                 alert("প্রোডাক্টের বিবরণ কপি করা হয়েছে! মেসেঞ্জার ওপেন হলে সেখানে পেস্ট (Paste) করে দিন।");
-            }).catch(err => {
-                console.log('Copy failed', err);
             });
 
             window.open(`https://m.me/${pageUsername}`, '_blank');
         }
 
+        // এখানে অর্ডার বাটনে ক্লিক করলে নতুন পেজে (checkout.html) রিডাইরেক্ট হবে
         function placeOrder() {
             if (!currentProduct) return;
             window.location.href = `checkout.html?id=${currentProduct.id}`;
