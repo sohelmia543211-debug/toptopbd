@@ -16,7 +16,7 @@ let globalBanners = [];
 let bannerIndex = 0;
 let bannerInterval = null;
 
-// ক্যাটাগরি ও সাব-ক্যাটাগরির সাথে আইডি যুক্ত করা হয়েছে
+// ক্যাটাগরি ও সাব-ক্যাটাগরির সাথে আইডি যুক্ত করা হয়েছে
 const hardcodedCategories = [
   {
     id: 1, // Main Category ID
@@ -161,7 +161,7 @@ function renderMainCategories() {
 
 function selectMainCategory(catId) {
     currentMainCatId = catId;
-    currentSubCatId = "সব"; // মূল ক্যাটাগরি বদলালে সাব-ক্যাটাগরি 'সব' হয়ে যাবে
+    currentSubCatId = "সব"; // মূল ক্যাটাগরি বদলালে সাব-ক্যাটাগরি 'সব' হয়ে যাবে
     renderMainCategories();
     renderSubCategories(); 
     currentPage = 1;
@@ -244,7 +244,7 @@ async function loadProducts(isAppend = false) {
         grid.innerHTML = shimmerHtml;
     }
 
-    // Supabase কুয়েরি সরাসরি আইডি (ID) দিয়ে ফিল্টার করবে
+    // Supabase কুয়েরি সরাসরি আইডি (ID) দিয়ে ফিল্টার করবে
     let query = supabaseClient.from('products').select('*');
 
     if (currentMainCatId !== "সব") {
@@ -285,11 +285,10 @@ async function loadProducts(isAppend = false) {
     let productHtml = isAppend ? grid.innerHTML : "";
     
     data.forEach(p => {
-        const waLink = p.whatsapp_link || `https://wa.me/8801700000000?text=I%20want%20to%20talk%20about%20this%20product:%20${encodeURIComponent(p.name)}`;
-        
+        // WhatsApp বাটনটি সম্পূর্ণ বাদ দেওয়া হয়েছে এবং কার্ডে ক্লিক করলেই ডিটেইলস পেজে যাবে
         productHtml += `
-            <div class="product-card" style="cursor: pointer; display: flex; flex-direction: column; justify-content: space-between;">
-                <div onclick="window.location.href='product_details.html?id=${p.id}'">
+            <div class="product-card" onclick="window.location.href='product_details.html?id=${p.id}'" style="cursor: pointer; display: flex; flex-direction: column; justify-content: space-between;">
+                <div>
                     <div class="product-img-box">
                         ${p.image_url ? `<img src="${p.image_url}">` : `<i class="fa-solid fa-image" style="font-size: 22px;"></i>`}
                     </div>
@@ -298,11 +297,6 @@ async function loadProducts(isAppend = false) {
                         <div class="price">৳ ${p.price}</div>
                         ${p.short_description ? `<p style="font-size: 12px; color: #666; margin-top: 6px; margin-bottom: 0; line-height: 1.3;">${p.short_description}</p>` : ''}
                     </div>
-                </div>
-                <div style="padding: 8px 10px; border-top: 1px solid #eee; margin-top: 8px;">
-                    <a href="${waLink}" target="_blank" style="display: block; width: 100%; background: #25D366; color: white; text-align: center; padding: 6px 0; border-radius: 4px; text-decoration: none; font-size: 13px; font-weight: 500;">
-                        <i class="fa-brands fa-whatsapp"></i> মেসেজ করুন
-                    </a>
                 </div>
             </div>
         `;
@@ -325,4 +319,4 @@ window.onload = () => {
     }
     fetchBanners();
     fetchInitialData();
-}
+};

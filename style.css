@@ -84,7 +84,7 @@ header h1 {
     justify-content: center;
 }
 
-/* কম্বো প্যাক ও জনপ্রিয় পণ্যের ট্যাব বাটন স্টাইল (পাশাপাশি রাখার জন্য ঠিক করা হয়েছে) */
+/* কম্বো প্যাক ও জনপ্রিয় পণ্যের ট্যাব বাটন স্টাইল */
 .product-type-tab-container {
     padding: 10px 10px;
     max-width: 1200px;
@@ -336,7 +336,7 @@ header h1 {
     width: 60%;
 }
 
-/* বটম নেভবার (সিনট্যাক্স ত্রুটি সংশোধন করা হয়েছে) */
+/* বটম নেভবার */
 .bottom-nav {
     position: fixed;
     bottom: 0;

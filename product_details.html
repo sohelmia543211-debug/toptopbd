@@ -15,6 +15,8 @@
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             margin: 0;
             padding: 0;
+            /* ফিক্সড বাটনের জন্য নিচে অতিরিক্ত স্পেস রাখা হলো যেন শেষ অংশ ঢাকা না পড়ে */
+            padding-bottom: 90px;
         }
         .details-container {
             max-width: 600px;
@@ -126,10 +128,78 @@
             line-height: 1.6;
             margin-bottom: 25px;
         }
+
+        /* রিলেটেড প্রোডাক্ট সেকশন স্টাইল */
+        .related-section {
+            margin-top: 30px;
+            border-top: 1px solid #eee;
+            padding-top: 20px;
+        }
+        .related-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: #333;
+            margin-bottom: 15px;
+        }
+        .related-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+        }
+        .related-card {
+            background: #fff;
+            border: 1px solid #eee;
+            border-radius: 8px;
+            overflow: hidden;
+            text-decoration: none;
+            color: inherit;
+            transition: transform 0.2s;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.02);
+        }
+        .related-card:hover {
+            transform: translateY(-3px);
+        }
+        .related-img {
+            width: 100%;
+            height: 140px;
+            object-fit: cover;
+            background: #f0f0f0;
+        }
+        .related-info {
+            padding: 10px;
+        }
+        .related-product-name {
+            font-size: 14px;
+            font-weight: 600;
+            color: #222;
+            margin-bottom: 5px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .related-product-price {
+            font-size: 14px;
+            font-weight: 700;
+            color: #ff5722;
+        }
+        
+        /* ৩টি বাটন নিচে ফিক্সড রাখার জন্য স্টাইল */
         .action-buttons {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            background: #fff;
+            padding: 10px 15px;
+            box-shadow: 0 -4px 15px rgba(0,0,0,0.1);
             display: flex;
             flex-direction: column;
-            gap: 12px;
+            gap: 8px;
+            box-sizing: border-box;
+            z-index: 999;
+            max-width: 600px;
+            left: 50%;
+            transform: translateX(-50%);
         }
         .btn {
             display: flex;
@@ -137,14 +207,14 @@
             justify-content: center;
             gap: 10px;
             width: 100%;
-            padding: 12px;
+            padding: 10px;
             border-radius: 8px;
             font-size: 15px;
             font-weight: 600;
             text-decoration: none;
             border: none;
             cursor: pointer;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+            box-shadow: 0 2px 6px rgba(0,0,0,0.08);
             transition: opacity 0.2s;
         }
         .btn:hover {
@@ -164,16 +234,46 @@
             color: white;
             flex: 1;
         }
+        .order-btn {
+            background: #ff5722;
+            color: white;
+            width: 100%;
+        }
     </style>
 </head>
 <body>
 
     <div class="details-container">
         <a href="index.html" class="back-btn"><i class="fa-solid fa-arrow-left"></i> হোম পেজে ফিরে যান</a>
-        
+
         <div id="productDetailsContent">
             <p style="text-align: center; padding: 40px; color: #777;">লোড হচ্ছে...</p>
         </div>
+
+        <!-- রিলেটেড প্রোডাক্ট সেকশন কন্টেইনার -->
+        <div id="relatedProductsSection" class="related-section" style="display: none;">
+            <div class="related-title">সংশ্লিষ্ট পণ্যসমূহ</div>
+            <div id="relatedProductsGrid" class="related-grid">
+                <!-- ডাইনামিকালি লোড হবে -->
+            </div>
+        </div>
+    </div>
+
+    <!-- ৩টি বাটন ফিক্সড সেকশন -->
+    <div class="action-buttons" id="actionButtonsWrapper" style="display: none;">
+        <div class="chat-buttons-row">
+            <button onclick="sendToWhatsApp()" class="btn whatsapp-btn">
+                <i class="fa-brands fa-whatsapp"></i> WhatsApp
+            </button>
+
+            <button onclick="sendToMessenger()" class="btn messenger-btn">
+                <i class="fa-brands fa-facebook-messenger"></i> Messenger
+            </button>
+        </div>
+
+        <button onclick="placeOrder()" class="btn order-btn">
+            <i class="fa-solid fa-bag-shopping"></i> অর্ডার করুন
+        </button>
     </div>
 
     <script>
@@ -190,7 +290,8 @@
 
         async function fetchProductDetails() {
             const container = document.getElementById('productDetailsContent');
-            
+            const actionButtonsWrapper = document.getElementById('actionButtonsWrapper');
+
             if (!productId) {
                 container.innerHTML = `<p style="color:red; text-align:center;">প্রোডাক্ট আইডি পাওয়া যায়নি!</p>`;
                 return;
@@ -214,7 +315,7 @@
                 if (data.image_url) images.push(data.image_url);
                 if (data.image_url_1) images.push(data.image_url_1);
                 if (data.image_url_2) images.push(data.image_url_2);
-                
+
                 if (images.length === 0) images.push('https://via.placeholder.com/300?text=No+Image');
 
                 selectedImageUrl = images[0];
@@ -231,7 +332,7 @@
                     <div class="main-img-box">
                         <img id="mainProductImg" src="${images[0]}" alt="${data.name}">
                     </div>
-                    
+
                     ${images.length > 1 ? `
                         <div class="sub-images-grid">
                             ${images.map((img, index) => `
@@ -244,25 +345,54 @@
 
                     <div class="section-heading">পণ্যের বিবরণ</div>
                     <div class="product-description">${data.description || data.short_description || 'কোনো বিবরণ দেওয়া হয়নি।'}</div>
-
-                    <div class="action-buttons">
-                        <div class="chat-buttons-row">
-                            <button onclick="sendToWhatsApp()" class="btn whatsapp-btn">
-                                <i class="fa-brands fa-whatsapp"></i> WhatsApp
-                            </button>
-
-                            <button onclick="sendToMessenger()" class="btn messenger-btn">
-                                <i class="fa-brands fa-facebook-messenger"></i> Messenger
-                            </button>
-                        </div>
-                    </div>
                 `;
 
+                // ডাটা লোড হওয়ার পর ফিক্সড বাটনগুলো দৃশ্যমান করা হবে
+                actionButtonsWrapper.style.display = 'flex';
+
                 checkFavoriteStatus();
+
+                // রিলেটেড বা ক্যাটাগরি অনুযায়ী প্রোডাক্ট ফেচ করা
+                fetchRelatedProducts(data.category, data.id);
 
             } catch (err) {
                 console.error(err);
                 container.innerHTML = `<p style="color:red; text-align:center;">কানেকশন এরর হয়েছে!</p>`;
+            }
+        }
+
+        // রিলেটেড প্রোডাক্ট লোড করার ফাংশন
+        async function fetchRelatedProducts(category, currentId) {
+            const relatedSection = document.getElementById('relatedProductsSection');
+            const relatedGrid = document.getElementById('relatedProductsGrid');
+
+            try {
+                let query = supabaseClient
+                    .from('products')
+                    .select('*')
+                    .neq('id', currentId)
+                    .limit(4);
+
+                if (category) {
+                    query = query.eq('category', category);
+                }
+
+                const { data, error } = await query;
+
+                if (!error && data && data.length > 0) {
+                    relatedGrid.innerHTML = data.map(item => `
+                        <a href="product-details.html?id=${item.id}" class="related-card">
+                            <img src="${item.image_url || 'https://via.placeholder.com/150'}" alt="${item.name}" class="related-img">
+                            <div class="related-info">
+                                <div class="related-product-name">${item.name}</div>
+                                <div class="related-product-price">৳ ${item.price}</div>
+                            </div>
+                        </a>
+                    `).join('');
+                    relatedSection.style.display = 'block';
+                }
+            } catch (err) {
+                console.error('Related products error:', err);
             }
         }
 
@@ -338,7 +468,6 @@
                           `🖼️ প্রোডাক্ট ছবি: ${selectedImageUrl}\n\n` +
                           `দয়া করে বিষয়টি কনফার্ম করুন।`;
 
-            // টেক্সট কপি করে মেসেঞ্জারে রিডাইরেক্ট করা হচ্ছে
             navigator.clipboard.writeText(message).then(() => {
                 alert("প্রোডাক্টের বিবরণ কপি করা হয়েছে! মেসেঞ্জার ওপেন হলে সেখানে পেস্ট (Paste) করে দিন।");
             }).catch(err => {
@@ -346,6 +475,11 @@
             });
 
             window.open(`https://m.me/${pageUsername}`, '_blank');
+        }
+
+        function placeOrder() {
+            if (!currentProduct) return;
+            window.location.href = `checkout.html?id=${currentProduct.id}`;
         }
 
         window.onload = fetchProductDetails;
