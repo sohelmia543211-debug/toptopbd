@@ -52,7 +52,7 @@
             padding: 15px;
         }
 
-        /* ব্যানার বা অ্যাড সেকশন স্টাইল */
+        /* ব্যানার সেকশন */
         .banner-container {
             width: 100%;
             height: 130px;
@@ -153,7 +153,6 @@
             overflow: hidden;
         }
 
-        /* ৩ লাইনের ডেসক্রিপশন স্টাইল */
         .product-desc {
             font-size: 11px;
             color: #666;
@@ -267,9 +266,11 @@
         
         const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-        // URL থেকে সাব-ক্যাটাগরির নাম নেওয়া এবং ডিকোড করা
+        // URL থেকে আইডি এবং সাব-ক্যাটাগরির নাম নেওয়া
         const urlParams = new URLSearchParams(window.location.search);
-        const subCategoryName = urlParams.get('sub_category');
+        const mainCategoryId = urlParams.get('main_category_id');
+        const subCategoryId = urlParams.get('sub_category_id');
+        const subCategoryName = urlParams.get('sub_name');
 
         // ব্যানার লোড করার ফাংশন
         async function fetchBanners() {
@@ -278,7 +279,7 @@
                 if (error) throw error;
 
                 if (data && data.length > 0) {
-                    const banner = data[0]; // প্রথম ব্যানারটি দেখাবে
+                    const banner = data[0]; 
                     document.getElementById('bannerContainer').innerHTML = `
                         <div class="banner-slider" style="background-image: url('${banner.image_url}');">
                             <div class="banner-overlay">
@@ -293,27 +294,33 @@
             }
         }
 
-        // সাব-ক্যাটাগরি অনুযায়ী প্রোডাক্ট ফেচ ও ফিল্টার করা
+        // আইডি দিয়ে Supabase থেকে প্রোডাক্ট ফেচ ও ফিল্টার করা
         async function fetchProductsByCategory() {
             const grid = document.getElementById('productGrid');
 
             try {
                 // পেজের হেডার টাইটেল সেট করা
                 if (subCategoryName) {
-                    const decodedName = decodeURIComponent(subCategoryName);
-                    document.getElementById('pageTitle').innerText = decodedName;
+                    document.getElementById('pageTitle').innerText = decodeURIComponent(subCategoryName);
                 }
 
-                // সরাসরি Supabase থেকে `sub_categor` কলাম ধরে ফিল্টার করে প্রোডাক্ট আনা
-                const { data: products, error } = await supabaseClient
-                    .from('products')
-                    .select('*')
-                    .eq('sub_categor', subCategoryName);
+                // Supabase কুয়েরি শুরু
+                let query = supabaseClient.from('products').select('*');
+
+                if (mainCategoryId && mainCategoryId !== 'সব') {
+                    query = query.eq('MainCategory_id', Number(mainCategoryId));
+                }
+
+                if (subCategoryId && subCategoryId !== 'সব') {
+                    query = query.eq('subcategory_id', Number(subCategoryId));
+                }
+
+                const { data: products, error } = await query;
 
                 if (error) throw error;
 
                 if (!products || products.length === 0) {
-                    grid.innerHTML = '<div class="no-product"><i class="fa-solid fa-box-open" style="font-size: 28px; display:block; margin-bottom:8px; color:#ff5722;"></i>এই সাব-ক্যাটাগরিতে কোনো প্রোডাক্ট নেই।</div>';
+                    grid.innerHTML = '<div class="no-product"><i class="fa-solid fa-box-open" style="font-size: 28px; display:block; margin-bottom:8px; color:#ff5722;"></i>এই ক্যাটাগরিতে কোনো প্রোডাক্ট নেই।</div>';
                     return;
                 }
 

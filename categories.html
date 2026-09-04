@@ -56,11 +56,32 @@
         </a>
     </nav>
 
-    <!-- জাভাস্ক্রিপ্ট ফাইল (যেখানে hardcodedCategories এবং লজিক রয়েছে) -->
-    <script src="script.js"></script>
-    
-    <!-- ক্যাটাগরি পেজের নিজস্ব রেন্ডারিং স্ক্রিপ্ট -->
+    <!-- জাভাস্ক্রিপ্ট ফাইল ও কনফিগারেশন -->
     <script>
+        const hardcodedCategories = [
+          {
+            id: 1,
+            name: { bn: "ইলেক্ট্রনিক্স", en: "Electronics" },
+            icon: "fa-laptop",
+            subcategories: [
+              { id: 1, name: { bn: "কিচেন গ্যাজেট ও অ্যাপ্লায়েন্সেস", en: "Kitchen Gadgets & Appliances" }, icon: "fa-blender" },
+              { id: 2, name: { bn: "স্মার্টফোন ও গ্যাজেট", en: "Smartphones & Gadgets" }, icon: "fa-mobile-screen" },
+              { id: 3, name: { bn: "হোম ইউটিলিটি ও লাইটিং", en: "Home Utility & Lighting" }, icon: "fa-lightbulb" },
+              { id: 4, name: { bn: "স্মার্ট ওয়াচ ও ইয়ারফোন", en: "Smartwatches & Earphones" }, icon: "fa-headphones" }
+            ]
+          },
+          {
+            id: 2,
+            name: { bn: "কসমেটিক্স", en: "Cosmetics" },
+            icon: "fa-wand-magic-sparkles",
+            subcategories: [
+              { id: 1, name: { bn: "মেকআপ ও কসমেটিক্স আইটেম", en: "Makeup & Cosmetic Items" }, icon: "fa-palette" },
+              { id: 2, name: { bn: "স্কিন কেয়ার ও লোশন", en: "Skin Care & Lotions" }, icon: "fa-pump-soap" },
+              { id: 3, name: { bn: "মেকআপ অর্গানাইজার ও বক্স", en: "Makeup Organizers & Boxes" }, icon: "fa-box-archive" }
+            ]
+          }
+        ];
+
         document.addEventListener("DOMContentLoaded", () => {
             renderCategoryPageSidebar();
         });
@@ -79,7 +100,7 @@
                 hardcodedCategories.forEach(cat => {
                     const catName = cat.name.bn;
                     html += `
-                        <div onclick="selectCategoryPageMain('${cat.id}')" style="padding: 15px; border-bottom: 1px solid #eee; cursor: pointer; font-size: 14px; display: flex; align-items: center; gap: 10px; background: #fff;" id="cat_${cat.id}">
+                        <div onclick="selectCategoryPageMain(${cat.id})" style="padding: 15px; border-bottom: 1px solid #eee; cursor: pointer; font-size: 14px; display: flex; align-items: center; gap: 10px; background: #fff;" id="cat_${cat.id}">
                             <i class="fa-solid ${cat.icon || 'fa-tag'}" style="color: #ff5722;"></i> ${catName}
                         </div>
                     `;
@@ -88,12 +109,11 @@
 
             sidebar.innerHTML = html;
             if (typeof hardcodedCategories !== 'undefined' && hardcodedCategories.length > 0) {
-                selectCategoryPageMain(hardcodedCategories[0].id); // প্রথমে প্রথম ক্যাটাগরি সিলেক্ট থাকবে
+                selectCategoryPageMain(hardcodedCategories[0].id);
             }
         }
 
         function selectCategoryPageMain(catId) {
-            // একটিভ স্টাইল পরিবর্তন
             document.querySelectorAll('#mainCategorySidebar > div').forEach(el => el.style.background = '#fff');
             const selectedEl = document.getElementById(catId === 'সব' ? 'cat_all' : `cat_${catId}`);
             if(selectedEl) selectedEl.style.background = '#fff5f2';
@@ -102,11 +122,14 @@
             if (!subGrid || typeof hardcodedCategories === 'undefined') return;
 
             let subs = [];
+
             if (catId === 'সব') {
-                subs = hardcodedCategories.flatMap(c => c.subcategories || []);
+                subs = hardcodedCategories.flatMap(c => (c.subcategories || []).map(sub => ({ ...sub, mainCatId: c.id })));
             } else {
                 const found = hardcodedCategories.find(c => c.id === catId);
-                subs = found ? found.subcategories : [];
+                if (found) {
+                    subs = (found.subcategories || []).map(sub => ({ ...sub, mainCatId: found.id }));
+                }
             }
 
             let subHtml = '';
@@ -115,8 +138,11 @@
             } else {
                 subs.forEach(sub => {
                     const subName = sub.name.bn;
+                    const mainCatId = sub.mainCatId;
+                    
+                    // ফিক্সড: category_products.html এর বদলে সঠিক products.html এ রিডায়রেক্ট করা হলো
                     subHtml += `
-                        <div onclick="window.location.href='index.html?sub=${encodeURIComponent(subName)}'" style="background: white; padding: 16px 12px; border-radius: 10px; border: 1px solid #eee; text-align: center; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.03); cursor: pointer; transition: all 0.2s ease;" onmouseover="this.style.borderColor='#ff5722'; this.style.transform='translateY(-2px)';" onmouseout="this.style.borderColor='#eee'; this.style.transform='translateY(0)';">
+                        <div onclick="window.location.href='products.html?main_category_id=${mainCatId}&sub_category_id=${sub.id}&sub_name=${encodeURIComponent(subName)}'" style="background: white; padding: 16px 12px; border-radius: 10px; border: 1px solid #eee; text-align: center; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.03); cursor: pointer; transition: all 0.2s ease;" onmouseover="this.style.borderColor='#ff5722'; this.style.transform='translateY(-2px)';" onmouseout="this.style.borderColor='#eee'; this.style.transform='translateY(0)';">
                             <div style="font-size: 24px; color: #ff5722; background: #fff5f2; width: 45px; height: 45px; display: flex; align-items: center; justify-content: center; border-radius: 50%;">
                                 <i class="fa-solid ${sub.icon || 'fa-tag'}"></i>
                             </div>

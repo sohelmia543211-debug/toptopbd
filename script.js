@@ -3,8 +3,8 @@ const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBh
 
 const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-let currentMainCategory = "সব"; 
-let currentSubCategory = "সব";
+let currentMainCatId = "সব";  // এখানে এখন আইডি বা "সব" থাকবে
+let currentSubCatId = "সব";   // এখানে সাব-ক্যাটাগরি আইডি বা "সব" থাকবে
 let currentSearchKeyword = "";
 
 let currentPage = 1;
@@ -16,26 +16,27 @@ let globalBanners = [];
 let bannerIndex = 0;
 let bannerInterval = null;
 
+// ক্যাটাগরি ও সাব-ক্যাটাগরির সাথে আইডি যুক্ত করা হয়েছে
 const hardcodedCategories = [
   {
-    id: "electronics",
+    id: 1, // Main Category ID
     name: { bn: "ইলেক্ট্রনিক্স", en: "Electronics" },
     icon: "fa-laptop",
     subcategories: [
-      { name: { bn: "কিচেন গ্যাজেট ও অ্যাপ্লায়েন্সেস", en: "Kitchen Gadgets & Appliances" }, icon: "fa-blender" },
-      { name: { bn: "স্মার্টফোন ও গ্যাজেট", en: "Smartphones & Gadgets" }, icon: "fa-mobile-screen" },
-      { name: { bn: "হোম ইউটিলিটি ও লাইটিং", en: "Home Utility & Lighting" }, icon: "fa-lightbulb" },
-      { name: { bn: "স্মার্ট ওয়াচ ও ইয়ারফোন", en: "Smartwatches & Earphones" }, icon: "fa-headphones" }
+      { id: 1, name: { bn: "কিচেন গ্যাজেট ও অ্যাপ্লায়েন্সেস", en: "Kitchen Gadgets & Appliances" }, icon: "fa-blender" },
+      { id: 2, name: { bn: "স্মার্টফোন ও গ্যাজেট", en: "Smartphones & Gadgets" }, icon: "fa-mobile-screen" },
+      { id: 3, name: { bn: "হোম ইউটিলিটি ও লাইটিং", en: "Home Utility & Lighting" }, icon: "fa-lightbulb" },
+      { id: 4, name: { bn: "স্মার্ট ওয়াচ ও ইয়ারফোন", en: "Smartwatches & Earphones" }, icon: "fa-headphones" }
     ]
   },
   {
-    id: "cosmetics",
+    id: 2, // Main Category ID
     name: { bn: "কসমেটিক্স", en: "Cosmetics" },
     icon: "fa-wand-magic-sparkles",
     subcategories: [
-      { name: { bn: "মেকআপ ও কসমেটিক্স আইটেম", en: "Makeup & Cosmetic Items" }, icon: "fa-palette" },
-      { name: { bn: "স্কিন কেয়ার ও লোশন", en: "Skin Care & Lotions" }, icon: "fa-pump-soap" },
-      { name: { bn: "মেকআপ অর্গানাইজার ও বক্স", en: "Makeup Organizers & Boxes" }, icon: "fa-box-archive" }
+      { id: 1, name: { bn: "মেকআপ ও কসমেটিক্স আইটেম", en: "Makeup & Cosmetic Items" }, icon: "fa-palette" },
+      { id: 2, name: { bn: "স্কিন কেয়ার ও লোশন", en: "Skin Care & Lotions" }, icon: "fa-pump-soap" },
+      { id: 3, name: { bn: "মেকআপ অর্গানাইজার ও বক্স", en: "Makeup Organizers & Boxes" }, icon: "fa-box-archive" }
     ]
   }
 ];
@@ -113,7 +114,7 @@ function renderFilterCards() {
     if (!searchBarContainer) return;
 
     const lang = getLang();
-    const placeholderText = lang === 'en' ? 'Search premium items...' : 'প্রিমিয়াম ও জনপ্রিয় পণ্য খুঁজুন...';
+    const placeholderText = lang === 'en' ? 'Search premium items...' : 'প্রিমিয়াম ও জনপ্রিয় পণ্য খুঁজুন...';
 
     searchBarContainer.innerHTML = `
         <div style="display: flex; width: 100%; align-items: center; gap: 0;">
@@ -132,7 +133,7 @@ function renderMainCategories() {
 
     const lang = getLang();
     const allText = lang === 'en' ? 'All' : 'সব';
-    const isAllActive = currentMainCategory === "সব" ? 'active' : '';
+    const isAllActive = currentMainCatId === "সব" ? 'active' : '';
     
     let html = `
         <div class="cat-card ${isAllActive}" onclick="selectMainCategory('সব')">
@@ -144,10 +145,10 @@ function renderMainCategories() {
     `;
 
     hardcodedCategories.forEach((cat) => {
-        const isActive = (currentMainCategory !== "সব" && currentMainCategory.id === cat.id) ? 'active' : '';
+        const isActive = currentMainCatId === cat.id ? 'active' : '';
         const catName = cat.name[lang] || cat.name.bn;
         html += `
-            <div class="cat-card ${isActive}" onclick="selectMainCategory('${cat.id}')">
+            <div class="cat-card ${isActive}" onclick="selectMainCategory(${cat.id})">
                 <div style="width: 35px; height: 35px; margin: 0 auto 3px auto; background: #fff5f2; border-radius: 6px; display: flex; align-items: center; justify-content: center; color: #ff5722;">
                     <i class="fa-solid ${cat.icon}" style="font-size: 14px;"></i>
                 </div>
@@ -159,12 +160,8 @@ function renderMainCategories() {
 }
 
 function selectMainCategory(catId) {
-    if (catId === 'সব') {
-        currentMainCategory = "সব";
-    } else {
-        currentMainCategory = hardcodedCategories.find(c => c.id === catId) || "সব";
-    }
-    currentSubCategory = "সব"; 
+    currentMainCatId = catId;
+    currentSubCatId = "সব"; // মূল ক্যাটাগরি বদলালে সাব-ক্যাটাগরি 'সব' হয়ে যাবে
     renderMainCategories();
     renderSubCategories(); 
     currentPage = 1;
@@ -179,19 +176,16 @@ function renderSubCategories() {
     const allText = lang === 'en' ? 'All' : 'সব';
 
     let filteredSubs = [];
-    if (currentMainCategory === "সব") {
+    if (currentMainCatId === "সব") {
         filteredSubs = hardcodedCategories.flatMap((cat) => 
-            cat.subcategories.map((sub, subIdx) => ({ ...sub, catId: cat.id, subIndex: subIdx + 1 }))
+            cat.subcategories.map((sub) => ({ ...sub, mainCatId: cat.id }))
         );
     } else {
-        filteredSubs = (currentMainCategory.subcategories || []).map((sub, subIdx) => ({ 
-            ...sub, 
-            catId: currentMainCategory.id, 
-            subIndex: subIdx + 1 
-        }));
+        const matchedCat = hardcodedCategories.find(c => c.id === currentMainCatId);
+        filteredSubs = matchedCat ? matchedCat.subcategories : [];
     }
 
-    const allOptionActive = currentSubCategory === "সব" ? 'active' : '';
+    const allOptionActive = currentSubCatId === "সব" ? 'active' : '';
     let html = `
         <div class="sub-card ${allOptionActive}" onclick="selectSubCategory('সব')">
             <div style="width: 28px; height: 28px; margin: 0 auto 3px auto; background: #ff5722; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-size: 11px;">
@@ -203,10 +197,9 @@ function renderSubCategories() {
 
     filteredSubs.forEach(sub => {
         const subName = sub.name[lang] || sub.name.bn;
-        const subBnName = sub.name.bn; 
-        const isActive = currentSubCategory === subBnName ? 'active' : '';
+        const isActive = currentSubCatId === sub.id ? 'active' : '';
         html += `
-            <div class="sub-card ${isActive}" onclick="selectSubCategory('${subBnName}')">
+            <div class="sub-card ${isActive}" onclick="selectSubCategory(${sub.id})">
                 <div style="width: 28px; height: 28px; margin: 0 auto 3px auto; background: #fff5f2; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #ff5722; font-size: 11px;">
                     <i class="fa-solid ${sub.icon || 'fa-tag'}"></i>
                 </div>
@@ -218,8 +211,8 @@ function renderSubCategories() {
     grid.innerHTML = html;
 }
 
-function selectSubCategory(subName) {
-    currentSubCategory = subName;
+function selectSubCategory(subId) {
+    currentSubCatId = subId;
     renderSubCategories();
     currentPage = 1;
     loadProducts(false);
@@ -251,17 +244,15 @@ async function loadProducts(isAppend = false) {
         grid.innerHTML = shimmerHtml;
     }
 
+    // Supabase কুয়েরি সরাসরি আইডি (ID) দিয়ে ফিল্টার করবে
     let query = supabaseClient.from('products').select('*');
 
-    // শুধুমাত্র ক্যাটাগরি ও সাব-ক্যাটাগরি ফিল্টারিং (অন্য কোনো অতিরিক্ত ফিল্টার রাখা হয়নি)
-    if (currentMainCategory !== "সব") {
-        const mBn = currentMainCategory.name.bn;
-        const mEn = currentMainCategory.name.en;
-        query = query.or(`Maincategory.eq.${mBn},Maincategory.eq.${mEn}`);
+    if (currentMainCatId !== "সব") {
+        query = query.eq('MainCategory_id', currentMainCatId);
     }
 
-    if (currentSubCategory !== "সব") {
-        query = query.eq('sub_categor', currentSubCategory);
+    if (currentSubCatId !== "সব") {
+        query = query.eq('subcategory_id', currentSubCatId);
     }
 
     const from = (currentPage - 1) * pageSize;
@@ -294,7 +285,7 @@ async function loadProducts(isAppend = false) {
     let productHtml = isAppend ? grid.innerHTML : "";
     
     data.forEach(p => {
-        const chatUrl = `https://wa.me/8801XXXXXXXXX?text=I%20want%20to%20talk%20about%20this%20product:%20${encodeURIComponent(p.name)}`;
+        const waLink = p.whatsapp_link || `https://wa.me/8801700000000?text=I%20want%20to%20talk%20about%20this%20product:%20${encodeURIComponent(p.name)}`;
         
         productHtml += `
             <div class="product-card" style="cursor: pointer; display: flex; flex-direction: column; justify-content: space-between;">
@@ -309,7 +300,7 @@ async function loadProducts(isAppend = false) {
                     </div>
                 </div>
                 <div style="padding: 8px 10px; border-top: 1px solid #eee; margin-top: 8px;">
-                    <a href="${chatUrl}" target="_blank" style="display: block; width: 100%; background: #25D366; color: white; text-align: center; padding: 6px 0; border-radius: 4px; text-decoration: none; font-size: 13px; font-weight: 500;">
+                    <a href="${waLink}" target="_blank" style="display: block; width: 100%; background: #25D366; color: white; text-align: center; padding: 6px 0; border-radius: 4px; text-decoration: none; font-size: 13px; font-weight: 500;">
                         <i class="fa-brands fa-whatsapp"></i> মেসেজ করুন
                     </a>
                 </div>
