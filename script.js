@@ -5,7 +5,6 @@ const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 let currentMainCategory = "সব"; 
 let currentSubCategory = "সব";
-let currentProductType = "combo_pack"; 
 let currentSearchKeyword = "";
 
 let currentPage = 1;
@@ -26,9 +25,7 @@ const hardcodedCategories = [
       { name: { bn: "কিচেন গ্যাজেট ও অ্যাপ্লায়েন্সেস", en: "Kitchen Gadgets & Appliances" }, icon: "fa-blender" },
       { name: { bn: "স্মার্টফোন ও গ্যাজেট", en: "Smartphones & Gadgets" }, icon: "fa-mobile-screen" },
       { name: { bn: "হোম ইউটিলিটি ও লাইটিং", en: "Home Utility & Lighting" }, icon: "fa-lightbulb" },
-      { name: { bn: "রিং লাইট ও স্টুডিও এক্সেসরিজ", en: "Ring Lights & Studio Accessories" }, icon: "fa-ring" },
-      { name: { bn: "স্মার্ট ওয়াচ ও ইয়ারফোন", en: "Smartwatches & Earphones" }, icon: "fa-headphones" },
-      { name: { bn: "ছোট ইলেকট্রনিক্স ও টুলস", en: "Small Electronics & Tools" }, icon: "fa-tools" }
+      { name: { bn: "স্মার্ট ওয়াচ ও ইয়ারফোন", en: "Smartwatches & Earphones" }, icon: "fa-headphones" }
     ]
   },
   {
@@ -38,10 +35,7 @@ const hardcodedCategories = [
     subcategories: [
       { name: { bn: "মেকআপ ও কসমেটিক্স আইটেম", en: "Makeup & Cosmetic Items" }, icon: "fa-palette" },
       { name: { bn: "স্কিন কেয়ার ও লোশন", en: "Skin Care & Lotions" }, icon: "fa-pump-soap" },
-      { name: { bn: "মেকআপ অর্গানাইজার ও বক্স", en: "Makeup Organizers & Boxes" }, icon: "fa-box-archive" },
-      { name: { bn: "হেয়ার কেয়ার ও স্টাইলিং", en: "Hair Care & Styling" }, icon: "fa-spray-can-sparkles" },
-      { name: { bn: "পারফিউম ও বডি স্প্রে", en: "Perfumes & Body Sprays" }, icon: "fa-spray-can" },
-      { name: { bn: "ব্যক্তিগত যত্ন ও গ্রুমিং", en: "Personal Care & Grooming" }, icon: "fa-heart" }
+      { name: { bn: "মেকআপ অর্গানাইজার ও বক্স", en: "Makeup Organizers & Boxes" }, icon: "fa-box-archive" }
     ]
   }
 ];
@@ -119,7 +113,7 @@ function renderFilterCards() {
     if (!searchBarContainer) return;
 
     const lang = getLang();
-    const placeholderText = lang === 'en' ? 'Search wholesale items...' : 'চকবাজার বা সুন্দরবন মার্কেটের পণ্য খুঁজুন...';
+    const placeholderText = lang === 'en' ? 'Search premium items...' : 'প্রিমিয়াম ও জনপ্রিয় পণ্য খুঁজুন...';
 
     searchBarContainer.innerHTML = `
         <div style="display: flex; width: 100%; align-items: center; gap: 0;">
@@ -130,26 +124,6 @@ function renderFilterCards() {
             </button>
         </div>
     `;
-}
-
-function handleProductTypeChange(val) {
-    currentProductType = val;
-    
-    const tabCombo = document.getElementById('tabCombo');
-    const tabPopular = document.getElementById('tabPopular');
-    
-    if (tabCombo && tabPopular) {
-        if (val === 'combo_pack') {
-            tabCombo.classList.add('active');
-            tabPopular.classList.remove('active');
-        } else {
-            tabPopular.classList.add('active');
-            tabCombo.classList.remove('active');
-        }
-    }
-
-    currentPage = 1;
-    loadProducts(false);
 }
 
 function renderMainCategories() {
@@ -219,7 +193,7 @@ function renderSubCategories() {
 
     const allOptionActive = currentSubCategory === "সব" ? 'active' : '';
     let html = `
-        <div class="sub-card ${allOptionActive}" onclick="selectSubCategory('সব', 'সব')">
+        <div class="sub-card ${allOptionActive}" onclick="selectSubCategory('সব')">
             <div style="width: 28px; height: 28px; margin: 0 auto 3px auto; background: #ff5722; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-size: 11px;">
                 <i class="fa-solid fa-border-all"></i>
             </div>
@@ -230,9 +204,9 @@ function renderSubCategories() {
     filteredSubs.forEach(sub => {
         const subName = sub.name[lang] || sub.name.bn;
         const subBnName = sub.name.bn; 
-        const isActive = currentSubCategory === subName ? 'active' : '';
+        const isActive = currentSubCategory === subBnName ? 'active' : '';
         html += `
-            <div class="sub-card ${isActive}" onclick="selectSubCategory('${subBnName}', '${sub.subIndex}')">
+            <div class="sub-card ${isActive}" onclick="selectSubCategory('${subBnName}')">
                 <div style="width: 28px; height: 28px; margin: 0 auto 3px auto; background: #fff5f2; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #ff5722; font-size: 11px;">
                     <i class="fa-solid ${sub.icon || 'fa-tag'}"></i>
                 </div>
@@ -244,11 +218,8 @@ function renderSubCategories() {
     grid.innerHTML = html;
 }
 
-let currentSubCategoryIndex = "সব";
-
-function selectSubCategory(subName, subIdx) {
+function selectSubCategory(subName) {
     currentSubCategory = subName;
-    currentSubCategoryIndex = subIdx;
     renderSubCategories();
     currentPage = 1;
     loadProducts(false);
@@ -282,10 +253,7 @@ async function loadProducts(isAppend = false) {
 
     let query = supabaseClient.from('products').select('*');
 
-    if (currentProductType && currentProductType !== 'all') {
-        query = query.eq('product_type', currentProductType);
-    }
-
+    // শুধুমাত্র ক্যাটাগরি ও সাব-ক্যাটাগরি ফিল্টারিং (অন্য কোনো অতিরিক্ত ফিল্টার রাখা হয়নি)
     if (currentMainCategory !== "সব") {
         const mBn = currentMainCategory.name.bn;
         const mEn = currentMainCategory.name.en;
