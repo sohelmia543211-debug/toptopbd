@@ -144,13 +144,26 @@
         .product-info h3 {
             font-size: 13px;
             color: #333;
-            margin: 0 0 6px 0;
+            margin: 0 0 4px 0;
             font-weight: 600;
             line-height: 1.3;
             display: -webkit-box;
             -webkit-line-clamp: 2;
             -webkit-box-orient: vertical;
             overflow: hidden;
+        }
+
+        /* ৩ লাইনের ডেসক্রিপশন স্টাইল */
+        .product-desc {
+            font-size: 11px;
+            color: #666;
+            margin: 0 0 8px 0;
+            line-height: 1.4;
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
 
         .price {
@@ -313,6 +326,7 @@
                             </div>
                             <div class="product-info">
                                 <h3>${p.name}</h3>
+                                <p class="product-desc">${p.short_description || 'কোনো বিবরণ নেই'}</p>
                                 <div class="price">৳ ${p.price}</div>
                             </div>
                         </div>

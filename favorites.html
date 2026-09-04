@@ -193,19 +193,19 @@
     <nav class="bottom-nav">
         <a href="index.html" class="bottom-nav-item">
             <i class="fa-solid fa-house"></i>
-            <span>Home</span>
+            <span>হোম</span>
         </a>
         <a href="categories.html" class="bottom-nav-item">
             <i class="fa-solid fa-list"></i>
-            <span>Category</span>
+            <span>ক্যাটাগরি</span>
         </a>
         <a href="favorites.html" class="bottom-nav-item active">
             <i class="fa-solid fa-heart"></i>
-            <span>Favorite</span>
+            <span>পছন্দ</span>
         </a>
-        <a href="seller_login.html" class="bottom-nav-item">
-            <i class="fa-solid fa-user-tie"></i>
-            <span>Seller Login</span>
+        <a href="support.html" class="bottom-nav-item">
+            <i class="fa-solid fa-headset"></i>
+            <span>সাপোর্ট</span>
         </a>
     </nav>
 
@@ -218,7 +218,7 @@
         async function fetchFavorites() {
             const grid = document.getElementById('favoriteGrid');
             
-            // লোকাল স্টোরেজ থেকে ফেভরিট আইডিগুলো নেওয়া
+            // লোকাল স্টোরেজ থেকে ফেভরিট আইডিগুলো নেওয়া
             let favoriteIds = JSON.parse(localStorage.getItem('topTopFavorites')) || [];
 
             if (favoriteIds.length === 0) {
@@ -240,7 +240,7 @@
                 if (error) throw error;
 
                 if (!products || products.length === 0) {
-                    grid.innerHTML = '<div class="no-product">পছন্দের কোনো প্রোডাক্ট খুঁজে পাওয়া যায়নি।</div>';
+                    grid.innerHTML = '<div class="no-product">পছন্দের কোনো প্রোডাক্ট খুঁজে পাওয়া যায়নি।</div>';
                     return;
                 }
 
@@ -266,7 +266,7 @@
 
             } catch (err) {
                 console.error('Error fetching favorites:', err);
-                grid.innerHTML = '<div class="no-product" style="color: red;">প্রোডাক্ট লোড করতে সমস্যা হয়েছে।</div>';
+                grid.innerHTML = '<div class="no-product" style="color: red;">প্রোডাক্ট লোড করতে সমস্যা হয়েছে।</div>';
             }
         }
 

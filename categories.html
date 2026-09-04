@@ -6,484 +6,130 @@
     <title>TopTop BD - ক্যাটাগরি সমূহ</title>
     <!-- FontAwesome আইকন -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <style>
-        * {
-            box-sizing: border-box;
-        }
-        body {
-            padding-bottom: 70px;
-            background-color: #f4f6f9;
-            margin: 0;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
-        
-        header {
-            background-color: #ffffff;
-            padding: 15px;
-            text-align: center;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
-            position: sticky;
-            top: 0;
-            z-index: 100;
-        }
-
-        header h1 {
-            margin: 0;
-            font-size: 20px;
-            color: #ff5722;
-            font-weight: 700;
-        }
-
-        /* স্প্লিট লেআউট */
-        .category-page-container {
-            display: flex;
-            height: calc(100vh - 125px);
-        }
-
-        /* বাম পাশের সাইডবার (মেইন ক্যাটাগরি) */
-        .main-category-sidebar {
-            width: 38%;
-            background-color: #ffffff;
-            border-right: 1px solid #eaeaea;
-            overflow-y: auto;
-            padding: 10px;
-        }
-
-        .main-category-item {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            padding: 10px 10px;
-            margin-bottom: 8px;
-            cursor: pointer;
-            border-radius: 10px;
-            background: #fafafa;
-            border: 1px solid #eee;
-            transition: all 0.25s ease;
-            width: 100%;
-        }
-
-        .main-category-icon-box {
-            width: 32px;
-            height: 32px;
-            background: #fff5f2;
-            border-radius: 8px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: #ff5722;
-            font-size: 14px;
-            flex-shrink: 0;
-            transition: all 0.25s ease;
-        }
-
-        .main-category-item span {
-            font-size: 12px;
-            font-weight: 600;
-            color: #444;
-            line-height: 1.2;
-            display: -webkit-box;
-            -webkit-line-clamp: 2;
-            -webkit-box-orient: vertical;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            word-break: break-word;
-        }
-
-        .main-category-item:hover {
-            background: #fff2ef;
-            border-color: #ffd8d0;
-        }
-
-        .main-category-item:hover .main-category-icon-box {
-            background: #ff5722;
-            color: #fff;
-        }
-
-        .main-category-item.active {
-            background-color: #fff2ef;
-            border-color: #ff5722;
-            box-shadow: 0 4px 10px rgba(255, 87, 34, 0.12);
-        }
-
-        .main-category-item.active .main-category-icon-box {
-            background: #ff5722;
-            color: #fff;
-        }
-
-        .main-category-item.active span {
-            color: #ff5722;
-        }
-
-        /* ডান পাশের কনটেন্ট এরিয়া */
-        .sub-category-content {
-            width: 62%;
-            background-color: #f4f6f9;
-            padding: 15px;
-            overflow-y: auto;
-        }
-
-        .section-title {
-            font-size: 15px;
-            font-weight: 700;
-            color: #333;
-            margin-bottom: 12px;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
-
-        /* সাব-ক্যাটাগরি গ্রিড (কার্ড স্টাইল) */
-        .sub-category-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
-            gap: 12px;
-        }
-
-        .sub-category-card {
-            background: #ffffff;
-            padding: 16px 10px;
-            text-align: center;
-            border-radius: 12px;
-            box-shadow: 0 3px 8px rgba(0,0,0,0.04);
-            cursor: pointer;
-            text-decoration: none;
-            color: #333;
-            border: 1px solid #eaeaea;
-            transition: all 0.2s ease;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .sub-category-card:hover {
-            transform: translateY(-3px);
-            border-color: #ff5722;
-            box-shadow: 0 6px 15px rgba(255, 87, 34, 0.1);
-        }
-
-        .sub-category-card .sub-icon {
-            width: 45px;
-            height: 45px;
-            object-fit: cover;
-            border-radius: 50%;
-            margin-bottom: 8px;
-            background: #fff5f2;
-            border: 1px solid #ffd8d0;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: #ff5722;
-            font-size: 16px;
-        }
-
-        .sub-category-card span {
-            display: block;
-            font-size: 11px;
-            font-weight: 600;
-            color: #444;
-            line-height: 1.3;
-        }
-
-        /* বটম নেভিগেশন বার */
-        .bottom-nav {
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            width: 100%;
-            height: 60px;
-            background-color: #ffffff;
-            display: flex;
-            justify-content: space-around;
-            align-items: center;
-            box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.08);
-            z-index: 1000;
-            border-top: 1px solid #eee;
-        }
-        .bottom-nav-item {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            text-decoration: none;
-            color: #777;
-            font-size: 11px;
-            font-weight: 500;
-            flex: 1;
-            height: 100%;
-            transition: color 0.2s ease;
-        }
-        .bottom-nav-item i {
-            font-size: 18px;
-            margin-bottom: 3px;
-        }
-        .bottom-nav-item.active, .bottom-nav-item:hover {
-            color: #ff5722;
-        }
-    </style>
+    <!-- Supabase লাইব্রেরি -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
-
-    <header>
-        <h1>ক্যাটাগরি ব্রাউজ করুন</h1>
+    
+    <!-- হেডার -->
+    <header style="background: #ff5722; color: white; padding: 12px 15px; text-align: center; font-size: 18px; font-weight: bold;">
+        <i class="fa-solid fa-list"></i> TopTop BD - সকল ক্যাটাগরি
     </header>
 
-    <div class="category-page-container">
-        <!-- বাম পাশের মেইন ক্যাটাগরি সাইডবার -->
-        <div class="main-category-sidebar" id="categorySidebar">
-            <!-- ডাইনামিক্যালি ক্যাটাগরিগুলো লোড হবে -->
+    <!-- ক্যাটাগরি লেআউট কন্টেইনার -->
+    <div class="category-page-container" style="display: flex; height: calc(100vh - 110px); background: #f9f9f9;">
+        
+        <!-- বাম পাশের সাইডবার (মেইন ক্যাটাগরি) -->
+        <div class="main-category-sidebar" id="mainCategorySidebar" style="width: 30%; background: #fff; border-right: 1px solid #ddd; overflow-y: auto;">
+            <!-- ডাইনামিক মেইন ক্যাটাগরিগুলো এখানে জাভাস্ক্রিপ্ট দিয়ে লোড হবে -->
         </div>
 
-        <!-- ডান পাশের সাব-ক্যাটাগরি গ্রিড এরিয়া -->
-        <div class="sub-category-content" id="subCategoryContent">
-            <div style="text-align: center; color: #888; margin-top: 50px; font-size: 13px;">একটি ক্যাটাগরি সিলেক্ট করুন</div>
+        <!-- ডান পাশের কনটেন্ট এরিয়া (সাব-ক্যাটাগরি) -->
+        <div class="sub-category-content" style="width: 70%; padding: 15px; overflow-y: auto;">
+            <div class="section-title" style="font-size: 15px; font-weight: bold; margin-bottom: 12px; color: #333;">
+                <i class="fa-solid fa-tags" style="color: #ff5722;"></i> সাব-ক্যাটাগরি সমূহ
+            </div>
+            <div class="sub-category-grid" id="subCategoryGrid" style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px;">
+                <!-- সাব-ক্যাটাগরি কার্ডগুলো এখানে ডাইনামিকালি লোড হবে -->
+            </div>
         </div>
     </div>
 
-    <!-- বটম নেভিগেশন বার -->
+    <!-- বটম নেভবার -->
     <nav class="bottom-nav">
         <a href="index.html" class="bottom-nav-item">
             <i class="fa-solid fa-house"></i>
-            <span>Home</span>
+            <span>হোম</span>
         </a>
         <a href="categories.html" class="bottom-nav-item active">
             <i class="fa-solid fa-list"></i>
-            <span>Category</span>
+            <span>ক্যাটাগরি</span>
         </a>
         <a href="favorites.html" class="bottom-nav-item">
             <i class="fa-solid fa-heart"></i>
-            <span>Favorite</span>
+            <span>পছন্দ</span>
         </a>
-        <a href="seller_login.html" class="bottom-nav-item">
-            <i class="fa-solid fa-user-tie"></i>
-            <span>Seller Login</span>
+        <a href="support.html" class="bottom-nav-item">
+            <i class="fa-solid fa-headset"></i>
+            <span>সাপোর্ট</span>
         </a>
     </nav>
 
+    <!-- জাভাস্ক্রিপ্ট ফাইল (যেখানে hardcodedCategories এবং লজিক রয়েছে) -->
+    <script src="script.js"></script>
+    
+    <!-- ক্যাটাগরি পেজের নিজস্ব রেন্ডারিং স্ক্রিপ্ট -->
     <script>
-        // আপডেট করা পূর্ণাঙ্গ ক্যাটাগরি ও সাব-ক্যাটাগরি ডেটা
-        const hardcodedCategories = [
-            {
-                id: "mobiles",
-                name: "মোবাইল ও ট্যাব",
-                icon: "fa-mobile-screen-button",
-                subcategories: [
-                    { name: "স্মার্টফোন", icon: "fa-mobile" },
-                    { name: "ফিচার ফোন", icon: "fa-phone-flip" },
-                    { name: "ট্যাব ও আইপ্যাড", icon: "fa-tablet-screen-button" },
-                    { name: "মোবাইল এক্সেসরিজ", icon: "fa-headphones" },
-                    { name: "পাওয়ার ব্যাংক", icon: "fa-battery-full" },
-                    { name: "স্মার্টওয়াচ", icon: "fa-clock" }
-                ]
-            },
-            {
-                id: "electronics",
-                name: "ইলেকট্রনিক্স",
-                icon: "fa-laptop",
-                subcategories: [
-                    { name: "ল্যাপটপ ও কম্পিউটার", icon: "fa-computer" },
-                    { name: "টিভি ও সাউন্ড সিস্টেম", icon: "fa-tv" },
-                    { name: "এসি ও ফ্রিজ", icon: "fa-snowflake" },
-                    { name: "হোম অ্যাপ্লায়েন্সেস", icon: "fa-blender" },
-                    { name: "ক্যামেরা ও ড্রোন", icon: "fa-camera" },
-                    { name: "রাউটার ও নেটওয়ার্কিং", icon: "fa-wifi" },
-                    { name: "প্রিন্টার ও স্ক্যানার", icon: "fa-print" },
-                    { name: "মাইক্রোওয়েভ ও ওভেন", icon: "fa-fire-burner" },
-                    { name: "আইপিএস ও জেনারেটর", icon: "fa-bolt" },
-                    { name: "স্টাবিলাইজার ও ইউপিএস", icon: "fa-shield-halved" }
-                ]
-            },
-            {
-                id: "vehicles",
-                name: "যানবাহন",
-                icon: "fa-motorcycle",
-                subcategories: [
-                    { name: "মোটরসাইকেল", icon: "fa-motorcycle" },
-                    { name: "বাইসাইকেল", icon: "fa-person-biking" },
-                    { name: "প্রাইভেট কার", icon: "fa-car" },
-                    { name: "ইলেকট্রিক বাইক ও স্কুটার", icon: "fa-bolt" },
-                    { name: "বাস ও ট্রাক", icon: "fa-truck" },
-                    { name: "অন্যান্য যান ও পার্টস", icon: "fa-gears" }
-                ]
-            },
-            {
-                id: "property",
-                name: "প্রপার্টি",
-                icon: "fa-building",
-                subcategories: [
-                    { name: "বাসা/ফ্লাট ভাড়া", icon: "fa-house-chimney" },
-                    { name: "জমি বা প্লট বিক্রি", icon: "fa-map" },
-                    { name: "সাবলেট রুম", icon: "fa-door-open" },
-                    { name: "দোকান বা অফিস স্পেস", icon: "fa-shop" },
-                    { name: "মেস সিট ভাড়া", icon: "fa-bed" }
-                ]
-            },
-            {
-                id: "fashion",
-                name: "ফ্যাশন",
-                icon: "fa-shirt",
-                subcategories: [
-                    { name: "পুরুষদের পোশাক", icon: "fa-user-tie" },
-                    { name: "নারীদের পোশাক", icon: "fa-person-dress" },
-                    { name: "ছেলেদের জুতো", icon: "fa-shoe-prints" },
-                    { name: "মেয়েদের জুতো", icon: "fa-shoe-prints" },
-                    { name: "ব্যাগ ও লাগেজ", icon: "fa-bag-shopping" },
-                    { name: "পাঞ্জাবি ও শেরওয়ানি", icon: "fa-shirt" },
-                    { name: "শাড়ি ও থ্রিপিস", icon: "fa-vest" },
-                    { name: "বাচ্চাদের পোশাক", icon: "fa-child" },
-                    { name: "ঘড়ি ও সানগ্লাস", icon: "fa-glasses" },
-                    { name: "কসমেটিক্স ও মেকআপ", icon: "fa-wand-magic-sparkles" }
-                ]
-            },
-            {
-                id: "home_living",
-                name: "হোম ও লিভিং",
-                icon: "fa-couch",
-                subcategories: [
-                    { name: "ঘরের আসবাবপত্র", icon: "fa-bed" },
-                    { name: "হোম ডেকোর বা শোপিস", icon: "fa-image" },
-                    { name: "কিচেন ও ডাইনিং", icon: "fa-utensils" },
-                    { name: "লাইটিং ও ফ্যান", icon: "fa-lightbulb" },
-                    { name: "বেডিং ও কার্পেট", icon: "fa-mattress-pillow" }
-                ]
-            },
-            {
-                id: "pets",
-                name: "পোষা প্রাণী",
-                icon: "fa-dog",
-                subcategories: [
-                    { name: "বিড়াল ও কুকুর", icon: "fa-paw" },
-                    { name: "পাখি ও মাছ", icon: "fa-dove" },
-                    { name: "গবাদিপশু", icon: "fa-cow" },
-                    { name: "পেট ফুড ও কেয়ার", icon: "fa-bone" }
-                ]
-            },
-            {
-                id: "books_sports",
-                name: "বই ও শখ",
-                icon: "fa-book",
-                subcategories: [
-                    { name: "একাডেমিক বই", icon: "fa-book-open" },
-                    { name: "উপন্যাস ও ইসলামিক বই", icon: "fa-book" },
-                    { name: "জিম ও স্পোর্টস আইটেম", icon: "fa-dumbbell" },
-                    { name: "মিউজিক্যাল ইন্সট্রুমেন্ট", icon: "fa-guitar" },
-                    { name: "খেলনা ও ভিডিও গেমস", icon: "fa-gamepad" }
-                ]
-            },
-            {
-                id: "agriculture",
-                name: "কৃষি ও বাগান",
-                icon: "fa-seedling",
-                subcategories: [
-                    { name: "বীজ ও সার", icon: "fa-plant-wilt" },
-                    { name: "কৃষিকাজের যন্ত্রপাতি", icon: "fa-tractor" },
-                    { name: "গাছের চারা ও টব", icon: "fa-tree" },
-                    { name: "সেচ সরঞ্জাম", icon: "fa-faucet-drip" },
-                    { name: "গবাদিপশুর খাদ্য", icon: "fa-wheat-awn" }
-                ]
-            },
-            {
-                id: "jobs",
-                name: "চাকরি",
-                icon: "fa-briefcase",
-                subcategories: [
-                    { name: "ফুলটাইম জব", icon: "fa-id-badge" },
-                    { name: "পার্টটাইম ও রিমোট জব", icon: "fa-laptop-file" },
-                    { name: "ইন্টার্নশিপ", icon: "fa-graduation-cap" },
-                    { name: "কাজের লোক বা সার্ভিস", icon: "fa-user-gear" }
-                ]
-            },
-            {
-                id: "services",
-                name: "সার্ভিস",
-                icon: "fa-tools",
-                subcategories: [
-                    { name: "আইটি ও গ্রাফিক্স ডিজাইন", icon: "fa-pen-nib" },
-                    { name: "ইলেকট্রিক ও প্লাম্বিং", icon: "fa-screwdriver-wrench" },
-                    { name: "ইভেন্ট ম্যানেজমেন্ট", icon: "fa-calendar-days" },
-                    { name: "টিউশন বা কোচিং", icon: "fa-chalkboard-user" }
-                ]
-            },
-            {
-                id: "others",
-                name: "অন্যান্য",
-                icon: "fa-box",
-                subcategories: [
-                    { name: "মিসেলেনিয়াস বা অন্যান্য আইটেম", icon: "fa-box-open" }
-                ]
-            }
-        ];
+        document.addEventListener("DOMContentLoaded", () => {
+            renderCategoryPageSidebar();
+        });
 
-        function loadCategoriesPage() {
-            renderSidebar();
-        }
+        function renderCategoryPageSidebar() {
+            const sidebar = document.getElementById('mainCategorySidebar');
+            if (!sidebar) return;
 
-        function renderSidebar() {
-            const sidebar = document.getElementById('categorySidebar');
-            sidebar.innerHTML = '';
-            
-            hardcodedCategories.forEach((cat, index) => {
-                const item = document.createElement('div');
-                item.className = 'main-category-item';
-                
-                item.innerHTML = `
-                    <div class="main-category-icon-box">
-                        <i class="fa-solid ${cat.icon}"></i>
-                    </div>
-                    <span>${cat.name}</span>
-                `;
-                
-                item.onclick = () => {
-                    document.querySelectorAll('.main-category-item').forEach(el => el.classList.remove('active'));
-                    item.classList.add('active');
-                    loadSubCategories(cat);
-                };
-
-                sidebar.appendChild(item);
-
-                // প্রথম ক্যাটাগরি ডিফল্টভাবে সিলেক্ট থাকবে
-                if (index === 0) {
-                    item.classList.add('active');
-                    loadSubCategories(cat);
-                }
-            });
-        }
-
-        function loadSubCategories(category) {
-            const subContent = document.getElementById('subCategoryContent');
-            const subs = category.subcategories || [];
-
-            if (subs.length === 0) {
-                subContent.innerHTML = `
-                    <div class="section-title">${category.name}</div>
-                    <div style="text-align: center; color: #888; margin-top: 40px; font-size: 13px;">এই ক্যাটাগরিতে কোনো সাব-ক্যাটাগরি নেই</div>
-                `;
-                return;
-            }
-
-            let gridHTML = `
-                <div class="section-title">${category.name}</div>
-                <div class="sub-category-grid">
+            let html = `
+                <div onclick="selectCategoryPageMain('সব')" style="padding: 15px; border-bottom: 1px solid #eee; cursor: pointer; font-size: 14px; font-weight: 500; display: flex; align-items: center; gap: 10px; background: #fff;" id="cat_all">
+                    <i class="fa-solid fa-border-all" style="color: #ff5722;"></i> সব ক্যাটাগরি
+                </div>
             `;
 
-            subs.forEach(sub => {
-                gridHTML += `
-                    <a href="products.html?category=${encodeURIComponent(category.name)}&sub_category=${encodeURIComponent(sub.name)}" class="sub-category-card">
-                        <div class="sub-icon">
-                            <i class="fa-solid ${sub.icon}"></i>
+            if (typeof hardcodedCategories !== 'undefined') {
+                hardcodedCategories.forEach(cat => {
+                    const catName = cat.name.bn;
+                    html += `
+                        <div onclick="selectCategoryPageMain('${cat.id}')" style="padding: 15px; border-bottom: 1px solid #eee; cursor: pointer; font-size: 14px; display: flex; align-items: center; gap: 10px; background: #fff;" id="cat_${cat.id}">
+                            <i class="fa-solid ${cat.icon || 'fa-tag'}" style="color: #ff5722;"></i> ${catName}
                         </div>
-                        <span>${sub.name}</span>
-                    </a>
-                `;
-            });
-            gridHTML += '</div>';
+                    `;
+                });
+            }
 
-            subContent.innerHTML = gridHTML;
+            sidebar.innerHTML = html;
+            if (typeof hardcodedCategories !== 'undefined' && hardcodedCategories.length > 0) {
+                selectCategoryPageMain(hardcodedCategories[0].id); // প্রথমে প্রথম ক্যাটাগরি সিলেক্ট থাকবে
+            }
         }
 
-        // পেজ লোড হওয়ার সাথে সাথে ক্যাটাগরি রেন্ডার হবে
-        loadCategoriesPage();
+        function selectCategoryPageMain(catId) {
+            // একটিভ স্টাইল পরিবর্তন
+            document.querySelectorAll('#mainCategorySidebar > div').forEach(el => el.style.background = '#fff');
+            const selectedEl = document.getElementById(catId === 'সব' ? 'cat_all' : `cat_${catId}`);
+            if(selectedEl) selectedEl.style.background = '#fff5f2';
+
+            const subGrid = document.getElementById('subCategoryGrid');
+            if (!subGrid || typeof hardcodedCategories === 'undefined') return;
+
+            let subs = [];
+            if (catId === 'সব') {
+                subs = hardcodedCategories.flatMap(c => c.subcategories || []);
+            } else {
+                const found = hardcodedCategories.find(c => c.id === catId);
+                subs = found ? found.subcategories : [];
+            }
+
+            let subHtml = '';
+            if(subs.length === 0) {
+                subHtml = `<div style="grid-column: 1/-1; text-align:center; color:#777; padding:20px;">কোনো সাব-ক্যাটাগরি নেই</div>`;
+            } else {
+                subs.forEach(sub => {
+                    const subName = sub.name.bn;
+                    subHtml += `
+                        <div style="background: white; padding: 12px; border-radius: 8px; border: 1px solid #eee; text-align: center; display: flex; flex-direction: column; justify-content: space-between; box-shadow: 0 1px 3px rgba(0,0,0,0.05);">
+                            <div>
+                                <div style="font-size: 20px; color: #ff5722; margin-bottom: 6px;"><i class="fa-solid ${sub.icon || 'fa-tag'}"></i></div>
+                                <div style="font-size: 13px; font-weight: 500; color: #333; margin-bottom: 10px;">${subName}</div>
+                            </div>
+                            <button onclick="window.location.href='index.html?sub=${encodeURIComponent(subName)}'" style="background: #ff5722; color: white; border: none; padding: 6px 10px; border-radius: 4px; font-size: 12px; font-weight: bold; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 5px; width: 100%;">
+                                <i class="fa-solid fa-cart-shopping"></i> অর্ডার করুন
+                            </button>
+                        </div>
+                    `;
+                });
+            }
+            subGrid.innerHTML = subHtml;
+        }
     </script>
 </body>
 </html>

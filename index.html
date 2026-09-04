@@ -3,64 +3,63 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title data-en="TopTop BD - Local Marketplace" data-bn="TopTop BD - লোকাল মার্কেটপ্লেস (নতুন ও পুরনো পণ্য)">TopTop BD - লোকাল মার্কেটপ্লেস (নতুন ও পুরনো পণ্য)</title>
+    <title data-en="TopTop BD - Local Marketplace" data-bn="TopTop BD - লোকাল মার্কেটপ্লেস (কম্বো ও জনপ্রিয় পণ্য)">TopTop BD - লোকাল মার্কেটপ্লেস (কম্বো ও জনপ্রিয় পণ্য)</title>
     
-    <!-- FontAwesome আইকন -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
-    <!-- Supabase CDN -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     
-    <!-- স্টাইল ফাইল লিংক -->
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-    <!-- ১. হেডার -->
     <header>
         <div class="header-top">
             <h1>TopTop BD</h1>
             <button class="lang-switch-btn" id="langSwitchBtn" onclick="toggleLanguage()">English</button>
         </div>
-        <!-- সার্চ বার ও লোকেশন হেডারের ভেতরে -->
         <div class="search-location-bar" id="searchBarContainer">
-            <!-- script.js দ্বারা ডাইনামিকালি রেন্ডার হবে -->
-        </div>
+            </div>
     </header>
 
-    <!-- ২. ডাইনামিক ব্যানার সেকশন -->
     <div class="banner-container" id="bannerContainer">
         <div class="banner-slider" data-en="Loading..." data-bn="লোড হচ্ছে...">
             লোড হচ্ছে...
         </div>
     </div>
 
-    <!-- ৩. নতুন, পুরাতন ও প্রপার্টি বাটন (ব্যানার ও ক্যাটাগরির মাঝখানে) -->
-    <div class="product-type-tab-container" style="padding: 10px 15px; background: #fff; margin-bottom: 10px; display: flex; justify-content: center; gap: 10px; border-bottom: 1px solid #eee;">
-        <button id="tabUsed" onclick="handleProductTypeChange('used_product')" style="flex: 1; padding: 10px; border: none; border-radius: 6px; font-weight: 600; cursor: pointer; background: #ff5722; color: white;" data-en="Used" data-bn="পুরাতন পণ্য">পুরাতন পণ্য</button>
-        <button id="tabNew" onclick="handleProductTypeChange('new_product')" style="flex: 1; padding: 10px; border: none; border-radius: 6px; font-weight: 600; cursor: pointer; background: #f1f1f1; color: #333;" data-en="New" data-bn="নতুন পণ্য">নতুন পণ্য</button>
-        <button id="tabProp" onclick="handleProductTypeChange('land_property')" style="flex: 1; padding: 10px; border: none; border-radius: 6px; font-weight: 600; cursor: pointer; background: #f1f1f1; color: #333;" data-en="Property" data-bn="প্রপার্টি">প্রপার্টি</button>
+    <div class="product-type-tab-container">
+        <button id="tabCombo" class="large-product-card-btn active" onclick="handleProductTypeChange('combo_pack')">
+            <i class="fa-solid fa-boxes-stacked"></i>
+            <div>
+                <span class="btn-title" data-en="Combo Pack" data-bn="কম্বো প্যাক">কম্বো প্যাক</span>
+                <span class="btn-subtitle" data-en="Explore special bundle offers" data-bn="বিশেষ বান্ডেল অফারসমূহ দেখুন">বিশেষ বান্ডেল অফারসমূহ দেখুন</span>
+            </div>
+        </button>
+        <button id="tabPopular" class="large-product-card-btn" onclick="handleProductTypeChange('popular_product')">
+            <i class="fa-solid fa-fire"></i>
+            <div>
+                <span class="btn-title" data-en="Popular Products" data-bn="জনপ্রিয় পণ্য">জনপ্রিয় পণ্য</span>
+                <span class="btn-subtitle" data-en="Discover trending items" data-bn="সবচেয়ে চাহিদাপূর্ণ পণ্যগুলো খুঁজুন">সবচেয়ে চাহিদাপূর্ণ পণ্যগুলো খুঁজুন</span>
+            </div>
+        </button>
     </div>
 
-    <!-- ৪. মেইন ক্যাটাগরি সেকশন -->
     <div class="categories-container">
         <div class="section-title" data-en="Categories" data-bn="ক্যাটাগরি সমূহ">ক্যাটাগরি সমূহ</div>
         <div class="categories-grid" id="mainCategories"></div>
     </div>
 
-    <!-- ৫. সাব-ক্যাটাগরি সেকশন -->
     <div class="sub-categories-container">
         <div class="section-title" data-en="Sub-Categories" data-bn="সাব-ক্যাটাগরি সমূহ">সাব-ক্যাটাগরি সমূহ</div>
         <div class="sub-categories-grid" id="subCategories"></div>
     </div>
 
-    <!-- ৬. প্রোডাক্ট সেকশন -->
     <div class="container">
         <div class="section-title" data-en="Products" data-bn="প্রোডাক্টসমূহ">প্রোডাক্টসমূহ</div>
         <div class="product-grid" id="productGrid" style="min-height: 250px;"></div>
     </div>
 
-    <!-- ৭. বটম নেভিগেশন বার -->
     <nav class="bottom-nav">
         <a href="index.html" class="bottom-nav-item active">
             <i class="fa-solid fa-house"></i>
@@ -74,13 +73,12 @@
             <i class="fa-solid fa-heart"></i>
             <span data-en="Favorite" data-bn="পছন্দ">পছন্দ</span>
         </a>
-        <a href="seller_login.html" class="bottom-nav-item">
-            <i class="fa-solid fa-user-tie"></i>
-            <span data-en="Seller Login" data-bn="সেলার লগইন">সেলার লগইন</span>
+        <a href="support.html" class="bottom-nav-item">
+            <i class="fa-solid fa-headset"></i>
+            <span data-en="Support" data-bn="সাপোর্ট">সাপোর্ট</span>
         </a>
     </nav>
 
-    <!-- ভাষা ও অন্যান্য স্ক্রিপ্ট -->
     <script>
         let currentLang = localStorage.getItem('toptop_lang') || 'bn';
 
