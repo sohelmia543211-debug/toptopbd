@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>অ্যাডমিন লগইন ও ড্যাশবোর্ড - TopTop BD</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        body {
+            background-color: #f4f6f9;
+            margin: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        .admin-header {
+            background: #ff5722;
+            color: white;
+            padding: 20px;
+            text-align: center;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        .admin-header h1 {
+            margin: 0;
+            font-size: 22px;
+        }
+        .admin-header p {
+            margin: 5px 0 0 0;
+            font-size: 13px;
+            opacity: 0.9;
+        }
+        .admin-container {
+            max-width: 450px;
+            margin: 40px auto;
+            padding: 0 15px;
+        }
+        /* লগইন বক্স স্টাইল */
+        .login-card {
+            background: #fff;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+            text-align: center;
+            border-top: 4px solid #ff5722;
+        }
+        .login-card i {
+            font-size: 45px;
+            color: #ff5722;
+            margin-bottom: 15px;
+        }
+        .form-group {
+            margin-bottom: 15px;
+            text-align: left;
+        }
+        .form-group label {
+            display: block;
+            font-weight: 600;
+            color: #444;
+            margin-bottom: 6px;
+            font-size: 13px;
+        }
+        .form-control {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 14px;
+            box-sizing: border-box;
+            outline: none;
+        }
+        .login-btn {
+            background: #ff5722;
+            color: white;
+            border: none;
+            width: 100%;
+            padding: 12px;
+            border-radius: 8px;
+            font-size: 15px;
+            font-weight: 700;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+        .login-btn:hover {
+            background: #e64a19;
+        }
+        /* ড্যাশবোর্ড গ্রিড (লগইন হওয়ার পর দেখাবে) */
+        .admin-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            max-width: 600px;
+            margin: 40px auto;
+            padding: 0 15px;
+        }
+        .admin-card {
+            background: #fff;
+            padding: 30px 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+            text-align: center;
+            text-decoration: none;
+            color: #333;
+            transition: all 0.3s ease;
+            border-top: 4px solid #ff5722;
+        }
+        .admin-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+        }
+        .admin-card i {
+            font-size: 40px;
+            color: #ff5722;
+            margin-bottom: 15px;
+        }
+        .admin-card h3 {
+            margin: 0 0 8px 0;
+            font-size: 18px;
+            color: #222;
+        }
+        .admin-card p {
+            margin: 0;
+            font-size: 13px;
+            color: #666;
+        }
+        .logout-box {
+            text-align: center;
+            margin-top: 20px;
+        }
+        .logout-btn {
+            background: #d32f2f;
+            color: white;
+            border: none;
+            padding: 8px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 13px;
+        }
+        @media (max-width: 480px) {
+            .admin-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <header class="admin-header">
+        <h1>TopTop BD অ্যাডমিন প্যানেল</h1>
+        <p>নিরাপদ অ্যাডমিন কন্ট্রোল রুম</p>
+    </header>
+
+    <!-- ১. লগইন সেকশন -->
+    <div class="admin-container" id="loginSection">
+        <div class="login-card">
+            <i class="fa-solid fa-lock"></i>
+            <h3 style="margin-bottom: 20px; color: #333;">অ্যাডমিন লগইন</h3>
+            <form id="loginForm" onsubmit="adminLogin(event)">
+                <div class="form-group">
+                    <label>মোবাইল নম্বর *</label>
+                    <input type="tel" id="adminPhone" class="form-control" placeholder="আপনার মোবাইল নম্বর দিন" required>
+                </div>
+                <div class="form-group">
+                    <label>পাসওয়ার্ড *</label>
+                    <input type="password" id="adminPassword" class="form-control" placeholder="পাসওয়ার্ড দিন" required>
+                </div>
+                <button type="submit" id="loginBtn" class="login-btn">লগইন করুন</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- ২. ড্যাশবোর্ড সেকশন (প্রথমে লুকিয়ে থাকবে) -->
+    <div id="dashboardSection" style="display: none;">
+        <div class="admin-grid">
+            <!-- অর্ডার ম্যানেজমেন্ট বাটন (adminorder.html ফাইলে নিয়ে যাবে) -->
+            <a href="adminorder.html" class="admin-card">
+                <i class="fa-solid fa-box-archive"></i>
+                <h3>অর্ডার ম্যানেজমেন্ট</h3>
+                <p>সকল কাস্টমারের অর্ডার দেখুন এবং স্ট্যাটাস আপডেট করুন।</p>
+            </a>
+
+            <!-- সাপোর্ট চ্যাট বাটন -->
+            <a href="admin_chat.html" class="admin-card">
+                <i class="fa-solid fa-headset"></i>
+                <h3>সাপোর্ট চ্যাট</h3>
+                <p>কাস্টমারদের মেসেজ পড়ুন এবং চ্যাটবটের মতো রিপ্লাই দিন।</p>
+            </a>
+        </div>
+        
+        <div class="logout-box" id="logoutBox">
+            <button onclick="adminLogout()" class="logout-btn"><i class="fa-solid fa-right-from-bracket"></i> লগআউট করুন</button>
+        </div>
+    </div>
+
+    <script>
+        const SUPABASE_URL = 'https://mzqqkkgdggwmpegvqaol.supabase.co';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im16cXFra2dkZ2d3bXBlZ3ZxYW9sIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODY4MDU4NDUsImV4cCI6MjEwMjM4MTg0NX0.hbUQ4dKjX2iXTF-ugi7JkV_-J5gKIpSEsPN8RpJ0EEo';
+        const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+        // পেজ লোড হলে চেক করা আগে থেকেই লগইন করা আছে কি না
+        window.onload = function() {
+            if (localStorage.getItem('toptop_admin_logged') === 'true') {
+                showDashboard();
+            }
+        };
+
+        // অ্যাডমিন লগইন ফাংশন
+        async function adminLogin(event) {
+            event.preventDefault();
+            
+            let phone = document.getElementById('adminPhone').value.trim();
+            let password = document.getElementById('adminPassword').value.trim();
+            let btn = document.getElementById('loginBtn');
+
+            btn.disabled = true;
+            btn.innerText = "যাচাই করা হচ্ছে...";
+
+            try {
+                const { data, error } = await supabaseClient
+                    .from('admins')
+                    .select('*')
+                    .eq('phone', phone)
+                    .eq('password', password);
+
+                if (error || !data || data.length === 0) {
+                    alert("ভুল মোবাইল নম্বর অথবা পাসওয়ার্ড!");
+                    btn.disabled = false;
+                    btn.innerText = "লগইন করুন";
+                    return;
+                }
+
+                // লগইন সফল হলে
+                localStorage.setItem('toptop_admin_logged', 'true');
+                localStorage.setItem('toptop_admin_phone', phone);
+                showDashboard();
+
+            } catch (err) {
+                console.error(err);
+                alert("সার্ভার সমস্যা! আবার চেষ্টা করুন।");
+                btn.disabled = false;
+                btn.innerText = "লগইন করুন";
+            }
+        }
+
+        function showDashboard() {
+            document.getElementById('loginSection').style.display = 'none';
+            document.getElementById('dashboardSection').style.display = 'block';
+        }
+
+        // লগআউট ফাংশন
+        function adminLogout() {
+            localStorage.removeItem('toptop_admin_logged');
+            localStorage.removeItem('toptop_admin_phone');
+            document.getElementById('loginSection').style.display = 'block';
+            document.getElementById('dashboardSection').style.display = 'none';
+            document.getElementById('loginForm').reset();
+            document.getElementById('loginBtn').disabled = false;
+            document.getElementById('loginBtn').innerText = "লগইন করুন";
+        }
+    </script>
+</body>
+</html>
