@@ -7,23 +7,44 @@
     <!-- এসইও এবং সার্চ অপ্টিমাইজেশন টাইটেল -->
     <title data-en="TopTop BD - Online Shopping & E-Commerce Store" data-bn="TopTop BD - অনলাইন শপিং ও ই-কমার্স স্টোর">TopTop BD - অনলাইন শপিং ও ই-কমার্স স্টোর</title>
     
-    <!-- এসইও মেটা ডেসক্রিপশন ও কিওয়ার্ডস -->
+    <!-- এসইও মেটা ডেসক্রিপশন ও কিওয়ার্ডস -->
     <meta name="description" content="TopTop BD is your trusted online shopping store in Bangladesh for smart gadgets, electronics, cosmetics, and best quality products at affordable prices.">
     <meta name="keywords" content="toptopbd, toptop, online shopping bangladesh, electronics, cosmetics, kitchen gadgets, toptop bd shop">
     <meta name="author" content="TopTop BD">
 
-    <!-- ব্রাউজার ট্যাব লোগো (Favicon) - আপনার লোগোর লিংক এখানে বসাবেন -->
-    <link rel="icon" type="image/png" href="your_logo_link_here.png">
+    <!-- ব্রাউজার ট্যাব লোগো (Favicon) - আপনার লোগোর ফাইল পাথ এখানে ঠিক করুন -->
+    <link rel="icon" type="image/png" href="logo.png"> 
     
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <link rel="stylesheet" href="style.css">
+
+    <!-- কাস্টম স্টাইল যাতে লোগোটি সুন্দরভাবে বসে -->
+    <style>
+        .logo-link img {
+            height: 45px; /* লোগোর উচ্চতা নির্ধারণ করুন */
+            width: auto;
+            object-fit: contain;
+            border-radius: 8px;
+            vertical-align: middle;
+        }
+        .header-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 15px;
+            background-color: #fff; /* হেডার ব্যাকগ্রাউন্ড কালার */
+        }
+    </style>
 </head>
 <body>
 
     <header>
         <div class="header-top">
-            <h1>TopTop BD</h1>
+            <!-- এখানে টেক্সটের বদলে লোগো ইমেজ ব্যবহার করা হয়েছে -->
+            <a href="index.html" class="logo-link">
+                <img src="logo.png" alt="TopTop BD Logo">
+            </a>
             <button class="lang-switch-btn" id="langSwitchBtn" onclick="toggleLanguage()">English</button>
         </div>
         <div class="search-location-bar" id="searchBarContainer"></div>
