@@ -135,6 +135,8 @@
             color: #333;
             margin-bottom: 15px;
         }
+        
+        /* সংশ্লিষ্ট পণ্যসমূহ সেকশনের ডিজাইন আপডেট */
         .related-grid {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
@@ -147,35 +149,52 @@
             overflow: hidden;
             text-decoration: none;
             color: inherit;
-            transition: transform 0.2s;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            transition: transform 0.2s, box-shadow 0.2s;
             box-shadow: 0 2px 5px rgba(0,0,0,0.02);
         }
         .related-card:hover {
             transform: translateY(-3px);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+        }
+        .related-img-box {
+            width: 100%;
+            height: 140px;
+            background: #f9f9f9;
+            overflow: hidden;
         }
         .related-img {
             width: 100%;
-            height: 140px;
+            height: 100%;
             object-fit: cover;
-            background: #f0f0f0;
         }
         .related-info {
             padding: 10px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            flex-grow: 1;
         }
         .related-product-name {
-            font-size: 14px;
+            font-size: 13px;
             font-weight: 600;
             color: #222;
-            margin-bottom: 5px;
-            white-space: nowrap;
+            margin-bottom: 6px;
+            display: -webkit-box;
+            -webkit-line-clamp: 2; /* নাম বড় হলে সর্বোচ্চ ২ লাইন দেখাবে এবং ভেঙে যাবে না */
+            -webkit-box-orient: vertical;
             overflow: hidden;
-            text-overflow: ellipsis;
+            line-height: 1.3;
+            height: 34px; /* নির্দিষ্ট উচ্চতা ফিক্সড রাখা হয়েছে যাতে সব কার্ড সমান দেখায় */
         }
         .related-product-price {
             font-size: 14px;
             font-weight: 700;
             color: #ff5722;
         }
+
         .action-buttons {
             position: fixed;
             bottom: 0;
@@ -363,7 +382,9 @@
                 if (!error && data && data.length > 0) {
                     relatedGrid.innerHTML = data.map(item => `
                         <a href="product_details.html?id=${item.id}" class="related-card">
-                            <img src="${item.image_url || 'https://via.placeholder.com/150'}" alt="${item.name}" class="related-img">
+                            <div class="related-img-box">
+                                <img src="${item.image_url || 'https://via.placeholder.com/150'}" alt="${item.name}" class="related-img">
+                            </div>
                             <div class="related-info">
                                 <div class="related-product-name">${item.name}</div>
                                 <div class="related-product-price">৳ ${item.price}</div>
@@ -455,7 +476,6 @@
             window.open(`https://m.me/${pageUsername}`, '_blank');
         }
 
-        // এখানে অর্ডার বাটনে ক্লিক করলে নতুন পেজে (checkout.html) রিডাইরেক্ট হবে
         function placeOrder() {
             if (!currentProduct) return;
             window.location.href = `checkout.html?id=${currentProduct.id}`;
