@@ -12,7 +12,7 @@
 </head>
 <body>
     
-    <!-- হেডার -->
+    <!-- হেডার (আলাদা ভাষা পরিবর্তনের বাটন ছাড়া একদম পরিচ্ছন্ন) -->
     <header style="background: #ff5722; color: white; padding: 12px 15px; text-align: center; font-size: 18px; font-weight: bold;" id="pageHeaderTitle">
         <i class="fa-solid fa-list"></i> TopTop BD - সকল ক্যাটাগরি
     </header>
@@ -96,7 +96,7 @@
             renderCategoryPageSidebar();
         });
 
-        // স্ট্যাটিক টেকগুলো ভাষা অনুযায়ী পরিবর্তন করার জন্য
+        // স্ট্যাটিক টেক্সটগুলো ভাষা অনুযায়ী পরিবর্তন করার জন্য
         function updateStaticTexts() {
             const lang = getLang();
             const headerTitle = document.getElementById('pageHeaderTitle');
@@ -109,6 +109,19 @@
                 if (headerTitle) headerTitle.innerHTML = `<i class="fa-solid fa-list"></i> TopTop BD - সকল ক্যাটাগরি`;
                 if (subTitle) subTitle.innerHTML = `<i class="fa-solid fa-tags" style="color: #ff5722;"></i> সাব-ক্যাটাগরি সমূহ`;
             }
+
+            // বটম নেভবারের টেক্সট অনুবাদ
+            const navTranslations = {
+                'bn': { 'nav_home': 'হোম', 'nav_categories': 'ক্যাটাগরি', 'nav_orders': 'আমার অর্ডার', 'nav_favorites': 'পছন্দ', 'nav_support': 'সাপোর্ট' },
+                'en': { 'nav_home': 'Home', 'nav_categories': 'Categories', 'nav_orders': 'My Orders', 'nav_favorites': 'Favorites', 'nav_support': 'Support' }
+            };
+
+            document.querySelectorAll('[data-lang-key]').forEach(el => {
+                const key = el.getAttribute('data-lang-key');
+                if (navTranslations[lang] && navTranslations[lang][key]) {
+                    el.innerText = navTranslations[lang][key];
+                }
+            });
         }
 
         function renderCategoryPageSidebar() {
@@ -126,7 +139,7 @@
 
             if (typeof hardcodedCategories !== 'undefined') {
                 hardcodedCategories.forEach(cat => {
-                    const catName = cat.name[lang] || cat.name.bn; // ভাষার ওপর ভিত্তি করে নাম সিলেক্ট হবে
+                    const catName = cat.name[lang] || cat.name.bn; 
                     html += `
                         <div onclick="selectCategoryPageMain(${cat.id})" style="padding: 15px; border-bottom: 1px solid #eee; cursor: pointer; font-size: 14px; display: flex; align-items: center; gap: 10px; background: #fff;" id="cat_${cat.id}">
                             <i class="fa-solid ${cat.icon || 'fa-tag'}" style="color: #ff5722;"></i> ${catName}
@@ -168,7 +181,7 @@
                 subHtml = `<div style="grid-column: 1/-1; text-align:center; color:#777; padding:20px;">${noSubText}</div>`;
             } else {
                 subs.forEach(sub => {
-                    const subName = sub.name[lang] || sub.name.bn; // সাব-ক্যাটাগরির নাম ভাষার সাথে কানেক্ট করা হলো
+                    const subName = sub.name[lang] || sub.name.bn; 
                     const mainCatId = sub.mainCatId;
                     
                     subHtml += `

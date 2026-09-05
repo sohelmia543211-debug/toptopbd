@@ -179,7 +179,7 @@
 
     <!-- হেডার -->
     <header>
-        <h1 id="pageHeaderTitle">পছন্দের প্রোডাক্টসমূহ (Favorites)</h1>
+        <h1 id="pageHeaderTitle">পছন্দের প্রোডাক্টসমূহ</h1>
     </header>
 
     <!-- মেইন কনটেন্ট -->
@@ -224,7 +224,7 @@
             return localStorage.getItem('toptop_lang') || 'bn';
         }
 
-        // স্ট্যাটিক টেক্সটগুলো ভাষা অনুযায়ী পরিবর্তন করার জন্য
+        // স্ট্যাটিক টেক্সট ও বটম নেভবার ভাষা অনুযায়ী পরিবর্তন করার জন্য
         function updateStaticTexts() {
             const lang = getLang();
             const headerTitle = document.getElementById('pageHeaderTitle');
@@ -234,6 +234,19 @@
             } else {
                 if (headerTitle) headerTitle.innerText = 'পছন্দের প্রোডাক্টসমূহ';
             }
+
+            // বটম নেভবারের টেক্সট অনুবাদ
+            const navTranslations = {
+                'bn': { 'nav_home': 'হোম', 'nav_categories': 'ক্যাটাগরি', 'nav_orders': 'আমার অর্ডার', 'nav_favorites': 'পছন্দ', 'nav_support': 'সাপোর্ট' },
+                'en': { 'nav_home': 'Home', 'nav_categories': 'Categories', 'nav_orders': 'My Orders', 'nav_favorites': 'Favorites', 'nav_support': 'Support' }
+            };
+
+            document.querySelectorAll('[data-lang-key]').forEach(el => {
+                const key = el.getAttribute('data-lang-key');
+                if (navTranslations[lang] && navTranslations[lang][key]) {
+                    el.innerText = navTranslations[lang][key];
+                }
+            });
         }
 
         async function fetchFavorites() {

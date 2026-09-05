@@ -244,7 +244,7 @@
             return localStorage.getItem('toptop_lang') || 'bn';
         }
 
-        // ভাষা অনুযায়ী টেক্সট আপডেট করার ফাংশন
+        // ভাষা অনুযায়ী টেক্সট আপডেট করার ফাংশন
         function updateStaticTexts() {
             const lang = getLang();
 
@@ -301,6 +301,19 @@
                 if (supMsgInput) supMsgInput.placeholder = 'আপনার বার্তা এখানে লিখুন...';
                 if (supSubmitBtn && !supSubmitBtn.disabled) supSubmitBtn.innerText = 'মেসেজ পাঠান';
             }
+
+            // বটম নেভবারের টেক্সট অনুবাদ
+            const navTranslations = {
+                'bn': { 'nav_home': 'হোম', 'nav_categories': 'ক্যাটাগরি', 'nav_orders': 'আমার অর্ডার', 'nav_favorites': 'পছন্দ', 'nav_support': 'সাপোর্ট' },
+                'en': { 'nav_home': 'Home', 'nav_categories': 'Categories', 'nav_orders': 'My Orders', 'nav_favorites': 'Favorites', 'nav_support': 'Support' }
+            };
+
+            document.querySelectorAll('[data-lang-key]').forEach(el => {
+                const key = el.getAttribute('data-lang-key');
+                if (navTranslations[lang] && navTranslations[lang][key]) {
+                    el.innerText = navTranslations[lang][key];
+                }
+            });
         }
 
         // পেজ লোড হলে চেক করা কাস্টমারের নম্বর আগে থেকেই সেভ আছে কি না

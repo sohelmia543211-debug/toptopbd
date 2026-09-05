@@ -66,19 +66,6 @@
     <script>
         let currentLang = localStorage.getItem('toptop_lang') || 'bn';
 
-        function toggleLanguage() {
-            currentLang = currentLang === 'bn' ? 'en' : 'bn';
-            localStorage.setItem('toptop_lang', currentLang);
-            applyLanguage();
-            
-            setTimeout(() => {
-                if (typeof renderMainCategories === 'function') renderMainCategories();
-                if (typeof renderSubCategories === 'function') renderSubCategories();
-                if (typeof renderFilterCards === 'function') renderFilterCards();
-                if (typeof loadProducts === 'function') loadProducts(false); // সঠিক ফাংশন কল করা হলো
-            }, 10);
-        }
-
         function applyLanguage() {
             const langBtn = document.getElementById('langSwitchBtn');
             if(langBtn) langBtn.innerText = currentLang === 'bn' ? 'English' : 'বাংলা';
@@ -92,6 +79,21 @@
                 }
             });
         }
+
+        function toggleLanguage() {
+            currentLang = currentLang === 'bn' ? 'en' : 'bn';
+            localStorage.setItem('toptop_lang', currentLang);
+            applyLanguage();
+            
+            setTimeout(() => {
+                if (typeof renderMainCategories === 'function') renderMainCategories();
+                if (typeof renderSubCategories === 'function') renderSubCategories();
+                if (typeof renderFilterCards === 'function') renderFilterCards();
+                if (typeof loadProducts === 'function') loadProducts(false);
+            }, 10);
+        }
+
+        // পেজ রেন্ডার হওয়ার সাথে সাথেই ভাষা সেট করার জন্য
         applyLanguage();
     </script>
     <script src="script.js"></script>
