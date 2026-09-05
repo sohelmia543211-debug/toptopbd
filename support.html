@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>সাপোর্ট ও যোগাযোগ - TopTop BD</title>
+    <title>TopTop BD - সাপোর্ট ও যোগাযোগ</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <link rel="stylesheet" href="style.css">
@@ -104,6 +104,41 @@
             color: #b71c1c;
             margin-right: 20px;
         }
+        
+        /* বটম নেভিগেশন বার */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 60px;
+            background-color: #ffffff;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.08);
+            z-index: 1000;
+            border-top: 1px solid #eee;
+        }
+        .bottom-nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
+            color: #777;
+            font-size: 11px;
+            font-weight: 500;
+            flex: 1;
+            height: 100%;
+        }
+        .bottom-nav-item i {
+            font-size: 18px;
+            margin-bottom: 3px;
+        }
+        .bottom-nav-item.active {
+            color: #ff5722;
+        }
     </style>
 </head>
 <body>
@@ -111,7 +146,7 @@
     <header>
         <div class="header-top" style="display: flex; align-items: center; justify-content: space-between; padding: 15px; background: #ff5722; color: white;">
             <a href="index.html" style="color:white; text-decoration:none; font-size:16px;"><i class="fa-solid fa-arrow-left"></i></a>
-            <h1 style="font-size: 18px; margin: 0;">সাপোর্ট ও চ্যাট</h1>
+            <h1 id="pageHeaderTitle" style="font-size: 18px; margin: 0;">সাপোর্ট ও চ্যাট</h1>
             <div style="width: 24px;"></div>
         </div>
     </header>
@@ -121,19 +156,19 @@
         <!-- টাইম কার্ড -->
         <div class="support-card">
             <i class="fa-regular fa-clock"></i>
-            <h3>সাপোর্টের সময়সীমা</h3>
-            <p>প্রতিদিন সকাল ১০:০০ টা থেকে রাত ১০:০০ টা পর্যন্ত আমরা আপনার সেবায় নিয়োজিত আছি।</p>
+            <h3 id="supportTimeTitle">সাপোর্টের সময়সীমা</h3>
+            <p id="supportTimeDesc">প্রতিদিন সকাল ১০:০০ টা থেকে রাত ১০:০০ টা পর্যন্ত আমরা আপনার সেবায় নিয়োজিত আছি।</p>
         </div>
 
         <!-- চ্যাট ও মেসেজ বক্স -->
         <div class="support-card" style="text-align: left;">
-            <h3 style="margin-bottom: 15px; text-align: center; color: #ff5722;"><i class="fa-solid fa-headset"></i> কাস্টমার কেয়ার চ্যাট</h3>
+            <h3 id="chatHeaderTitle" style="margin-bottom: 15px; text-align: center; color: #ff5722;"><i class="fa-solid fa-headset"></i> কাস্টমার কেয়ার চ্যাট</h3>
             
             <!-- চ্যাট হিস্ট্রি দেখার সেকশন -->
             <div id="chatSection" style="display: none;">
                 <div style="display: flex; justify-content: space-between; align-items: center; background: #fff3e0; padding: 8px 12px; border-radius: 6px; font-size: 13px; margin-bottom: 10px;">
-                    <span>নম্বর: <strong id="activePhoneDisplay"></strong></span>
-                    <button type="button" onclick="logoutChat()" style="background: none; border: none; color: #d32f2f; cursor: pointer; font-weight: bold; font-size: 12px;"><i class="fa-solid fa-right-from-bracket"></i> পরিবর্তন করুন</button>
+                    <span id="phoneDisplayLabel">নম্বর: <strong id="activePhoneDisplay"></strong></span>
+                    <button type="button" onclick="logoutChat()" style="background: none; border: none; color: #d32f2f; cursor: pointer; font-weight: bold; font-size: 12px;"><i class="fa-solid fa-right-from-bracket"></i> <span id="changePhoneText">পরিবর্তন করুন</span></button>
                 </div>
                 
                 <div id="chatContainer" class="chat-box">
@@ -145,10 +180,10 @@
             <!-- প্রথমবার আসার জন্য নম্বর ভেরিফিকেশন বা সার্চ বক্স -->
             <div id="loginSection">
                 <div class="form-group">
-                    <label>আপনার মোবাইল নম্বর দিয়ে চ্যাট শুরু করুন *</label>
+                    <label id="phoneInputLabel">আপনার মোবাইল নম্বর দিয়ে চ্যাট শুরু করুন *</label>
                     <div style="display: flex; gap: 8px;">
                         <input type="tel" id="verifyPhone" class="form-control" placeholder="যেমন: 01712345678">
-                        <button type="button" onclick="verifyAndLoadChat()" style="background:#ff5722; color:#fff; border:none; padding:0 15px; border-radius:8px; cursor:pointer; font-weight:600;">প্রবেশ</button>
+                        <button type="button" id="verifyBtn" onclick="verifyAndLoadChat()" style="background:#ff5722; color:#fff; border:none; padding:0 15px; border-radius:8px; cursor:pointer; font-weight:600;">প্রবেশ</button>
                     </div>
                 </div>
                 <hr style="margin: 20px 0; border:0; border-top:1px solid #eee;">
@@ -157,16 +192,16 @@
             <!-- নতুন মেসেজ পাঠানোর ফর্ম (নম্বর অটো ফিল থাকবে) -->
             <form id="supportForm" onsubmit="submitSupportMessage(event)">
                 <div class="form-group">
-                    <label>আপনার নাম *</label>
+                    <label id="nameLabel">আপনার নাম *</label>
                     <input type="text" id="supName" class="form-control" placeholder="আপনার নাম লিখুন" required>
                 </div>
                 <div class="form-group">
-                    <label>মোবাইল নম্বর *</label>
+                    <label id="phoneLabel">মোবাইল নম্বর *</label>
                     <input type="tel" id="supPhone" class="form-control" placeholder="যেমন: 01712345678" readonly style="background: #f1f1f1; cursor: not-allowed;">
-                    <small style="color: #666; font-size: 11px;">নম্বর পরিবর্তন করতে চাইলে ওপরের চ্যাট পরিবর্তন বাটনে ক্লিক করুন।</small>
+                    <small id="phoneHint" style="color: #666; font-size: 11px;">নম্বর পরিবর্তন করতে চাইলে ওপরের চ্যাট পরিবর্তন বাটনে ক্লিক করুন।</small>
                 </div>
                 <div class="form-group" style="margin-top: 10px;">
-                    <label>আপনার বার্তা বা সমস্যা *</label>
+                    <label id="msgLabel">আপনার বার্তা বা সমস্যা *</label>
                     <textarea id="supMsg" class="form-control" placeholder="আপনার বার্তা এখানে লিখুন..." required></textarea>
                 </div>
                 <button type="submit" id="supSubmitBtn" class="submit-btn">মেসেজ পাঠান</button>
@@ -176,26 +211,26 @@
     </div>
 
     <!-- নিচের নেভিগেশন বার -->
-    <nav class="bottom-nav" style="position: fixed; bottom: 0; left: 0; width: 100%; height: 60px; background: #fff; display: flex; justify-content: space-around; align-items: center; border-top: 1px solid #eee; z-index: 1000;">
-        <a href="index.html" class="bottom-nav-item" style="display:flex; flex-direction:column; align-items:center; text-decoration:none; color:#777; font-size:11px;">
-            <i class="fa-solid fa-house" style="font-size:18px; margin-bottom:3px;"></i>
-            <span>হোম</span>
+    <nav class="bottom-nav">
+        <a href="index.html" class="bottom-nav-item">
+            <i class="fa-solid fa-house"></i>
+            <span data-lang-key="nav_home">হোম</span>
         </a>
-        <a href="categories.html" class="bottom-nav-item" style="display:flex; flex-direction:column; align-items:center; text-decoration:none; color:#777; font-size:11px;">
-            <i class="fa-solid fa-list" style="font-size:18px; margin-bottom:3px;"></i>
-            <span>ক্যাটাগরি</span>
+        <a href="categories.html" class="bottom-nav-item">
+            <i class="fa-solid fa-list"></i>
+            <span data-lang-key="nav_categories">ক্যাটাগরি</span>
         </a>
-        <a href="my_orders.html" class="bottom-nav-item" style="display:flex; flex-direction:column; align-items:center; text-decoration:none; color:#777; font-size:11px;">
-            <i class="fa-solid fa-box-archive" style="font-size:18px; margin-bottom:3px;"></i>
-            <span>আমার অর্ডার</span>
+        <a href="my_orders.html" class="bottom-nav-item">
+            <i class="fa-solid fa-box-archive"></i>
+            <span data-lang-key="nav_orders">আমার অর্ডার</span>
         </a>
-        <a href="favorites.html" class="bottom-nav-item" style="display:flex; flex-direction:column; align-items:center; text-decoration:none; color:#777; font-size:11px;">
-            <i class="fa-solid fa-heart" style="font-size:18px; margin-bottom:3px;"></i>
-            <span>পছন্দ</span>
+        <a href="favorites.html" class="bottom-nav-item">
+            <i class="fa-solid fa-heart"></i>
+            <span data-lang-key="nav_favorites">পছন্দ</span>
         </a>
-        <a href="support.html" class="bottom-nav-item active" style="display:flex; flex-direction:column; align-items:center; text-decoration:none; color:#ff5722; font-size:11px;">
-            <i class="fa-solid fa-headset" style="font-size:18px; margin-bottom:3px;"></i>
-            <span>সাপোর্ট</span>
+        <a href="support.html" class="bottom-nav-item active">
+            <i class="fa-solid fa-headset"></i>
+            <span data-lang-key="nav_support">সাপোর্ট</span>
         </a>
     </nav>
 
@@ -204,8 +239,73 @@
         const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im16cXFra2dkZ2d3bXBlZ3ZxYW9sIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODY4MDU4NDUsImV4cCI6MjEwMjM4MTg0NX0.hbUQ4dKjX2iXTF-ugi7JkV_-J5gKIpSEsPN8RpJ0EEo';
         const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
+        // ভাষা ডিটেক্ট করার ফাংশন
+        function getLang() {
+            return localStorage.getItem('toptop_lang') || 'bn';
+        }
+
+        // ভাষা অনুযায়ী টেক্সট আপডেট করার ফাংশন
+        function updateStaticTexts() {
+            const lang = getLang();
+
+            const headerTitle = document.getElementById('pageHeaderTitle');
+            const supportTimeTitle = document.getElementById('supportTimeTitle');
+            const supportTimeDesc = document.getElementById('supportTimeDesc');
+            const chatHeaderTitle = document.getElementById('chatHeaderTitle');
+            const phoneDisplayLabel = document.getElementById('phoneDisplayLabel');
+            const changePhoneText = document.getElementById('changePhoneText');
+            const phoneInputLabel = document.getElementById('phoneInputLabel');
+            const verifyPhoneInput = document.getElementById('verifyPhone');
+            const verifyBtn = document.getElementById('verifyBtn');
+            const nameLabel = document.getElementById('nameLabel');
+            const supNameInput = document.getElementById('supName');
+            const phoneLabel = document.getElementById('phoneLabel');
+            const supPhoneInput = document.getElementById('supPhone');
+            const phoneHint = document.getElementById('phoneHint');
+            const msgLabel = document.getElementById('msgLabel');
+            const supMsgInput = document.getElementById('supMsg');
+            const supSubmitBtn = document.getElementById('supSubmitBtn');
+
+            if (lang === 'en') {
+                if (headerTitle) headerTitle.innerText = 'Support & Chat';
+                if (supportTimeTitle) supportTimeTitle.innerText = 'Support Hours';
+                if (supportTimeDesc) supportTimeDesc.innerText = 'We are at your service every day from 10:00 AM to 10:00 PM.';
+                if (chatHeaderTitle) chatHeaderTitle.innerHTML = '<i class="fa-solid fa-headset"></i> Customer Care Chat';
+                if (changePhoneText) changePhoneText.innerText = 'Change';
+                if (phoneInputLabel) phoneInputLabel.innerText = 'Start chat with your mobile number *';
+                if (verifyPhoneInput) verifyPhoneInput.placeholder = 'e.g., 01712345678';
+                if (verifyBtn) verifyBtn.innerText = 'Enter';
+                if (nameLabel) nameLabel.innerText = 'Your Name *';
+                if (supNameInput) supNameInput.placeholder = 'Enter your name';
+                if (phoneLabel) phoneLabel.innerText = 'Mobile Number *';
+                if (supPhoneInput) supPhoneInput.placeholder = 'e.g., 01712345678';
+                if (phoneHint) phoneHint.innerText = 'To change number, click the change button above.';
+                if (msgLabel) msgLabel.innerText = 'Your Message or Issue *';
+                if (supMsgInput) supMsgInput.placeholder = 'Write your message here...';
+                if (supSubmitBtn && !supSubmitBtn.disabled) supSubmitBtn.innerText = 'Send Message';
+            } else {
+                if (headerTitle) headerTitle.innerText = 'সাপোর্ট ও চ্যাট';
+                if (supportTimeTitle) supportTimeTitle.innerText = 'সাপোর্টের সময়সীমা';
+                if (supportTimeDesc) supportTimeDesc.innerText = 'প্রতিদিন সকাল ১০:০০ টা থেকে রাত ১০:০০ টা পর্যন্ত আমরা আপনার সেবায় নিয়োজিত আছি।';
+                if (chatHeaderTitle) chatHeaderTitle.innerHTML = '<i class="fa-solid fa-headset"></i> কাস্টমার কেয়ার চ্যাট';
+                if (changePhoneText) changePhoneText.innerText = 'পরিবর্তন করুন';
+                if (phoneInputLabel) phoneInputLabel.innerText = 'আপনার মোবাইল নম্বর দিয়ে চ্যাট শুরু করুন *';
+                if (verifyPhoneInput) verifyPhoneInput.placeholder = 'যেমন: 01712345678';
+                if (verifyBtn) verifyBtn.innerText = 'প্রবেশ';
+                if (nameLabel) nameLabel.innerText = 'আপনার নাম *';
+                if (supNameInput) supNameInput.placeholder = 'আপনার নাম লিখুন';
+                if (phoneLabel) phoneLabel.innerText = 'মোবাইল নম্বর *';
+                if (supPhoneInput) supPhoneInput.placeholder = 'যেমন: 01712345678';
+                if (phoneHint) phoneHint.innerText = 'নম্বর পরিবর্তন করতে চাইলে ওপরের চ্যাট পরিবর্তন বাটনে ক্লিক করুন।';
+                if (msgLabel) msgLabel.innerText = 'আপনার বার্তা বা সমস্যা *';
+                if (supMsgInput) supMsgInput.placeholder = 'আপনার বার্তা এখানে লিখুন...';
+                if (supSubmitBtn && !supSubmitBtn.disabled) supSubmitBtn.innerText = 'মেসেজ পাঠান';
+            }
+        }
+
         // পেজ লোড হলে চেক করা কাস্টমারের নম্বর আগে থেকেই সেভ আছে কি না
         window.onload = function() {
+            updateStaticTexts();
             let savedPhone = localStorage.getItem('toptop_support_phone');
             let savedName = localStorage.getItem('toptop_support_name');
 
@@ -219,9 +319,10 @@
         };
 
         async function verifyAndLoadChat() {
+            const lang = getLang();
             let phone = document.getElementById('verifyPhone').value.trim();
             if (!phone) {
-                alert("দয়া করে আপনার মোবাইল নম্বরটি লিখুন।");
+                alert(lang === 'en' ? 'Please enter your mobile number.' : 'দয়া করে আপনার মোবাইল নম্বরটি লিখুন।');
                 return;
             }
 
@@ -235,7 +336,7 @@
             
             let chatContainer = document.getElementById('chatContainer');
             chatContainer.style.display = 'block';
-            chatContainer.innerHTML = "লোড হচ্ছে...";
+            chatContainer.innerHTML = lang === 'en' ? 'Loading...' : 'লোড হচ্ছে...';
 
             const { data, error } = await supabaseClient
                 .from('support_messages')
@@ -244,12 +345,13 @@
                 .order('created_at', { ascending: true });
 
             if (error) {
-                chatContainer.innerHTML = "ডেটা লোড করতে সমস্যা হয়েছে।";
+                chatContainer.innerHTML = lang === 'en' ? 'Failed to load data.' : 'ডেটা লোড করতে সমস্যা হয়েছে।';
                 return;
             }
 
             if (data.length === 0) {
-                chatContainer.innerHTML = "<p style='text-align:center; color:#777; font-size:13px;'>আপনার কোনো পূর্ববর্তী বার্তা নেই। নিচের ফর্ম থেকে মেসেজ পাঠান।</p>";
+                const noMsg = lang === 'en' ? 'You have no previous messages. Send a message from the form below.' : 'আপনার কোনো পূর্ববর্তী বার্তা নেই। নিচের ফর্ম থেকে মেসেজ পাঠান।';
+                chatContainer.innerHTML = `<p style='text-align:center; color:#777; font-size:13px;'>${noMsg}</p>`;
                 return;
             }
 
@@ -259,9 +361,11 @@
                     document.getElementById('supName').value = item.customer_name;
                     localStorage.setItem('toptop_support_name', item.customer_name);
                 }
-                html += `<div class="chat-msg user-bubble"><strong>${item.customer_name || 'আপনি'}:</strong> ${item.message}</div>`;
+                const senderName = lang === 'en' ? (item.customer_name || 'You') : (item.customer_name || 'আপনি');
+                const adminLabel = lang === 'en' ? 'Admin (Support):' : 'অ্যাডমিন (সাপোর্ট):';
+                html += `<div class="chat-msg user-bubble"><strong>${senderName}:</strong> ${item.message}</div>`;
                 if (item.admin_reply) {
-                    html += `<div class="chat-msg admin-bubble"><strong>অ্যাডমিন (সাপোর্ট):</strong> ${item.admin_reply}</div>`;
+                    html += `<div class="chat-msg admin-bubble"><strong>${adminLabel}</strong> ${item.admin_reply}</div>`;
                 }
             });
 
@@ -282,19 +386,20 @@
         // নতুন মেসেজ পাঠানোর ফাংশন
         async function submitSupportMessage(event) {
             event.preventDefault();
+            const lang = getLang();
 
             const submitBtn = document.getElementById('supSubmitBtn');
             submitBtn.disabled = true;
-            submitBtn.innerText = "পাঠানো হচ্ছে...";
+            submitBtn.innerText = lang === 'en' ? 'Sending...' : 'পাঠানো হচ্ছে...';
 
             let name = document.getElementById('supName').value.trim();
             let phone = document.getElementById('supPhone').value.trim();
             let message = document.getElementById('supMsg').value.trim();
 
             if (!phone) {
-                alert("দয়া করে ওপরের বক্সে আপনার নম্বর দিয়ে প্রবেশ করুন।");
+                alert(lang === 'en' ? 'Please enter your number in the box above to enter.' : 'দয়া করে ওপরের বক্সে আপনার নম্বর দিয়ে প্রবেশ করুন।');
                 submitBtn.disabled = false;
-                submitBtn.innerText = "মেসেজ পাঠান";
+                submitBtn.innerText = lang === 'en' ? 'Send Message' : 'মেসেজ পাঠান';
                 return;
             }
 
@@ -314,26 +419,26 @@
 
                 if (error) {
                     console.error(error);
-                    alert("মেসেজ পাঠাতে সমস্যা হয়েছে: " + error.message);
+                    alert((lang === 'en' ? 'Failed to send message: ' : 'মেসেজ পাঠাতে সমস্যা হয়েছে: ') + error.message);
                     submitBtn.disabled = false;
-                    submitBtn.innerText = "মেসেজ পাঠান";
+                    submitBtn.innerText = lang === 'en' ? 'Send Message' : 'মেসেজ পাঠান';
                     return;
                 }
 
-                alert("আপনার মেসেজটি সফলভাবে পাঠানো হয়েছে!");
+                alert(lang === 'en' ? 'Your message has been sent successfully!' : 'আপনার মেসেজটি সফলভাবে পাঠানো হয়েছে!');
                 document.getElementById('supMsg').value = '';
                 
                 // চ্যাট বক্স সাথে সাথে রিফ্রেশ করা
                 verifyAndLoadChat();
 
                 submitBtn.disabled = false;
-                submitBtn.innerText = "মেসেজ পাঠান";
+                submitBtn.innerText = lang === 'en' ? 'Send Message' : 'মেসেজ পাঠান';
 
             } catch (err) {
                 console.error(err);
-                alert("নেটওয়ার্ক সমস্যা! আবার চেষ্টা করুন।");
+                alert(lang === 'en' ? 'Network error! Please try again.' : 'নেটওয়ার্ক সমস্যা! আবার চেষ্টা করুন।');
                 submitBtn.disabled = false;
-                submitBtn.innerText = "মেসেজ পাঠান";
+                submitBtn.innerText = lang === 'en' ? 'Send Message' : 'মেসেজ পাঠান';
             }
         }
     </script>

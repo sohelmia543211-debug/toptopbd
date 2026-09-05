@@ -285,7 +285,6 @@ async function loadProducts(isAppend = false) {
     let productHtml = isAppend ? grid.innerHTML : "";
     
     data.forEach(p => {
-        // WhatsApp বাটনটি সম্পূর্ণ বাদ দেওয়া হয়েছে এবং কার্ডে ক্লিক করলেই ডিটেইলস পেজে যাবে
         productHtml += `
             <div class="product-card" onclick="window.location.href='product_details.html?id=${p.id}'" style="cursor: pointer; display: flex; flex-direction: column; justify-content: space-between;">
                 <div>

@@ -75,7 +75,7 @@
                 if (typeof renderMainCategories === 'function') renderMainCategories();
                 if (typeof renderSubCategories === 'function') renderSubCategories();
                 if (typeof renderFilterCards === 'function') renderFilterCards();
-                if (typeof renderProducts === 'function') renderProducts();
+                if (typeof loadProducts === 'function') loadProducts(false); // সঠিক ফাংশন কল করা হলো
             }, 10);
         }
 

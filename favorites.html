@@ -179,37 +179,37 @@
 
     <!-- হেডার -->
     <header>
-        <h1>পছন্দের প্রোডাক্টসমূহ (Favorites)</h1>
+        <h1 id="pageHeaderTitle">পছন্দের প্রোডাক্টসমূহ (Favorites)</h1>
     </header>
 
     <!-- মেইন কনটেন্ট -->
     <div class="container">
         <div class="product-grid" id="favoriteGrid">
-            <div class="no-product">লোড হচ্ছে...</div>
+            <div class="no-product" id="loadingText">লোড হচ্ছে...</div>
         </div>
     </div>
 
-    <!-- বটম নেভিগেশন বার (এখানে 'আমার অর্ডার' বাটন যুক্ত করা হয়েছে) -->
+    <!-- বটম নেভিগেশন বার -->
     <nav class="bottom-nav">
         <a href="index.html" class="bottom-nav-item">
             <i class="fa-solid fa-house"></i>
-            <span>হোম</span>
+            <span data-lang-key="nav_home">হোম</span>
         </a>
         <a href="categories.html" class="bottom-nav-item">
             <i class="fa-solid fa-list"></i>
-            <span>ক্যাটাগরি</span>
+            <span data-lang-key="nav_categories">ক্যাটাগরি</span>
         </a>
         <a href="my_orders.html" class="bottom-nav-item">
             <i class="fa-solid fa-box-archive"></i>
-            <span>আমার অর্ডার</span>
+            <span data-lang-key="nav_orders">আমার অর্ডার</span>
         </a>
         <a href="favorites.html" class="bottom-nav-item active">
             <i class="fa-solid fa-heart"></i>
-            <span>পছন্দ</span>
+            <span data-lang-key="nav_favorites">পছন্দ</span>
         </a>
         <a href="support.html" class="bottom-nav-item">
             <i class="fa-solid fa-headset"></i>
-            <span>সাপোর্ট</span>
+            <span data-lang-key="nav_support">সাপোর্ট</span>
         </a>
     </nav>
 
@@ -219,17 +219,37 @@
         
         const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
+        // ভাষা ডিটেক্ট করার ফাংশন
+        function getLang() {
+            return localStorage.getItem('toptop_lang') || 'bn';
+        }
+
+        // স্ট্যাটিক টেক্সটগুলো ভাষা অনুযায়ী পরিবর্তন করার জন্য
+        function updateStaticTexts() {
+            const lang = getLang();
+            const headerTitle = document.getElementById('pageHeaderTitle');
+
+            if (lang === 'en') {
+                if (headerTitle) headerTitle.innerText = 'Favorite Products';
+            } else {
+                if (headerTitle) headerTitle.innerText = 'পছন্দের প্রোডাক্টসমূহ';
+            }
+        }
+
         async function fetchFavorites() {
+            updateStaticTexts();
             const grid = document.getElementById('favoriteGrid');
+            const lang = getLang();
             
             // লোকাল স্টোরেজ থেকে ফেভরিট আইডিগুলো নেওয়া
             let favoriteIds = JSON.parse(localStorage.getItem('topTopFavorites')) || [];
 
             if (favoriteIds.length === 0) {
+                const emptyMsg = lang === 'en' ? 'You have no favorite products.' : 'আপনার কোনো ফেভরিট প্রোডাক্ট নেই।';
                 grid.innerHTML = `
                     <div class="no-product">
                         <i class="fa-regular fa-heart" style="font-size: 36px; display:block; margin-bottom:10px; color:#ccc;"></i>
-                        আপনার কোনো ফেভরিট প্রোডাক্ট নেই।
+                        ${emptyMsg}
                     </div>`;
                 return;
             }
@@ -244,15 +264,17 @@
                 if (error) throw error;
 
                 if (!products || products.length === 0) {
-                    grid.innerHTML = '<div class="no-product">পছন্দের কোনো প্রোডাক্ট খুঁজে পাওয়া যায়নি।</div>';
+                    const notFoundMsg = lang === 'en' ? 'No favorite products found.' : 'পছন্দের কোনো প্রোডাক্ট খুঁজে পাওয়া যায়নি।';
+                    grid.innerHTML = `<div class="no-product">${notFoundMsg}</div>`;
                     return;
                 }
 
                 let html = '';
                 products.forEach(p => {
+                    const removeTitle = lang === 'en' ? 'Remove' : 'বাদ দিন';
                     html += `
                         <div class="product-card">
-                            <button class="remove-fav-btn" onclick="removeFavorite(event, '${p.id}')" title="বাদ দিন">
+                            <button class="remove-fav-btn" onclick="removeFavorite(event, '${p.id}')" title="${removeTitle}">
                                 <i class="fa-solid fa-xmark"></i>
                             </button>
                             <div class="product-img-box" onclick="window.location.href='product_details.html?id=${p.id}'">
@@ -270,7 +292,8 @@
 
             } catch (err) {
                 console.error('Error fetching favorites:', err);
-                grid.innerHTML = '<div class="no-product" style="color: red;">প্রোডাক্ট লোড করতে সমস্যা হয়েছে।</div>';
+                const errorMsg = lang === 'en' ? 'Failed to load products.' : 'প্রোডাক্ট লোড করতে সমস্যা হয়েছে।';
+                grid.innerHTML = `<div class="no-product" style="color: red;">${errorMsg}</div>`;
             }
         }
 
