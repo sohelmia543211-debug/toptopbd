@@ -19,32 +19,20 @@
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <link rel="stylesheet" href="style.css">
 
-    <!-- কাস্টম স্টাইল: হেডার চিকন, লোগো বড় এবং TopTop BD লেখা সহ -->
+    <!-- কাস্টম স্টাইল: হেডার চিকন এবং লোগো বড় করার জন্য -->
     <style>
         .header-top {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 5px 12px; /* হেডার আরও চিকন ও কম প্যাডিং দেওয়া হয়েছে */
-            background-color: #ff5722 !important;
+            padding: 4px 12px; /* হেডার আরও চিকন ও পাতলা করা হলো */
+            background-color: #ff5722 !important; /* কমলা কালার */
         }
-        .logo-container {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            text-decoration: none;
-        }
-        .logo-container img {
-            height: 48px; /* লোগো আইকনটি আগের চেয়ে বড় করা হয়েছে */
+        .logo-link img {
+            height: 48px; /* লোগো আইকন বড় করা হলো */
             width: auto;
             object-fit: contain;
-        }
-        .logo-text {
-            color: #ffffff; /* সাদা রঙের টেক্সট */
-            font-size: 20px;
-            font-weight: bold;
-            font-family: sans-serif;
-            letter-spacing: 0.5px;
+            vertical-align: middle;
         }
     </style>
 </head>
@@ -52,10 +40,9 @@
 
     <header>
         <div class="header-top">
-            <!-- লোগো এবং TopTop BD লেখা একসাথে -->
-            <a href="index.html" class="logo-container">
+            <!-- লোগো ইমেজ -->
+            <a href="index.html" class="logo-link">
                 <img src="logo.png" alt="TopTop BD Logo">
-                <span class="logo-text">TopTop BD</span>
             </a>
             <button class="lang-switch-btn" id="langSwitchBtn" onclick="toggleLanguage()">English</button>
         </div>
