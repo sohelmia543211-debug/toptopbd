@@ -47,7 +47,12 @@
             line-height: 1.4;
             flex-grow: 1;
         }
-        .favorite-btn {
+        .btn-group-top {
+            display: flex;
+            gap: 8px;
+            flex-shrink: 0;
+        }
+        .favorite-btn, .share-btn-top {
             background: #fff;
             border: 2px solid #eee;
             border-radius: 50%;
@@ -57,16 +62,23 @@
             align-items: center;
             justify-content: center;
             cursor: pointer;
-            font-size: 20px;
-            color: #ccc;
+            font-size: 18px;
+            color: #555;
             transition: all 0.2s ease;
             box-shadow: 0 2px 8px rgba(0,0,0,0.04);
-            flex-shrink: 0;
+        }
+        .favorite-btn {
+            color: #ccc;
         }
         .favorite-btn.active {
             color: #ff3b30;
             border-color: #ff3b30;
             background: #fff5f5;
+        }
+        .share-btn-top:hover {
+            border-color: #ff5722;
+            color: #ff5722;
+            background: #fff8f6;
         }
         .product-price {
             font-size: 22px;
@@ -136,7 +148,6 @@
             margin-bottom: 15px;
         }
         
-        /* সংশ্লিষ্ট পণ্যসমূহ সেকশনের ডিজাইন আপডেট */
         .related-grid {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
@@ -183,11 +194,11 @@
             color: #222;
             margin-bottom: 6px;
             display: -webkit-box;
-            -webkit-line-clamp: 2; /* নাম বড় হলে সর্বোচ্চ ২ লাইন দেখাবে এবং ভেঙে যাবে না */
+            -webkit-line-clamp: 2;
             -webkit-box-orient: vertical;
             overflow: hidden;
             line-height: 1.3;
-            height: 34px; /* নির্দিষ্ট উচ্চতা ফিক্সড রাখা হয়েছে যাতে সব কার্ড সমান দেখায় */
+            height: 34px;
         }
         .related-product-price {
             font-size: 14px;
@@ -250,6 +261,105 @@
             color: white;
             width: 100%;
         }
+
+        /* Share Modal Styling */
+        .share-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+        .share-modal-content {
+            background: #fff;
+            padding: 20px;
+            border-radius: 12px;
+            width: 90%;
+            max-width: 350px;
+            text-align: center;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+            animation: fadeIn 0.2s ease;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: scale(0.95); }
+            to { opacity: 1; transform: scale(1); }
+        }
+        .share-modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            font-weight: 700;
+            font-size: 16px;
+            color: #333;
+        }
+        .close-modal {
+            background: none;
+            border: none;
+            font-size: 18px;
+            cursor: pointer;
+            color: #777;
+        }
+        .share-options-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 12px;
+            margin-bottom: 15px;
+        }
+        .share-option-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-decoration: none;
+            color: #333;
+            font-size: 12px;
+            gap: 6px;
+        }
+        .share-icon-circle {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 20px;
+        }
+        .share-fb { background: #1877F2; }
+        .share-wa { background: #25D366; }
+        .share-messenger { background: #0084FF; }
+        .share-copy { background: #555; }
+        .copy-link-box {
+            display: flex;
+            background: #f1f1f1;
+            border-radius: 6px;
+            overflow: hidden;
+            border: 1px solid #ddd;
+        }
+        .copy-link-input {
+            border: none;
+            background: transparent;
+            padding: 8px 10px;
+            font-size: 12px;
+            flex-grow: 1;
+            color: #555;
+            outline: none;
+            width: 100%;
+        }
+        .copy-btn-action {
+            background: #ff5722;
+            color: white;
+            border: none;
+            padding: 0 12px;
+            font-weight: 600;
+            font-size: 12px;
+            cursor: pointer;
+        }
     </style>
 </head>
 <body>
@@ -264,6 +374,38 @@
         <div id="relatedProductsSection" class="related-section" style="display: none;">
             <div class="related-title">সংশ্লিষ্ট পণ্যসমূহ</div>
             <div id="relatedProductsGrid" class="related-grid"></div>
+        </div>
+    </div>
+
+    <!-- Share Modal -->
+    <div class="share-modal" id="shareModal">
+        <div class="share-modal-content">
+            <div class="share-modal-header">
+                <span>প্রোডাক্টটি শেয়ার করুন</span>
+                <button class="close-modal" onclick="closeShareModal()"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div class="share-options-grid">
+                <a href="#" id="shareFacebook" target="_blank" class="share-option-item">
+                    <div class="share-icon-circle share-fb"><i class="fa-brands fa-facebook-f"></i></div>
+                    <span>ফেসবুক</span>
+                </a>
+                <a href="#" id="shareWhatsapp" target="_blank" class="share-option-item">
+                    <div class="share-icon-circle share-wa"><i class="fa-brands fa-whatsapp"></i></div>
+                    <span>হোয়াটসঅ্যাপ</span>
+                </a>
+                <a href="#" id="shareMessenger" target="_blank" class="share-option-item">
+                    <div class="share-icon-circle share-messenger"><i class="fa-brands fa-facebook-messenger"></i></div>
+                    <span>মেসেঞ্জার</span>
+                </a>
+                <button onclick="copyProductLink()" class="share-option-item" style="background: none; border: none; cursor: pointer; width: 100%;">
+                    <div class="share-icon-circle share-copy"><i class="fa-solid fa-copy"></i></div>
+                    <span>কপি লিংক</span>
+                </button>
+            </div>
+            <div class="copy-link-box">
+                <input type="text" id="shareUrlInput" class="copy-link-input" readonly>
+                <button class="copy-btn-action" onclick="copyProductLink()">কপি</button>
+            </div>
         </div>
     </div>
 
@@ -328,9 +470,14 @@
                 container.innerHTML = `
                     <div class="title-row">
                         <h1 class="product-title">${data.name}</h1>
-                        <button class="favorite-btn" id="favBtn" onclick="toggleFavorite('${data.id}')">
-                            <i class="fa-solid fa-heart"></i>
-                        </button>
+                        <div class="btn-group-top">
+                            <button class="share-btn-top" onclick="openShareModal()" title="শেয়ার করুন">
+                                <i class="fa-solid fa-share-nodes"></i>
+                            </button>
+                            <button class="favorite-btn" id="favBtn" onclick="toggleFavorite('${data.id}')">
+                                <i class="fa-solid fa-heart"></i>
+                            </button>
+                        </div>
                     </div>
                     <div class="product-price">৳ ${data.price}</div>
 
@@ -355,10 +502,49 @@
                 actionButtonsWrapper.style.display = 'flex';
                 checkFavoriteStatus();
                 fetchRelatedProducts(data.category, data.id);
+                setupShareLinks();
 
             } catch (err) {
                 console.error(err);
                 container.innerHTML = `<p style="color:red; text-align:center;">কানেকশন এরর হয়েছে!</p>`;
+            }
+        }
+
+        function setupShareLinks() {
+            const currentUrl = window.location.href;
+            document.getElementById('shareUrlInput').value = currentUrl;
+            
+            const encodedUrl = encodeURIComponent(currentUrl);
+            const encodedText = encodeURIComponent(currentProduct ? currentProduct.name : "TopTop BD Product");
+
+            document.getElementById('shareFacebook').href = `https://www.facebook.com/sharer/sharer.php?u=${encodedUrl}`;
+            document.getElementById('shareWhatsapp').href = `https://api.whatsapp.com/send?text=${encodedText} - ${encodedUrl}`;
+            document.getElementById('shareMessenger').href = `fb-messenger://share/?link=${encodedUrl}`;
+        }
+
+        function openShareModal() {
+            document.getElementById('shareModal').style.display = 'flex';
+        }
+
+        function closeShareModal() {
+            document.getElementById('shareModal').style.display = 'none';
+        }
+
+        function copyProductLink() {
+            const urlInput = document.getElementById('shareUrlInput');
+            urlInput.select();
+            urlInput.setSelectionRange(0, 99999);
+            navigator.clipboard.writeText(urlInput.value).then(() => {
+                alert("লিংক সফলভাবে কপি হয়েছে!");
+                closeShareModal();
+            });
+        }
+
+        // Close modal when clicking outside
+        window.onclick = function(event) {
+            const modal = document.getElementById('shareModal');
+            if (event.target == modal) {
+                closeShareModal();
             }
         }
 
